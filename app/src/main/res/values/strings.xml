@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Dekont</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_sign_in_failed">Failed to sign in with the given credentials</string>
+    <string name="error_field_required">This field is required</string>
+
+    <string name="dialog_message_login_redirect">You are not logged in. Would you like to be redirected to the login screen?</string>
+    <string name="dialog_positive_login_redirect">Yes</string>
+    <string name="dialog_negative_login_redirect">No</string>
+
+    <string name="title_activity_transactions">Transactions</string>
+</resources>
