@@ -57,7 +57,7 @@ class DekontApi constructor(private val context: Context) {
                     "name" to name
             ))
 
-            val response = performJsonRequest("POST", "/login/", jsonData)
+            val response = performJsonRequest("POST", "login", jsonData)
             return LoginResponse(response)
         }
 
@@ -65,7 +65,7 @@ class DekontApi constructor(private val context: Context) {
          * Verify validity of auth token.
          */
         fun verifyAuthTokenValidity(authToken: String): Boolean {
-            val response = performJsonRequest("GET", "/verify-authtoken/$authToken")
+            val response = performJsonRequest("GET", "verify-authtoken/$authToken")
 
             return response.json!!.getBoolean("is_valid")
         }
