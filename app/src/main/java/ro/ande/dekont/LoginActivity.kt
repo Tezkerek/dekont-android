@@ -2,31 +2,21 @@ package ro.ande.dekont
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.annotation.TargetApi
-import android.content.pm.PackageManager
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.app.LoaderManager.LoaderCallbacks
-import android.content.CursorLoader
-import android.content.Loader
-import android.database.Cursor
-import android.net.Uri
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Bundle
-import android.provider.ContactsContract
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import android.widget.TextView
-
-import java.util.ArrayList
-import android.Manifest.permission.READ_CONTACTS
-import android.content.Context
-import android.content.Intent
-
 import kotlinx.android.synthetic.main.activity_login.*
+import okhttp3.ResponseBody
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * A login screen that offers login via email/password.
@@ -35,7 +25,7 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private var mAuthTask: UserLoginTask? = null
+    private var mLoginCall: Call<ResponseBody>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
      * errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
-        if (mAuthTask != null) {
+        if (mLoginCall != null) {
             return
         }
 
@@ -100,8 +90,42 @@ class LoginActivity : AppCompatActivity() {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-            mAuthTask = UserLoginTask(emailStr, passwordStr)
-            mAuthTask!!.execute(null as Void?)
+
+            // Generate a random number to identify device
+            val deviceName = "android-" + Math.ceil(Math.random() * 100)
+
+            mLoginCall = DekontApi(this).login(emailStr, passwordStr, deviceName)
+            mLoginCall!!.enqueue(LoginCallback())
+        }
+    }
+
+    /**
+     * Callback for the login attempt.
+     */
+    private inner class LoginCallback : Callback<ResponseBody> {
+        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+            if (response.isSuccessful) {
+                val responseStr = response.body()!!.string()
+                val responseJson = JSONObject(responseStr)
+
+                // Store the token
+                // TODO: Figure out how to use AccountManager
+                val sharedPreferences = getSharedPreferences(DekontApi.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString(DekontApi.SHARED_PREFERENCES_TOKEN_KEY, responseJson.getString("token")).apply()
+
+                finishLogin()
+            } else {
+                // Display an error popup
+                Snackbar.make(this@LoginActivity.login_form, R.string.error_sign_in_failed, Snackbar.LENGTH_SHORT).show()
+            }
+
+            mLoginCall = null
+            showProgress(false)
+        }
+
+        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            // Display error
+            Snackbar.make(this@LoginActivity.login_form, R.string.error_server_unreachable, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -148,52 +172,7 @@ class LoginActivity : AppCompatActivity() {
     private fun finishLogin() {
         val intent = Intent(this, TransactionsActivity::class.java)
         startActivity(intent)
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    inner class UserLoginTask internal constructor(private val email: String, private val password: String) : AsyncTask<Void, Void, Boolean>() {
-
-        override fun doInBackground(vararg params: Void): Boolean {
-
-            try {
-                // Generate a random number to identify device
-                val deviceName = "android-" + Math.ceil(Math.random() * 100)
-
-                val loginResponse = DekontApi.login(email, password, deviceName)
-
-                if (loginResponse.success) {
-                    // Store the token
-                    // TODO: Figure out how to use AccountManager
-                    val sharedPreferences = getSharedPreferences(DekontApi.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-                    sharedPreferences.edit().putString(DekontApi.SHARED_PREFERENCES_TOKEN_KEY, loginResponse.token).apply()
-                }
-
-                return loginResponse.success
-            } catch (e: InterruptedException) {
-                return false
-            }
-
-        }
-
-        override fun onPostExecute(success: Boolean) {
-            mAuthTask = null
-            showProgress(false)
-
-            if (success) {
-                finishLogin()
-            } else {
-                // Display an error popup
-                Snackbar.make(this@LoginActivity.login_form, R.string.error_sign_in_failed, Snackbar.LENGTH_SHORT).show()
-            }
-        }
-
-        override fun onCancelled() {
-            mAuthTask = null
-            showProgress(false)
-        }
+        finish()
     }
 
     companion object {

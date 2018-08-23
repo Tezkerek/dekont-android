@@ -4,8 +4,11 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
+
+    <string name="error_server_unreachable">Unable to reach server.</string>
+    <string name="error_internal_server_error">An internal server error has occurred.</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_sign_in_failed">Failed to sign in with the given credentials</string>

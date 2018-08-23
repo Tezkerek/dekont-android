@@ -21,13 +21,6 @@ class DekontResponse(connection: HttpURLConnection) {
     }
 }
 
-class LoginResponse(response: DekontResponse) {
-    val success = response.success
+class LoginResponse {
     var token: String? = null
-
-    init {
-        if (success) {
-            token = response.json!!.getString("token")
-        }
-    }
 }

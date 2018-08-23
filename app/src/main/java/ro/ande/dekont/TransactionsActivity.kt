@@ -2,22 +2,33 @@ package ro.ande.dekont
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_transactions.*
+import ro.ande.dekont.viewmodel.TransactionsViewModel
 
 class TransactionsActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transactions)
         setSupportActionBar(toolbar)
 
-        CheckLoginTask().execute()
+        val mViewModel = ViewModelProviders.of(this).get(TransactionsViewModel::class.java)
+        mViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
+            if (!isLoggedIn!!) {
+                redirectToLogin()
+            } else {
+                Toast.makeText(this, "You are logged in", Toast.LENGTH_SHORT).show()
+            }
+        })
+
     }
 
     /**
@@ -41,20 +52,5 @@ class TransactionsActivity : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
-    }
-
-    /**
-     * Verifies login status and redirects the user to the login page if needed.
-     */
-    inner class CheckLoginTask : AsyncTask<Void, Void, Boolean>() {
-        override fun doInBackground(vararg params: Void): Boolean {
-            return DekontApi(this@TransactionsActivity).isLoginValid()
-        }
-
-        override fun onPostExecute(isLoggedIn: Boolean) {
-            if (!isLoggedIn) {
-                showLoginRedirectDialog()
-            }
-        }
     }
 }
