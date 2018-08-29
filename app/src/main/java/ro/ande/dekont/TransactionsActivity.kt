@@ -1,26 +1,28 @@
 package ro.ande.dekont
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-
 import kotlinx.android.synthetic.main.activity_transactions.*
+import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionsViewModel
+import javax.inject.Inject
 
-class TransactionsActivity : AppCompatActivity() {
+class TransactionsActivity : BaseActivity(), Injectable {
+    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transactions)
         setSupportActionBar(toolbar)
 
-        val mViewModel = ViewModelProviders.of(this).get(TransactionsViewModel::class.java)
+        val mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionsViewModel::class.java)
         mViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
                 redirectToLogin()
@@ -29,6 +31,7 @@ class TransactionsActivity : AppCompatActivity() {
             }
         })
 
+        mViewModel.verifyLogin()
     }
 
     /**

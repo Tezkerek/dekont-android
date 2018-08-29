@@ -2,34 +2,40 @@ package ro.ande.dekont
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_login.*
-import okhttp3.ResponseBody
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import ro.ande.dekont.di.Injectable
+import ro.ande.dekont.viewmodel.LoginViewModel
+import ro.ande.dekont.vo.Resource
+import ro.ande.dekont.vo.Status
+import ro.ande.dekont.vo.Token
+import javax.inject.Inject
 
 /**
  * A login screen that offers login via email/password.
  */
-class LoginActivity : AppCompatActivity() {
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private var mLoginCall: Call<ResponseBody>? = null
+class LoginActivity : BaseActivity(), Injectable {
+    @Inject
+    lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private lateinit var mViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LoginViewModel::class.java)
+
+        mViewModel.authToken.observe(this, LoginObserver())
 
         // Set up the login form.
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -49,10 +55,6 @@ class LoginActivity : AppCompatActivity() {
      * errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
-        if (mLoginCall != null) {
-            return
-        }
-
         // Reset errors.
         email.error = null
         password.error = null
@@ -94,38 +96,31 @@ class LoginActivity : AppCompatActivity() {
             // Generate a random number to identify device
             val deviceName = "android-" + Math.ceil(Math.random() * 100)
 
-            mLoginCall = DekontApi(this).login(emailStr, passwordStr, deviceName)
-            mLoginCall!!.enqueue(LoginCallback())
+            mViewModel.attemptLogin(emailStr, passwordStr, deviceName)
         }
     }
 
     /**
      * Callback for the login attempt.
      */
-    private inner class LoginCallback : Callback<ResponseBody> {
-        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-            if (response.isSuccessful) {
-                val responseStr = response.body()!!.string()
-                val responseJson = JSONObject(responseStr)
+    private inner class LoginObserver : Observer<Resource<Token>> {
+        override fun onChanged(tokenResource: Resource<Token>?) {
+            if (tokenResource!!.status == Status.SUCCESS) {
+                val token = tokenResource.data!!
 
                 // Store the token
                 // TODO: Figure out how to use AccountManager
-                val sharedPreferences = getSharedPreferences(DekontApi.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-                sharedPreferences.edit().putString(DekontApi.SHARED_PREFERENCES_TOKEN_KEY, responseJson.getString("token")).apply()
+                val sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString(SHARED_PREFERENCES_TOKEN_KEY, token.token).apply()
 
                 finishLogin()
             } else {
                 // Display an error popup
-                Snackbar.make(this@LoginActivity.login_form, R.string.error_sign_in_failed, Snackbar.LENGTH_SHORT).show()
+//                Snackbar.make(this@LoginActivity.login_form, R.string.error_sign_in_failed, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(this@LoginActivity.login_form, tokenResource.message!!, Snackbar.LENGTH_SHORT).show()
             }
 
-            mLoginCall = null
             showProgress(false)
-        }
-
-        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-            // Display error
-            Snackbar.make(this@LoginActivity.login_form, R.string.error_server_unreachable, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -176,6 +171,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val SHARED_PREFERENCES_NAME = "auth"
+        const val SHARED_PREFERENCES_TOKEN_KEY = "token"
 
         const val ARG_ACCOUNT_TYPE = "accountType"
         const val ARG_AUTH_TYPE = "authType"
