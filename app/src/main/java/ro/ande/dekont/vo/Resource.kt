@@ -5,6 +5,10 @@ package ro.ande.dekont.vo
  * @param <T>
 </T> */
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
+    fun isSuccess() = status == Status.SUCCESS
+    fun isError() = status == Status.ERROR
+    fun isLoading() = status == Status.LOADING
+
     companion object {
         fun <T> success(data: T?): Resource<T> {
             return Resource(Status.SUCCESS, data, null)

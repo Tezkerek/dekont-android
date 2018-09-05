@@ -22,7 +22,7 @@ class LoginViewModel
         mediatorAuthToken.addSource(login) { response ->
             when (response) {
                 is ApiSuccessResponse -> mediatorAuthToken.value = Resource.success(response.body)
-                is ApiErrorResponse -> mediatorAuthToken.value = Resource.error(response.errorMessage, null)
+                is ApiErrorResponse -> mediatorAuthToken.value = Resource.error(response.getFirstError(), null)
             }
         }
     }

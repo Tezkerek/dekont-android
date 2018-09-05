@@ -105,7 +105,7 @@ class LoginActivity : BaseActivity(), Injectable {
      */
     private inner class LoginObserver : Observer<Resource<Token>> {
         override fun onChanged(tokenResource: Resource<Token>?) {
-            if (tokenResource!!.status == Status.SUCCESS) {
+            if (tokenResource!!.isSuccess()) {
                 val token = tokenResource.data!!
 
                 // Store the token
@@ -177,16 +177,5 @@ class LoginActivity : BaseActivity(), Injectable {
         const val ARG_ACCOUNT_TYPE = "accountType"
         const val ARG_AUTH_TYPE = "authType"
         const val ARG_IS_ADDING_NEW_ACCOUNT = "isAddingNewAccount"
-
-        /**
-         * Id to identity READ_CONTACTS permission request.
-         */
-        private val REQUEST_READ_CONTACTS = 0
-
-        /**
-         * A dummy authentication store containing known user names and passwords.
-         * TODO: remove after connecting to a real authentication system.
-         */
-        private val DUMMY_CREDENTIALS = arrayOf("foo@example.com:hello", "bar@example.com:world")
     }
 }
