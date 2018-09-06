@@ -9,6 +9,7 @@ import retrofit2.Response
  * Represents an API response.
  * T is the type of the body.
  */
+@Suppress("unused")
 sealed class ApiResponse<T> {
     companion object {
         fun <T> create(response: Response<T>): ApiResponse<T> {
@@ -46,7 +47,7 @@ class ApiEmptyResponse<T> : ApiResponse<T>()
 
 class ApiSuccessResponse<T>(val body: T) : ApiResponse<T>()
 
-class ApiErrorResponse<T>(val errorResponse: JSONObject) : ApiResponse<T>() {
+class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
     private var detail: String? = null
 
     private var nonFieldErrors: List<String>? = null
