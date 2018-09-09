@@ -1,17 +1,21 @@
 package ro.ande.dekont
 
 import android.app.Activity
+import androidx.fragment.app.Fragment
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
+import dagger.android.support.HasSupportFragmentInjector
 import ro.ande.dekont.di.AppInjector
 import ro.ande.dekont.di.DaggerAppComponent
 import javax.inject.Inject
 
-class DekontApp : DaggerApplication(), HasActivityInjector {
+class DekontApp : DaggerApplication(), HasActivityInjector, HasSupportFragmentInjector {
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 
     @Inject lateinit var dispatchingActivityInjector: DispatchingAndroidInjector<Activity>
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     override fun onCreate() {
         super.onCreate()
