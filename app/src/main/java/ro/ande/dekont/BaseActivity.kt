@@ -2,7 +2,7 @@ package ro.ande.dekont
 
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import dagger.android.AndroidInjection
 
 open class BaseActivity : AppCompatActivity() {

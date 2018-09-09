@@ -2,22 +2,21 @@ package ro.ande.dekont
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.LoginViewModel
 import ro.ande.dekont.vo.Resource
-import ro.ande.dekont.vo.Status
 import ro.ande.dekont.vo.Token
 import javax.inject.Inject
 

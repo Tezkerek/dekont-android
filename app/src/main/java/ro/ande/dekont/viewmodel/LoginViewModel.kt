@@ -1,7 +1,9 @@
 package ro.ande.dekont.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.repo.UserRepository

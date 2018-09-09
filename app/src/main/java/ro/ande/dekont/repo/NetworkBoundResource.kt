@@ -1,9 +1,9 @@
 package ro.ande.dekont.repo
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
-import android.support.annotation.MainThread
-import android.support.annotation.WorkerThread
+import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.ApiEmptyResponse
 import ro.ande.dekont.api.ApiErrorResponse

@@ -1,6 +1,6 @@
 package ro.ande.dekont
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body

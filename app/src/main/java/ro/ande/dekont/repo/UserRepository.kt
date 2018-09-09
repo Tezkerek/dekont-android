@@ -1,6 +1,6 @@
 package ro.ande.dekont.repo
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import ro.ande.dekont.DekontService
 import ro.ande.dekont.api.ApiResponse
 import ro.ande.dekont.api.LoginRequest

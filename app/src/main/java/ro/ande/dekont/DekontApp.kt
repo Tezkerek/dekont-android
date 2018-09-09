@@ -1,7 +1,6 @@
 package ro.ande.dekont
 
 import android.app.Activity
-import android.app.Application
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import dagger.android.DispatchingAndroidInjector

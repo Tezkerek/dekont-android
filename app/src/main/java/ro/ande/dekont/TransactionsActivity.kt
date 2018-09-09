@@ -1,14 +1,13 @@
 package ro.ande.dekont
 
 import android.app.AlertDialog
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_transactions.*
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionsViewModel
