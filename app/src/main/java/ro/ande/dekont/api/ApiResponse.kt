@@ -1,9 +1,14 @@
 package ro.ande.dekont.api
 
+import android.content.Context
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
+import ro.ande.dekont.R
+import java.io.IOException
+import java.net.ConnectException
+import kotlin.reflect.KClass
 
 /**
  * Represents an API response.
@@ -37,6 +42,10 @@ sealed class ApiResponse<T> {
         fun <T> create(error: Throwable): ApiErrorResponse<T> {
             return ApiErrorResponse.createFromThrowable(error)
         }
+
+        fun <T> create(context: Context, error: Throwable): ApiErrorResponse<T> {
+            return ApiErrorResponse.createFromThrowable(context, error)
+        }
     }
 }
 
@@ -54,8 +63,10 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
     private val fieldErrors: Map<String, List<String>>
 
     init {
+        // Extract detail from the error response
         if (errorResponse.has("detail")) {
             detail = errorResponse.getString("detail")
+            errorResponse.remove("detail")
         }
 
         val mutableFieldErrors: MutableMap<String, List<String>> = mutableMapOf()
@@ -102,8 +113,29 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
 
     companion object {
         fun <T> createFromThrowable(throwable: Throwable): ApiErrorResponse<T> {
-            return ApiErrorResponse(createSingleMessage(throwable.message ?: "Unknown error"))
+            throwable.printStackTrace()
+            val message = getMessageByException(throwable).second
+            return ApiErrorResponse(createSingleMessage(message))
         }
+
+        fun <T> createFromThrowable(context: Context, throwable: Throwable): ApiErrorResponse<T> {
+            val message = context.getString(getMessageByException(throwable).first)
+            return ApiErrorResponse(createSingleMessage(message))
+        }
+
+        /** A mapping of exception classes to error messages */
+        private val exceptionToMessageMap = mapOf<KClass<out Throwable>, Pair<Int, String>>(
+                IOException::class to Pair(R.string.error_network, "Network error"),
+                ConnectException::class to Pair(R.string.error_server_unreachable, "Unable to reach server")
+        )
+
+        /**
+         * Helper function for obtaining the corresponding error message from an exception.
+         * @return A Pair of resIds and strings, where the strings are to be used if no context is available.
+         */
+        private fun getMessageByException(exception: Throwable): Pair<Int, String> =
+                exceptionToMessageMap[exception::class]
+                        ?: Pair(R.string.error_unknown, "Unknown error")
 
         private fun <T> getListFromJsonArray(array: JSONArray): List<T> {
             val mutableNonFieldErrors = mutableListOf<T>()
@@ -115,7 +147,13 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
             return mutableNonFieldErrors
         }
 
-        private fun createSingleMessage(message: String, key: String = "detail"): JSONObject = JSONObject().put(key, JSONArray(listOf(message)))
+        private fun createSingleMessage(message: String, key: String = "detail"): JSONObject {
+            val converted = when (key) {
+                "detail" -> message
+                else -> JSONArray(listOf(message))
+            }
+            return JSONObject().put(key, converted)
+        }
 
         private val malformedResponseMessage = createSingleMessage("Unknown error: server response is malformed")
     }
