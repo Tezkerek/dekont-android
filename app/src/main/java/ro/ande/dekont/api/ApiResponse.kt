@@ -1,6 +1,7 @@
 package ro.ande.dekont.api
 
 import android.content.Context
+import android.util.Log
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -8,6 +9,7 @@ import retrofit2.Response
 import ro.ande.dekont.R
 import java.io.IOException
 import java.net.ConnectException
+import java.net.SocketTimeoutException
 import kotlin.reflect.KClass
 
 /**
@@ -126,16 +128,19 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
         /** A mapping of exception classes to error messages */
         private val exceptionToMessageMap = mapOf<KClass<out Throwable>, Pair<Int, String>>(
                 IOException::class to Pair(R.string.error_network, "Network error"),
-                ConnectException::class to Pair(R.string.error_server_unreachable, "Unable to reach server")
+                ConnectException::class to Pair(R.string.error_server_unreachable, "Unable to reach server"),
+                SocketTimeoutException::class to Pair(R.string.error_server_unreachable, "Unable to reach server")
         )
 
         /**
          * Helper function for obtaining the corresponding error message from an exception.
          * @return A Pair of resIds and strings, where the strings are to be used if no context is available.
          */
-        private fun getMessageByException(exception: Throwable): Pair<Int, String> =
-                exceptionToMessageMap[exception::class]
-                        ?: Pair(R.string.error_unknown, "Unknown error")
+        private fun getMessageByException(exception: Throwable): Pair<Int, String> {
+            Log.e("ApiResponse", "Received exception: ${exception.javaClass} ${exception.message}")
+            return exceptionToMessageMap[exception::class]
+                    ?: Pair(R.string.error_unknown, "Unknown error")
+        }
 
         private fun <T> getListFromJsonArray(array: JSONArray): List<T> {
             val mutableNonFieldErrors = mutableListOf<T>()
