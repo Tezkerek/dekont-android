@@ -12,12 +12,13 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ro.ande.dekont.DekontService
+import ro.ande.dekont.LoginActivity
+import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.R
 import ro.ande.dekont.util.LiveDataCallAdapterFactory
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module(includes = [ViewModelModule::class])
@@ -28,9 +29,22 @@ class AppModule {
             OkHttpClient.Builder()
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .addInterceptor { chain ->
+                        val token = app.getSharedPreferences(LoginActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).getString("token", null)
+
+                        val originalRequest = chain.request()
+
+                        val request =
+                                if (token != null) originalRequest.newBuilder()
+                                        .addHeader("Authorization", "Token $token")
+                                        .build()
+                                else originalRequest
+
+                        chain.proceed(request)
+                    }
+                    .addInterceptor { chain ->
                         val request = chain.request()
 
-                        Log.d("LoggingInterceptor", "Sending request ${request.url()} on ${chain.connection()} ${request.headers()}")
+                        Log.d("LoggingInterceptor", "Sending request ${request.url()} on ${chain.connection()} with ${request.headers()}")
 
                         val response = chain.proceed(request)
 
