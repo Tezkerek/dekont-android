@@ -5,17 +5,22 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
 import android.widget.Toast
+import androidx.room.Room
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import org.threeten.bp.LocalDate
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ro.ande.dekont.LoginActivity
 import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.R
-import ro.ande.dekont.util.LiveDataCallAdapterFactory
+import ro.ande.dekont.db.DekontDatabase
+import ro.ande.dekont.db.TransactionDao
+import ro.ande.dekont.util.*
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -74,11 +79,11 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideDekontService(client: OkHttpClient, liveDataCallAdapterFactory: LiveDataCallAdapterFactory, gsonConverterFactory: GsonConverterFactory): DekontService =
+    fun provideDekontService(client: OkHttpClient, liveDataCallAdapterFactory: LiveDataCallAdapterFactory, gson: Gson): DekontService =
             Retrofit.Builder()
                     .baseUrl("http://192.168.0.53:8000")
                     .client(client)
-                    .addConverterFactory(gsonConverterFactory)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(liveDataCallAdapterFactory)
                     .build()
                     .create(DekontService::class.java)
@@ -87,5 +92,22 @@ class AppModule {
     fun provideLiveDataCallAdapterFactory(): LiveDataCallAdapterFactory = LiveDataCallAdapterFactory()
 
     @Provides
-    fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
+    fun provideGson(): Gson =
+            GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, GsonLocalDateSerializer())
+                    .registerTypeAdapter(LocalDate::class.java, GsonLocalDateDeserializer())
+                    .registerTypeAdapter(Currency::class.java, GsonCurrencySerializer())
+                    .registerTypeAdapter(Currency::class.java, GsonCurrencyDeserializer())
+                    .create()
+
+    @Provides
+    @Singleton
+    fun provideDatabase(app: Application): DekontDatabase =
+            Room.databaseBuilder(app, DekontDatabase::class.java, "dekont.db")
+                    .fallbackToDestructiveMigration()
+                    .build()
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(db: DekontDatabase): TransactionDao = db.transactionDao()
 }

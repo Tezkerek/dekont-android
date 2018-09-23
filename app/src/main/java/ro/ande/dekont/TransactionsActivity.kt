@@ -21,8 +21,8 @@ class TransactionsActivity : BaseActivity(), Injectable {
         setContentView(R.layout.activity_transactions)
         setSupportActionBar(toolbar)
 
-        val mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionsViewModel::class.java)
-        mViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
+        val transactionsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionsViewModel::class.java)
+        transactionsViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
                 redirectToLogin()
             } else {
@@ -30,7 +30,7 @@ class TransactionsActivity : BaseActivity(), Injectable {
             }
         })
 
-        mViewModel.verifyLogin()
+        transactionsViewModel.verifyLogin()
     }
 
     /**

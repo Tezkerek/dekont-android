@@ -12,8 +12,7 @@ import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.vo.Resource
 
 /**
- * A generic class that can provide a resource backed by both the sqlite database and the network.
- *
+ * A generic class that can provide a resource backed by both the local database and the network.
  *
  * You can read more about it in the [Architecture
  * Guide](https://developer.android.com/arch).
@@ -22,7 +21,6 @@ import ro.ande.dekont.vo.Resource
  */
 abstract class NetworkBoundResource<ResultType, RequestType>
 @MainThread constructor(private val appExecutors: AppExecutors) {
-
     private val result = MediatorLiveData<Resource<ResultType>>()
 
     init {
@@ -100,7 +98,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
 
     @WorkerThread
-    protected abstract fun saveCallResult(item: RequestType)
+    protected abstract fun saveCallResult(result: RequestType)
 
     @MainThread
     protected abstract fun shouldFetch(data: ResultType?): Boolean

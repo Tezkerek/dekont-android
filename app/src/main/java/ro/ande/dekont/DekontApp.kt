@@ -2,6 +2,7 @@ package ro.ande.dekont
 
 import android.app.Activity
 import androidx.fragment.app.Fragment
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import dagger.android.DispatchingAndroidInjector
@@ -26,6 +27,8 @@ class DekontApp : DaggerApplication(), HasActivityInjector, HasSupportFragmentIn
                 .inject(this)
 
         AppInjector.injectAll(this)
+
+        AndroidThreeTen.init(this)
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> = DaggerAppComponent.builder().application(this).build()
