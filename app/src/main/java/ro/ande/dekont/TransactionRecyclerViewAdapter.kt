@@ -5,48 +5,93 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.transaction_list_header.view.*
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
-import ro.ande.dekont.dummy.DummyContent.DummyItem
-import ro.ande.dekont.vo.Resource
+import org.threeten.bp.Month
+import org.zakariya.stickyheaders.SectioningAdapter
 import ro.ande.dekont.vo.Transaction
 
 class TransactionRecyclerViewAdapter(
-        private val transactions: Resource<List<Transaction>>
-) : RecyclerView.Adapter<TransactionRecyclerViewAdapter.ViewHolder>() {
-    private val mOnClickListener: View.OnClickListener
+        private var transactions: List<Transaction>
+) : SectioningAdapter() {
+    private var sections: MutableList<Section> = mutableListOf()
 
     init {
-        mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-        }
+        setTransactions(transactions)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
+    fun setTransactions(transactions: List<Transaction>) {
+        this.transactions = transactions
+
+        sections = transactions
+                .asSequence()
+                .groupBy { it.date.month }
+                .map { entry -> Section(entry.key, entry.value) }
+                .toMutableList()
+
+        notifyAllSectionsDataSetChanged()
+    }
+
+    override fun onCreateItemViewHolder(parent: ViewGroup, itemUserType: Int): ItemViewHolder {
+        val view = LayoutInflater
+                .from(parent.context)
                 .inflate(R.layout.transaction_list_item, parent, false)
-        return ViewHolder(view)
+
+        return TransactionViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = transactions.data?.get(position)
-        holder.dayView.text = item?.date?.dayOfMonth.toString()
-        holder.amountView.text = item?.amount.toString()
-        holder.currencyView.text = item?.currency?.currencyCode
+    override fun onCreateHeaderViewHolder(parent: ViewGroup, headerUserType: Int): HeaderViewHolder {
+        val view = LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.transaction_list_header, parent, false)
 
-//        with(holder.view) {
-//            tag = item
-//            setOnClickListener(mOnClickListener)
-//        }
+        return MonthHeaderViewHolder(view)
     }
 
-    override fun getItemCount(): Int = transactions.data?.size ?: 0
+    override fun onBindItemViewHolder(viewHolder: ItemViewHolder, sectionIndex: Int, itemIndex: Int, itemType: Int) {
+        viewHolder as TransactionViewHolder
+        val transaction = sections[sectionIndex].transactions[itemIndex]
+        viewHolder.dayView.text = transaction.date.dayOfMonth.toString()
+        viewHolder.amountView.text = transaction.amount.toString()
+        viewHolder.currencyView.text = transaction.currency.currencyCode
+    }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    override fun onBindHeaderViewHolder(viewHolder: HeaderViewHolder, sectionIndex: Int, headerType: Int) {
+        viewHolder as MonthHeaderViewHolder
+        val section = sections[sectionIndex]
+        viewHolder.monthView.text = section.month.name
+
+        viewHolder.view.setOnClickListener { section.isExpanded = !section.isExpanded; notifyAllSectionsDataSetChanged() }
+    }
+
+    // Needed, otherwise crashes
+    // See https://github.com/ShamylZakariya/StickyHeaders/issues/87#issuecomment-369088743
+    override fun onCreateGhostHeaderViewHolder(parent: ViewGroup): GhostHeaderViewHolder {
+        val view = View(parent.context)
+        view.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        return GhostHeaderViewHolder(view)
+    }
+
+    override fun getNumberOfSections(): Int = sections.size
+
+    override fun getNumberOfItemsInSection(sectionIndex: Int): Int = sections[sectionIndex].let { if (it.isExpanded) it.transactions.size else 0 }
+
+    override fun doesSectionHaveHeader(sectionIndex: Int): Boolean = true
+
+    override fun doesSectionHaveFooter(sectionIndex: Int): Boolean = false
+
+    private class Section(val month: Month, val transactions: List<Transaction>) {
+        var isExpanded: Boolean = true
+    }
+
+    inner class TransactionViewHolder(val view: View) : SectioningAdapter.ItemViewHolder(view) {
         val dayView: TextView = view.transaction_day
         val amountView: TextView = view.transaction_amount
         val currencyView: TextView = view.transaction_currency
+    }
+
+    inner class MonthHeaderViewHolder(val view: View) : SectioningAdapter.HeaderViewHolder(view) {
+        val monthView: TextView = view.month_view
     }
 }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
+import org.zakariya.stickyheaders.StickyHeaderLayoutManager
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import javax.inject.Inject
@@ -39,13 +40,7 @@ class TransactionListFragment : Fragment(), Injectable {
 
         // Set the adapter
         if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-//                adapter = TransactionRecyclerViewAdapter(DummyContent.ITEMS)
-            }
+            view.layoutManager = StickyHeaderLayoutManager()
         }
         return view
     }
@@ -57,11 +52,11 @@ class TransactionListFragment : Fragment(), Injectable {
             transactionsViewModel = ViewModelProviders.of(it, mViewModelFactory).get(TransactionsViewModel::class.java)
         }
 
-        transactionsViewModel.loadTransactions().observe(this, Observer { transactions ->
+        transactionsViewModel.loadTransactions().observe(this, Observer { transactionsResource ->
             this@TransactionListFragment.transaction_list.run {
-                adapter = TransactionRecyclerViewAdapter(transactions)
-                if (transactions.isError()) {
-//                    Snackbar.make(this, transactions.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
+                val transactions = transactionsResource.data
+                if (transactions != null) {
+                    adapter = TransactionRecyclerViewAdapter(transactions)
                 }
             }
         })
