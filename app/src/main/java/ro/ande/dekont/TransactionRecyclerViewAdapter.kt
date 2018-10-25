@@ -1,35 +1,69 @@
 package ro.ande.dekont
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.RotateAnimation
+import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.transaction_list_header.view.*
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
 import org.threeten.bp.Month
-import org.zakariya.stickyheaders.SectioningAdapter
+import ro.ande.dekont.util.SectioningAdapter
 import ro.ande.dekont.vo.Transaction
 
-class TransactionRecyclerViewAdapter(
-        private var transactions: List<Transaction>
-) : SectioningAdapter() {
+class TransactionRecyclerViewAdapter() : SectioningAdapter() {
+    private var transactions: List<Transaction> = listOf()
     private var sections: MutableList<Section> = mutableListOf()
 
-    init {
+    constructor(transactions: List<Transaction>) : this() {
         setTransactions(transactions)
     }
 
     fun setTransactions(transactions: List<Transaction>) {
-        this.transactions = transactions
+        val oldTransactions = this.transactions
+        val oldSections = this.sections
 
-        sections = transactions
+        val byMonth: Map<Month, List<Transaction>> = transactions
                 .asSequence()
                 .groupBy { it.date.month }
-                .map { entry -> Section(entry.key, entry.value) }
+
+        this.transactions = transactions
+        this.sections =  byMonth
+                .map { entry ->
+                    val month = entry.key
+                    val contents =  entry.value
+
+                    val oldSectionIndex = oldSections.indexOfFirst { it.month == month }
+                    val oldSection = if (oldSectionIndex > -1) oldSections[oldSectionIndex] else null
+
+
+                    // New sections are expanded
+                    // Existing sections are expanded if their contents are changed
+                    // Otherwise they keep their state
+                    val isCollapsed =
+                            let {
+                                if (oldSection != null) {
+                                    val areContentsUnchanged = oldSection.transactions.foldIndexed(true) { i, acc, transaction -> acc && transaction == contents[i] }
+                                    if (areContentsUnchanged) oldSection.isCollapsed else false
+                                } else {
+                                    // New section is collapsed
+                                    false
+                                }
+                            }
+
+                    Section(entry.key, entry.value, isCollapsed)
+                }
                 .toMutableList()
 
         notifyAllSectionsDataSetChanged()
+
+        // Apply collapse states
+        this.sections.forEachIndexed { index, section ->
+            setSectionIsCollapsed(index, section.isCollapsed)
+        }
     }
 
     override fun onCreateItemViewHolder(parent: ViewGroup, itemUserType: Int): ItemViewHolder {
@@ -61,7 +95,14 @@ class TransactionRecyclerViewAdapter(
         val section = sections[sectionIndex]
         viewHolder.monthView.text = section.month.name
 
-        viewHolder.view.setOnClickListener { section.isExpanded = !section.isExpanded; notifyAllSectionsDataSetChanged() }
+        viewHolder.instantCollapse(section.isCollapsed)
+
+        viewHolder.view.setOnClickListener { view ->
+            section.isCollapsed = !isSectionCollapsed(sectionIndex)
+            setSectionIsCollapsed(sectionIndex, section.isCollapsed)
+
+            viewHolder.animateCollapse(section.isCollapsed)
+        }
     }
 
     // Needed, otherwise crashes
@@ -75,23 +116,49 @@ class TransactionRecyclerViewAdapter(
 
     override fun getNumberOfSections(): Int = sections.size
 
-    override fun getNumberOfItemsInSection(sectionIndex: Int): Int = sections[sectionIndex].let { if (it.isExpanded) it.transactions.size else 0 }
+    override fun getNumberOfItemsInSection(sectionIndex: Int): Int = sections[sectionIndex].transactions.size
 
     override fun doesSectionHaveHeader(sectionIndex: Int): Boolean = true
 
     override fun doesSectionHaveFooter(sectionIndex: Int): Boolean = false
 
-    private class Section(val month: Month, val transactions: List<Transaction>) {
-        var isExpanded: Boolean = true
+    private class Section(val month: Month, transactions: List<Transaction>, var isCollapsed: Boolean = false) {
+        val transactions: MutableList<Transaction> = transactions.toMutableList()
     }
 
-    inner class TransactionViewHolder(val view: View) : SectioningAdapter.ItemViewHolder(view) {
+    inner class TransactionViewHolder(val view: View) : ItemViewHolder(view) {
         val dayView: TextView = view.transaction_day
         val amountView: TextView = view.transaction_amount
         val currencyView: TextView = view.transaction_currency
     }
 
-    inner class MonthHeaderViewHolder(val view: View) : SectioningAdapter.HeaderViewHolder(view) {
+    inner class MonthHeaderViewHolder(val view: View) : HeaderViewHolder(view) {
         val monthView: TextView = view.month_view
+        val collapseIconView: ImageView = view.collapse_icon
+        var isCollapsed: Boolean = false
+
+        fun instantCollapse(collapse: Boolean) {
+            collapseIconView.rotation = if (collapse) 180.0f else 0.0f
+            this.isCollapsed = collapse
+        }
+
+        fun animateCollapse(collapse: Boolean) {
+            // Set collapsed/expanded icon
+            val pivotX = collapseIconView.width / 2.0f
+            val pivotY = collapseIconView.height / 2.0f
+            val animation =
+                    if (collapse)
+                        RotateAnimation(0.0f, 180.0f, pivotX, pivotY)
+                    else
+                        RotateAnimation(180.0f, 0.0f, pivotX, pivotY)
+
+            animation.duration = 500
+            animation.repeatCount = 0
+            animation.fillAfter = true
+
+            collapseIconView.animation = animation
+
+            this.isCollapsed = collapse
+        }
     }
 }

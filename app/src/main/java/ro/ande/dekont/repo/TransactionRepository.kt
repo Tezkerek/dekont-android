@@ -22,7 +22,7 @@ class TransactionRepository
 
             override fun shouldFetch(data: List<Transaction>?): Boolean = true
 
-            override fun loadFromDb(): LiveData<List<Transaction>> = transactionDao.retrieveSince(LocalDate.now().withDayOfMonth(1))
+            override fun loadFromDb(): LiveData<List<Transaction>> = transactionDao.retrieveSince(LocalDate.now().withDayOfYear(1))
 
             override fun createCall(): LiveData<ApiResponse<List<Transaction>>> = dekontService.listTransactions(users)
         }.asLiveData()

@@ -9,13 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
-import org.zakariya.stickyheaders.StickyHeaderLayoutManager
 import ro.ande.dekont.di.Injectable
+import ro.ande.dekont.util.StickyHeaderLayoutManager
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import javax.inject.Inject
 
@@ -41,6 +39,7 @@ class TransactionListFragment : Fragment(), Injectable {
         // Set the adapter
         if (view is RecyclerView) {
             view.layoutManager = StickyHeaderLayoutManager()
+            view.adapter = TransactionRecyclerViewAdapter()
         }
         return view
     }
@@ -53,10 +52,11 @@ class TransactionListFragment : Fragment(), Injectable {
         }
 
         transactionsViewModel.loadTransactions().observe(this, Observer { transactionsResource ->
-            this@TransactionListFragment.transaction_list.run {
-                val transactions = transactionsResource.data
-                if (transactions != null) {
-                    adapter = TransactionRecyclerViewAdapter(transactions)
+            val transactions = transactionsResource.data
+            if (transactions != null) {
+                this@TransactionListFragment.transaction_list.adapter.run {
+                    this as TransactionRecyclerViewAdapter
+                    this.setTransactions(transactions)
                 }
             }
         })
