@@ -1,7 +1,6 @@
 package ro.ande.dekont
 
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.transaction_list_header.view.*
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
-import org.threeten.bp.Month
+import org.threeten.bp.YearMonth
 import ro.ande.dekont.util.SectioningAdapter
 import ro.ande.dekont.vo.Transaction
 
@@ -26,17 +25,17 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         val oldTransactions = this.transactions
         val oldSections = this.sections
 
-        val byMonth: Map<Month, List<Transaction>> = transactions
+        val byYearMonth: Map<YearMonth, List<Transaction>> = transactions
                 .asSequence()
-                .groupBy { it.date.month }
+                .groupBy { YearMonth.from(it.date) }
 
         this.transactions = transactions
-        this.sections =  byMonth
+        this.sections =  byYearMonth
                 .map { entry ->
-                    val month = entry.key
+                    val yearMonth = entry.key
                     val contents =  entry.value
 
-                    val oldSectionIndex = oldSections.indexOfFirst { it.month == month }
+                    val oldSectionIndex = oldSections.indexOfFirst { it.yearMonth == yearMonth }
                     val oldSection = if (oldSectionIndex > -1) oldSections[oldSectionIndex] else null
 
 
@@ -54,7 +53,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
                                 }
                             }
 
-                    Section(entry.key, entry.value, isCollapsed)
+                    Section(yearMonth, entry.value, isCollapsed)
                 }
                 .toMutableList()
 
@@ -93,7 +92,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
     override fun onBindHeaderViewHolder(viewHolder: HeaderViewHolder, sectionIndex: Int, headerType: Int) {
         viewHolder as MonthHeaderViewHolder
         val section = sections[sectionIndex]
-        viewHolder.monthView.text = section.month.name
+        viewHolder.monthView.text = section.yearMonth.let { "${it.month.name} ${it.year}" }
 
         viewHolder.instantCollapse(section.isCollapsed)
 
@@ -122,7 +121,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
 
     override fun doesSectionHaveFooter(sectionIndex: Int): Boolean = false
 
-    private class Section(val month: Month, transactions: List<Transaction>, var isCollapsed: Boolean = false) {
+    private class Section(val yearMonth: YearMonth, transactions: List<Transaction>, var isCollapsed: Boolean = false) {
         val transactions: MutableList<Transaction> = transactions.toMutableList()
     }
 
