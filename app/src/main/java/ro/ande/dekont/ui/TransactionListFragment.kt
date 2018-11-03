@@ -1,4 +1,4 @@
-package ro.ande.dekont
+package ro.ande.dekont.ui
 
 import android.content.Context
 import android.os.Bundle

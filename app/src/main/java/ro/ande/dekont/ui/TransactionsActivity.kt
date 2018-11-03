@@ -1,4 +1,4 @@
-package ro.ande.dekont
+package ro.ande.dekont.ui
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_transactions.*
+import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import javax.inject.Inject
@@ -31,6 +32,19 @@ class TransactionsActivity : BaseActivity(), Injectable {
         })
 
         transactionsViewModel.verifyLogin()
+
+        this.add_transaction_fab.setOnClickListener { openNewTransactionEditor() }
+    }
+
+    private fun openNewTransactionEditor() {
+        val fragment = TransactionEditorFragment()
+        val args = Bundle()
+        args.putInt(TransactionEditorFragment.ARG_ACTION, TransactionEditorFragment.ACTION_CREATE)
+        fragment.arguments = args
+
+        val transaction = supportFragmentManager.beginTransaction()
+
+        transaction.add(fragment)
     }
 
     /**

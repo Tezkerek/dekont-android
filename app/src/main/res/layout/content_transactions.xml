@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".TransactionsActivity"
+    tools:context=".ui.TransactionsActivity"
     tools:showIn="@layout/activity_transactions">
 
     <fragment
-        android:name="ro.ande.dekont.TransactionListFragment"
+        android:name="ro.ande.dekont.ui.TransactionListFragment"
         android:id="@+id/transaction_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

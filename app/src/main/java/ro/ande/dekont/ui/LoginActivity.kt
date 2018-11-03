@@ -1,4 +1,4 @@
-package ro.ande.dekont
+package ro.ande.dekont.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
+import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.LoginViewModel
 import ro.ande.dekont.vo.Resource

@@ -2,8 +2,8 @@ package ro.ande.dekont.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import ro.ande.dekont.LoginActivity
-import ro.ande.dekont.TransactionsActivity
+import ro.ande.dekont.ui.LoginActivity
+import ro.ande.dekont.ui.TransactionsActivity
 
 @Module
 abstract class ActivityModule {

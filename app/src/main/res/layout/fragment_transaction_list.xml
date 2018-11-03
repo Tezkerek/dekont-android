@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="org.zakariya.stickyheaders.StickyHeaderLayoutManager"
-    tools:context=".TransactionListFragment"
+    tools:context=".ui.TransactionListFragment"
     tools:listitem="@layout/transaction_list_item" />

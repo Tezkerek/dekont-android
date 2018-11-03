@@ -15,7 +15,7 @@ import okhttp3.OkHttpClient
 import org.threeten.bp.LocalDate
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ro.ande.dekont.LoginActivity
+import ro.ande.dekont.ui.LoginActivity
 import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.R
 import ro.ande.dekont.db.DekontDatabase

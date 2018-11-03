@@ -7,6 +7,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import ro.ande.dekont.ui.LoginActivity
 
 class DekontAccountAuthenticator(val mContext: Context) : AbstractAccountAuthenticator(mContext) {
     override fun getAuthTokenLabel(p0: String?): String {
