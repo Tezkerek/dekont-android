@@ -20,6 +20,7 @@ import ro.ande.dekont.viewmodel.LoginViewModel
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Token
 import javax.inject.Inject
+import ro.ande.dekont.R
 
 /**
  * A login screen that offers login via email/password.

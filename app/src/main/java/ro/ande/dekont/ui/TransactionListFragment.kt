@@ -16,6 +16,7 @@ import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.StickyHeaderLayoutManager
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import javax.inject.Inject
+import ro.ande.dekont.R
 
 class TransactionListFragment : Fragment(), Injectable {
     @Inject

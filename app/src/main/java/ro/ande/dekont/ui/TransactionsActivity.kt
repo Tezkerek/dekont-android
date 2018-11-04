@@ -13,6 +13,7 @@ import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import javax.inject.Inject
+import ro.ande.dekont.R
 
 class TransactionsActivity : BaseActivity(), Injectable {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
