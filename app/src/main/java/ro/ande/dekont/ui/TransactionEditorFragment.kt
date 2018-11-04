@@ -9,21 +9,28 @@ import androidx.fragment.app.Fragment
 import ro.ande.dekont.vo.Transaction
 import ro.ande.dekont.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
  * A [Fragment] for editing a [Transaction].
  *
  */
 class TransactionEditorFragment : Fragment() {
+    private lateinit var onEditFinishedListener: OnTransactionEditFinishedListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_transaction_editor, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        onEditFinishedListener = this.activity as OnTransactionEditFinishedListener
+    }
+
+    /** Interface for transaction edit callback. */
+    interface OnTransactionEditFinishedListener {
+        fun onTransactionEditFinished(transaction: Transaction)
     }
 
     companion object {
@@ -32,5 +39,4 @@ class TransactionEditorFragment : Fragment() {
         const val ACTION_CREATE = 0
         const val ACTION_EDIT = 1
     }
-
 }
