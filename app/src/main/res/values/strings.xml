@@ -20,6 +20,6 @@
 
     <string name="title_activity_transactions">Transactions</string>
     <string name="error_missing_internet_connection">No internet connection</string>
-    <string name="error_network">A network error has occured.</string>
+    <string name="error_network">A network error has occurred.</string>
     <string name="error_unknown">Unknown error</string>
 </resources>
