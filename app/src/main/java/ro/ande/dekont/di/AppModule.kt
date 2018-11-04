@@ -81,7 +81,7 @@ class AppModule {
     @Singleton
     fun provideDekontService(client: OkHttpClient, liveDataCallAdapterFactory: LiveDataCallAdapterFactory, gson: Gson): DekontService =
             Retrofit.Builder()
-                    .baseUrl("http://192.168.0.53:8000")
+                    .baseUrl("http://192.168.0.192:8080")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(liveDataCallAdapterFactory)
