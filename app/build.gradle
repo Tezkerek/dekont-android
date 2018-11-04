@@ -29,7 +29,7 @@ android {
 
 dependencies {
     def dagger_version = "2.16"
-    def room_version = "2.1.0-alpha01"
+    def room_version = "2.1.0-alpha02"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -63,6 +63,6 @@ dependencies {
     implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta02'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 }
