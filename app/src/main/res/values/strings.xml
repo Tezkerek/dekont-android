@@ -22,4 +22,7 @@
     <string name="error_missing_internet_connection">No internet connection</string>
     <string name="error_network">A network error has occurred.</string>
     <string name="error_unknown">Unknown error</string>
+
+    <!-- EditText hints -->
+    <string name="hint_amount">Amount</string>
 </resources>

@@ -11,13 +11,7 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <fragment
-        android:name="ro.ande.dekont.ui.TransactionListFragment"
-        android:id="@+id/transaction_list"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_transaction_list" />
+        tools:context='.ui.TransactionListFragment' />
 
 </LinearLayout>

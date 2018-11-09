@@ -1,7 +1,5 @@
 package ro.ande.dekont.ui
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -76,26 +74,27 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
 
     override fun onTransactionEditFinished(transaction: Transaction) {}
 
-    /**
-     * Creates a dialog that asks the user whether they would like to be redirected to the login screen.
-     */
-    private fun showLoginRedirectDialog() {
-        val buttonListener = DialogInterface.OnClickListener { dialog, button ->
-            when (button) {
-                DialogInterface.BUTTON_POSITIVE -> redirectToLogin()
-            }
-        }
-
-        AlertDialog.Builder(this@TransactionsActivity)
-                .setMessage(R.string.dialog_message_login_redirect)
-                .setPositiveButton(R.string.dialog_positive_login_redirect, buttonListener)
-                .setNegativeButton(R.string.dialog_negative_login_redirect, buttonListener)
-                .show()
-    }
-
     private fun redirectToLogin() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_ARG_SHOW_ADD_FAB, this.add_transaction_fab.isOrWillBeShown)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        // Show add_fab
+        if (savedInstanceState.getBoolean(STATE_ARG_SHOW_ADD_FAB)) {
+            this.add_transaction_fab.show()
+        } else {
+            this.add_transaction_fab.hide()
+        }
+    }
+
+    companion object {
+        const val STATE_ARG_SHOW_ADD_FAB = "SHOW_ADD_FAB"
     }
 }

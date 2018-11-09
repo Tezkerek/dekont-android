@@ -5,9 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import ro.ande.dekont.vo.Transaction
 import ro.ande.dekont.R
+import java.util.*
+import kotlinx.android.synthetic.main.fragment_transaction_editor.*
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 
 /**
  * A [Fragment] for editing a [Transaction].
@@ -26,6 +31,23 @@ class TransactionEditorFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         onEditFinishedListener = this.activity as OnTransactionEditFinishedListener
+
+        setDateViewText(LocalDate.now())
+        populateCurrencySpinner()
+    }
+
+    // Populates the spinner with currencies
+    private fun populateCurrencySpinner() {
+        val currencies = Currency.getAvailableCurrencies().map { it.currencyCode }.sorted()
+
+        val adapter = ArrayAdapter<String>(this.context!!, android.R.layout.simple_spinner_item, currencies)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        this.currency_spinner.adapter = adapter
+    }
+
+    private fun setDateViewText(date: LocalDate) {
+        this.date_view.text = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     /** Interface for transaction edit callback. */
