@@ -6,6 +6,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 import ro.ande.dekont.viewmodel.LoginViewModel
+import ro.ande.dekont.viewmodel.TransactionEditorViewModel
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import ro.ande.dekont.viewmodel.ViewModelFactory
 
@@ -18,6 +19,10 @@ abstract class ViewModelModule {
     @Binds @IntoMap
     @ViewModelKey(TransactionsViewModel::class)
     internal abstract fun bindTransactionsViewModel(transactionsViewModel: TransactionsViewModel): ViewModel
+
+    @Binds @IntoMap
+    @ViewModelKey(TransactionEditorViewModel::class)
+    internal abstract fun bindTransactionEditorViewModel(transactionEditorViewModel: TransactionEditorViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
