@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,31 +7,31 @@
     tools:context=".ui.TransactionEditorFragment">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/date_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"/>
+            android:layout_weight="2"
+            android:gravity="center"
+            android:textSize="@dimen/date_view_text_size"/>
 
         <EditText
             android:id="@+id/amount_input"
-            android:hint="@string/hint_amount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:hint="@string/hint_amount"
             android:inputType="numberDecimal" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/currency_spinner"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            app:layout_constraintStart_toEndOf="@id/amount_input" />
+            android:layout_weight="2" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
