@@ -1,6 +1,7 @@
 package ro.ande.dekont.ui
 
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.fragment_transaction_editor.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
@@ -48,7 +48,9 @@ class TransactionEditorFragment : Fragment(), Injectable {
         editorViewModel.date.observe(this, Observer { date -> setDateViewText(date) })
 
         // Setup data
-        editorViewModel.setDate(LocalDate.now())
+        if (editorViewModel.date.value == null) {
+            editorViewModel.setDate(LocalDate.now())
+        }
         populateCurrencySpinner()
 
         this.date_view.setOnClickListener {
@@ -74,9 +76,8 @@ class TransactionEditorFragment : Fragment(), Injectable {
     private fun openDatePicker() {
         // Open DatePicker with the date
         editorViewModel.date.value!!.let { date ->
-//            val picker = DatePickerDialog(this.activity!!, R.style.DatePickerDialog, onDateSetListener, date.year, date.monthValue, date.dayOfMonth)
-            val picker = DatePickerDialog.newInstance(onDateSetListener, date.year, date.monthValue, date.dayOfMonth)
-            picker.show(this.fragmentManager, DATE_PICKER_TAG)
+            val picker = DatePickerDialog(this.activity!!, R.style.DatePickerDialog, onDateSetListener, date.year, date.monthValue, date.dayOfMonth)
+            picker.show()
         }
     }
 
