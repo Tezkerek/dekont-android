@@ -19,6 +19,9 @@
         <item name="android:windowBackground">@color/colorBackground</item>
     </style>
 
+    <style name="MaterialButton" parent="Widget.MaterialComponents.Button">
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
