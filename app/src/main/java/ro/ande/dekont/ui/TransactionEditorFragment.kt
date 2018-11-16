@@ -60,7 +60,11 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
     // Populates the spinner with currencies
     private fun populateCurrencySpinner() {
-        val currencies = Currency.getAvailableCurrencies().map { it.currencyCode }.sorted()
+        // Retrieve currencies from the app's assets
+        val currencies = context!!.assets.open("currencies.csv")
+                .bufferedReader()
+                .use { it.readText() }
+                .split('\n')
 
         val adapter = ArrayAdapter<String>(this.context!!, android.R.layout.simple_spinner_item, currencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
