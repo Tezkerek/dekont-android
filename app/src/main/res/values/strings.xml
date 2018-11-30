@@ -23,6 +23,11 @@
     <string name="error_network">A network error has occurred.</string>
     <string name="error_unknown">Unknown error</string>
 
-    <!-- EditText hints -->
+    <!-- Strings related to transaction editor -->
     <string name="hint_amount">Amount</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_supplier">Supplier</string>
+    <string name="hint_document_type">Document type</string>
+    <string name="hint_document_number">Document number</string>
+    <string name="action_save">Save</string>
 </resources>
