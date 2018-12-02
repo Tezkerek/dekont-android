@@ -17,10 +17,15 @@
         <TextView
             android:id="@+id/date_view"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="2"
+            android:background="@drawable/rounded_corners_rectangle"
             android:gravity="center"
-            android:textSize="@dimen/date_view_text_size"/>
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="11-11-2018"
+            android:textSize="@dimen/date_view_text_size" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
@@ -38,8 +43,10 @@
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/currency_spinner"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            android:gravity="bottom" />
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout

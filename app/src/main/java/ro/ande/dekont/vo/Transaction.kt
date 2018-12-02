@@ -12,7 +12,7 @@ import java.util.*
 @Entity
 data class Transaction (
         @field:SerializedName("id")
-        @field:PrimaryKey
+        @field:PrimaryKey(autoGenerate = true)
         val id: Int,
 
         @field:SerializedName("user")
@@ -20,28 +20,52 @@ data class Transaction (
         val userRelation: HyperlinkedRelation,
 
         @field:SerializedName("date")
-        val date: LocalDate,
+        var date: LocalDate,
 
         @field:SerializedName("amount")
-        val amount: BigDecimal,
+        var amount: BigDecimal,
 
         @field:SerializedName("currency")
-        val currency: Currency,
+        var currency: Currency,
 
         @field:SerializedName("description")
-        val description: String,
+        var description: String,
+
+        @field:SerializedName("supplier")
+        var supplier: String,
 
         @field:SerializedName("document_number")
         @field:ColumnInfo(name = "document_number")
-        val documentNumber: String,
+        var documentNumber: String,
 
         @field:SerializedName("document_type")
         @field:ColumnInfo(name = "document_type")
-        val documentType: String,
+        var documentType: String,
 
         @field:SerializedName("status")
-        val status: Int
+        var status: Int
 ) {
+    /** Constructor for to-be-created transactions */
+    constructor(
+            date: LocalDate,
+            amount: BigDecimal,
+            currency: Currency,
+            description: String,
+            supplier: String,
+            documentNumber: String,
+            documentType: String
+    ) : this(
+            0,
+            HyperlinkedRelation.empty(),
+            date,
+            amount,
+            currency,
+            description,
+            supplier,
+            documentNumber,
+            documentType,
+            PENDING
+    )
     companion object {
         const val PENDING = 0
         const val APPROVED = 1

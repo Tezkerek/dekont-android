@@ -1,13 +1,18 @@
 package ro.ande.dekont.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import org.threeten.bp.LocalDate
+import ro.ande.dekont.repo.TransactionRepository
+import ro.ande.dekont.vo.Transaction
+import java.math.BigDecimal
+import java.util.*
 import javax.inject.Inject
 
 class TransactionEditorViewModel
-@Inject constructor(): ViewModel() {
+@Inject constructor(app: Application, val transactionRepository: TransactionRepository): AndroidViewModel(app) {
     val date: LiveData<LocalDate>
         get() = _date
 
@@ -15,5 +20,27 @@ class TransactionEditorViewModel
 
     fun setDate(date: LocalDate) {
         _date.value = date
+    }
+
+    fun createTransaction(
+            amount: BigDecimal,
+            currency: Currency,
+            description: String,
+            supplier: String,
+            documentType: String,
+            documentNumber: String
+    ) {
+    }
+
+    fun saveTransaction(
+            id: Int,
+            amount: BigDecimal,
+            currency: Currency,
+            description: String,
+            supplier: String,
+            documentType: String,
+            documentNumber: String
+    ) {
+        val transaction = transactionRepository.updateTransaction(id, this.date.value!!, amount, currency, description, supplier, documentType, documentNumber)
     }
 }

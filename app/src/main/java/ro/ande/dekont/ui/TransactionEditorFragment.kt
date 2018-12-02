@@ -56,6 +56,10 @@ class TransactionEditorFragment : Fragment(), Injectable {
         this.date_view.setOnClickListener {
             openDatePicker()
         }
+
+        this.save_button.setOnClickListener {
+            saveTransaction()
+        }
     }
 
     // Populates the spinner with currencies
@@ -87,6 +91,14 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
     private fun setDateViewText(date: LocalDate) {
         this.date_view.text = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    }
+
+    private fun saveTransaction() {
+        val transaction = when (arguments?.getInt(ARG_ACTION)) {
+            ACTION_CREATE -> {
+                Transaction(0, )
+            }
+        }
     }
 
     /** Interface for transaction edit callback. */
