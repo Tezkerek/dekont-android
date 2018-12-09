@@ -18,6 +18,7 @@ import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionEditorViewModel
 import ro.ande.dekont.vo.Transaction
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 
@@ -96,7 +97,14 @@ class TransactionEditorFragment : Fragment(), Injectable {
     private fun saveTransaction() {
         val transaction = when (arguments?.getInt(ARG_ACTION)) {
             ACTION_CREATE -> {
-                Transaction(0, )
+                editorViewModel.createTransaction(
+                        BigDecimal(this.amount_input.text.toString()),
+                        Currency.getInstance(this.currency_spinner.selectedItem.toString()),
+                        this.description_input.text.toString(),
+                        this.supplier_input.text.toString(),
+                        this.document_type_input.text.toString(),
+                        this.document_number_input.text.toString()
+                )
             }
         }
     }

@@ -1,13 +1,15 @@
 package ro.ande.dekont.repo
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Transformations
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
-import ro.ande.dekont.api.DekontService
-import ro.ande.dekont.api.ApiResponse
+import ro.ande.dekont.api.*
 import ro.ande.dekont.db.TransactionDao
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Transaction
+import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
@@ -42,23 +44,23 @@ class TransactionRepository
             supplier: String,
             documentType: String,
             documentNumber: String
-    ) {
+    ): LiveData<Resource<Transaction>> {
         val transaction = Transaction(date, amount, currency, description, supplier, documentType, documentNumber)
 
-        val newId = transactionDao.insert(transaction)
+        // Attempt to insert on server.
+        return Transformations.map(dekontService.createTransaction(transaction)) { response ->
+            when (response) {
+                is ApiSuccessResponse -> {
+                    // Insert locally.
+                    val newTransaction = response.body
+                    transactionDao.insert(newTransaction)
 
-        // TODO Just return a livedata
-        return object : NetworkBoundResource<Transaction, Transaction>(appExecutors) {
-            override fun saveCallResult(result: Transaction) = transactionDao.insert(result)
-
-            override fun shouldFetch(data: Transaction?): Boolean = true
-
-            override fun loadFromDb(): LiveData<Transaction> = {}
-
-            override fun createCall(): LiveData<ApiResponse<Transaction>> = dekontService.createTransaction(transaction)
-
+                    Resource.success(newTransaction)
+                }
+                is ApiErrorResponse -> Resource.error(response.getFirstError(), null)
+                else -> Resource.error("Unexpected error: response is empty", null)
+            }
         }
-
     }
 
     fun updateTransaction(
