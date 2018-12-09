@@ -17,6 +17,9 @@ interface DekontService {
     @Auth
     @GET("transactions/")
     fun listTransactions(@Query("users") users: List<Int>?): LiveData<ApiResponse<List<Transaction>>>
+
+    @POST("transactions/")
+    fun createTransaction(@Body body: Transaction): LiveData<ApiResponse<Transaction>>
 }
 
 @Target(AnnotationTarget.FUNCTION)

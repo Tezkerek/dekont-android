@@ -8,10 +8,10 @@ import ro.ande.dekont.vo.Transaction
 @Dao
 abstract class TransactionDao {
     @Insert
-    abstract fun insert(vararg transactions: Transaction)
+    abstract fun insert(transactions: Transaction): Long
 
     @Insert
-    abstract fun insert(transactions: List<Transaction>): Long
+    abstract fun insert(transactions: List<Transaction>): List<Long>
 
     @Update
     abstract fun update(transaction: Transaction)

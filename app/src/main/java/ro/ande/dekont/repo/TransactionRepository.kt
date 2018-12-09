@@ -45,6 +45,8 @@ class TransactionRepository
     ) {
         val transaction = Transaction(date, amount, currency, description, supplier, documentType, documentNumber)
 
+        val newId = transactionDao.insert(transaction)
+
         // TODO Just return a livedata
         return object : NetworkBoundResource<Transaction, Transaction>(appExecutors) {
             override fun saveCallResult(result: Transaction) = transactionDao.insert(result)
@@ -53,13 +55,10 @@ class TransactionRepository
 
             override fun loadFromDb(): LiveData<Transaction> = {}
 
-            override fun createCall(): LiveData<ApiResponse<Transaction>> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun createCall(): LiveData<ApiResponse<Transaction>> = dekontService.createTransaction(transaction)
 
         }
 
-        transactionDao.insert(transaction)
     }
 
     fun updateTransaction(
