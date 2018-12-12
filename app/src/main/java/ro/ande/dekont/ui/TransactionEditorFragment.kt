@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_editor.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
@@ -58,6 +59,15 @@ class TransactionEditorFragment : Fragment(), Injectable {
             openDatePicker()
         }
 
+        // Observe result transaction
+        editorViewModel.transactionResource.observe(this, Observer { transactionResource ->
+            if (transactionResource.isSuccess()) {
+                finishEditing(transactionResource.data!!)
+            } else if (transactionResource.isError()) {
+                Snackbar.make(this.main_inputs_layout, transactionResource.message ?: "", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+
         this.save_button.setOnClickListener {
             saveTransaction()
         }
@@ -95,7 +105,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
     }
 
     private fun saveTransaction() {
-        val transaction = when (arguments?.getInt(ARG_ACTION)) {
+        when (arguments?.getInt(ARG_ACTION)) {
             ACTION_CREATE -> {
                 editorViewModel.createTransaction(
                         BigDecimal(this.amount_input.text.toString()),
@@ -109,12 +119,18 @@ class TransactionEditorFragment : Fragment(), Injectable {
         }
     }
 
+    private fun finishEditing(transaction: Transaction) {
+        this.onEditFinishedListener.onTransactionEditFinished(transaction)
+    }
+
     /** Interface for transaction edit callback. */
     interface OnTransactionEditFinishedListener {
         fun onTransactionEditFinished(transaction: Transaction)
     }
 
     companion object {
+        const val TAG = "TRANSACTION_EDITOR_FRAGMENT"
+
         const val ARG_ACTION = "ACTION"
 
         const val ACTION_CREATE = 0

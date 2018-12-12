@@ -21,7 +21,7 @@ class TransactionEditorViewModel
         get() = _transactionResource
 
     private val _date = MutableLiveData<LocalDate>()
-    private val _transactionResource = MutableLiveData<Resource<Transaction>>()
+    private val _transactionResource = MediatorLiveData<Resource<Transaction>>()
 
     fun setDate(date: LocalDate) {
         _date.value = date
@@ -35,8 +35,10 @@ class TransactionEditorViewModel
             documentType: String,
             documentNumber: String
     ) {
-        MediatorLiveData<Resource<Transaction>>()
-                .addSource(transactionRepository.createTransaction(this.date.value!!, amount, currency, description, supplier, documentType, documentNumber)) { _transactionResource.}
+        val transactionLiveData = transactionRepository.createTransaction(this.date.value!!, amount, currency, description, supplier, documentType, documentNumber)
+        _transactionResource.addSource(transactionLiveData) {
+            _transactionResource.value = it
+        }
     }
 
     fun saveTransaction(

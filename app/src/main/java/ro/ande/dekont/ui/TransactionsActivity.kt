@@ -52,7 +52,7 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
     /** Show the transaction list fragment */
     private fun openTransactionList() {
         supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, TransactionListFragment())
+                .replace(R.id.fragment_container, TransactionListFragment(), TransactionListFragment.TAG)
                 .commit()
     }
 
@@ -67,12 +67,17 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
         fragment.arguments = args
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
+                .replace(R.id.fragment_container, fragment, TransactionEditorFragment.TAG)
                 .addToBackStack(null)
                 .commit()
     }
 
-    override fun onTransactionEditFinished(transaction: Transaction) {}
+    override fun onTransactionEditFinished(transaction: Transaction) {
+        // Go back to the list and refresh it
+        supportFragmentManager.popBackStack()
+        (supportFragmentManager.findFragmentByTag(TransactionListFragment.TAG) as TransactionListFragment)
+                .refreshTransactionList()
+    }
 
     private fun redirectToLogin() {
         val intent = Intent(this, LoginActivity::class.java)

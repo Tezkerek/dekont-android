@@ -27,10 +27,6 @@ class TransactionListFragment : Fragment(), Injectable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -79,17 +75,11 @@ class TransactionListFragment : Fragment(), Injectable {
         super.onDetach()
     }
 
-    companion object {
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
+    fun refreshTransactionList() {
 
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-                TransactionListFragment().apply {
-                    arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
-                    }
-                }
+    }
+
+    companion object {
+        const val TAG = "TRANSACTION_LIST_FRAGMENT"
     }
 }
