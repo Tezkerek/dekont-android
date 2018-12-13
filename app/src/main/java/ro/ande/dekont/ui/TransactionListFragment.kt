@@ -48,7 +48,8 @@ class TransactionListFragment : Fragment(), Injectable {
             transactionsViewModel = ViewModelProviders.of(it, mViewModelFactory).get(TransactionsViewModel::class.java)
         }
 
-        transactionsViewModel.loadTransactions().observe(this, Observer { transactionsResource ->
+        // Observe transaction list
+        transactionsViewModel.transactions.observe(this, Observer { transactionsResource ->
             val transactions = transactionsResource.data
             if (transactions != null) {
                 this@TransactionListFragment.transaction_list.adapter.run {
@@ -57,6 +58,7 @@ class TransactionListFragment : Fragment(), Injectable {
                 }
             }
         })
+        transactionsViewModel.loadTransactions()
 
         transactionsViewModel.snackbarMessage.observe(this, Observer { message ->
             if (message != null) {
@@ -76,7 +78,7 @@ class TransactionListFragment : Fragment(), Injectable {
     }
 
     fun refreshTransactionList() {
-
+//        transactionsViewModel.loadTransactions()
     }
 
     companion object {

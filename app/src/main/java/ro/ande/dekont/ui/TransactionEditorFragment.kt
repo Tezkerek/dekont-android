@@ -108,7 +108,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
         when (arguments?.getInt(ARG_ACTION)) {
             ACTION_CREATE -> {
                 editorViewModel.createTransaction(
-                        BigDecimal(this.amount_input.text.toString()),
+                        BigDecimal(this.amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
                         Currency.getInstance(this.currency_spinner.selectedItem.toString()),
                         this.description_input.text.toString(),
                         this.supplier_input.text.toString(),

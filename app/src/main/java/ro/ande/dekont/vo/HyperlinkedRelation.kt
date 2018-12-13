@@ -7,9 +7,9 @@ import java.net.URL
  */
 data class HyperlinkedRelation(
         val id: Int,
-        val url: URL
+        val url: URL?
 ) {
     companion object {
-        fun empty() = HyperlinkedRelation(0, URL(""))
+        fun empty() = HyperlinkedRelation(0, null)
     }
 }

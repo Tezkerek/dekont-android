@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "b8ca80966e6a8d32dc4ee29e2cbeb258",
+    "version": 2,
+    "identityHash": "a30b461d1ecf54e963aac264a4f4ad71",
     "entities": [
       {
         "tableName": "Transaction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `currency` TEXT NOT NULL, `description` TEXT NOT NULL, `supplier` TEXT NOT NULL, `document_number` TEXT NOT NULL, `document_type` TEXT NOT NULL, `status` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `user_url` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `currency` TEXT NOT NULL, `description` TEXT NOT NULL, `supplier` TEXT NOT NULL, `document_number` TEXT NOT NULL, `document_type` TEXT NOT NULL, `status` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `user_url` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -72,7 +72,7 @@
             "fieldPath": "userRelation.url",
             "columnName": "user_url",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -88,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b8ca80966e6a8d32dc4ee29e2cbeb258\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a30b461d1ecf54e963aac264a4f4ad71\")"
     ]
   }
 }
