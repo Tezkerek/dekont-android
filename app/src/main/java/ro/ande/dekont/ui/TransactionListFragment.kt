@@ -23,8 +23,6 @@ class TransactionListFragment : Fragment(), Injectable {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var transactionsViewModel: TransactionsViewModel
 
-    private var columnCount = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }

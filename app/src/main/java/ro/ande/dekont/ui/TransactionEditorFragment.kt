@@ -89,13 +89,14 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
     // DatePicker date set callback
     private val onDateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-        editorViewModel.setDate(LocalDate.of(year, month, dayOfMonth))
+        // MonthOfYear uses values between 1 and 12, whereas DatePicker uses 0-11
+        editorViewModel.setDate(LocalDate.of(year, month+1, dayOfMonth))
     }
 
     private fun openDatePicker() {
         // Open DatePicker with the date
         editorViewModel.date.value!!.let { date ->
-            val picker = DatePickerDialog(this.activity!!, R.style.DatePickerDialog, onDateSetListener, date.year, date.monthValue, date.dayOfMonth)
+            val picker = DatePickerDialog(this.activity!!, R.style.DatePickerDialog, onDateSetListener, date.year, date.monthValue-1, date.dayOfMonth)
             picker.show()
         }
     }

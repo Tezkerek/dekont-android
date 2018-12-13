@@ -13,6 +13,7 @@ import org.threeten.bp.YearMonth
 import ro.ande.dekont.util.SectioningAdapter
 import ro.ande.dekont.vo.Transaction
 import ro.ande.dekont.R
+import java.text.DecimalFormat
 
 class TransactionRecyclerViewAdapter() : SectioningAdapter() {
     private var transactions: List<Transaction> = listOf()
@@ -86,7 +87,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         viewHolder as TransactionViewHolder
         val transaction = sections[sectionIndex].transactions[itemIndex]
         viewHolder.dayView.text = transaction.date.dayOfMonth.toString()
-        viewHolder.amountView.text = transaction.amount.toString()
+        viewHolder.amountView.text = DecimalFormat("##0.00").format(transaction.amount)
         viewHolder.currencyView.text = transaction.currency.currencyCode
     }
 
