@@ -3,6 +3,8 @@ package ro.ande.dekont.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.*
@@ -53,7 +55,9 @@ class TransactionRepository
                 is ApiSuccessResponse -> {
                     // Insert locally.
                     val newTransaction = response.body
-                    transactionDao.insert(newTransaction)
+                    doAsync {
+                        transactionDao.insert(newTransaction)
+                    }
 
                     Resource.success(newTransaction)
                 }
