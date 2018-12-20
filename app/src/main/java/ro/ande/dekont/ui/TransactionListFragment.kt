@@ -1,6 +1,8 @@
 package ro.ande.dekont.ui
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +37,13 @@ class TransactionListFragment : Fragment(), Injectable {
         if (view is RecyclerView) {
             view.layoutManager = StickyHeaderLayoutManager()
             view.adapter = TransactionRecyclerViewAdapter()
+                    .also { it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)} }
         }
+
+
+        // Long press transaction listener
+
+
         return view
     }
 
@@ -67,16 +75,36 @@ class TransactionListFragment : Fragment(), Injectable {
         })
     }
 
+    fun openTransactionOptionsMenu(transactionId: Int) {
+        AlertDialog.Builder(this.activity)
+                .setItems(R.array.transaction_options) { dialog, optionIndex ->
+                    when (optionIndex) {
+                        0 -> {
+                            // Show delete confirmation dialog
+                            AlertDialog.Builder(this.activity)
+                                    .setMessage(R.string.dialog_message_confirm_transaction_deletion)
+                                    .setPositiveButton(R.string.dialog_action_confirm) { confirmationDialog, _ ->
+                                        transactionsViewModel.deleteTransaction(transactionId)
+                                        confirmationDialog.dismiss()
+                                    }
+                                    .setNegativeButton(R.string.dialog_action_cancel) { confirmationDialog, _ ->
+                                        confirmationDialog.dismiss()
+                                    }
+                                    .create()
+                                    .show()
+                        }
+                    }
+                }
+                .create()
+                .show()
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
 
     override fun onDetach() {
         super.onDetach()
-    }
-
-    fun refreshTransactionList() {
-//        transactionsViewModel.loadTransactions()
     }
 
     companion object {

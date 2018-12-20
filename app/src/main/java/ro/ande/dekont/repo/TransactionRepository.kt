@@ -92,4 +92,8 @@ class TransactionRepository
 
         return transaction
     }
+
+    fun deleteTransaction(id: Int): LiveData<> {
+        dekontService.deleteTransaction(id)
+    }
 }

@@ -19,6 +19,8 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
     private var transactions: List<Transaction> = listOf()
     private var sections: MutableList<Section> = mutableListOf()
 
+    private var onTransactionLongPressListener: OnTransactionLongPressListener? = null
+
     constructor(transactions: List<Transaction>) : this() {
         setTransactions(transactions)
     }
@@ -67,6 +69,21 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         }
     }
 
+    interface OnTransactionLongPressListener {
+        fun onLongPress(transactionId: Int)
+    }
+
+    fun setOnTransactionLongPressListener(listener: OnTransactionLongPressListener) {
+        onTransactionLongPressListener = listener
+    }
+    fun setOnTransactionLongPressListener(listener: (Int) -> Unit) {
+        setOnTransactionLongPressListener(object : OnTransactionLongPressListener {
+            override fun onLongPress(transactionId: Int) {
+                listener(transactionId)
+            }
+        })
+    }
+
     override fun onCreateItemViewHolder(parent: ViewGroup, itemUserType: Int): ItemViewHolder {
         val view = LayoutInflater
                 .from(parent.context)
@@ -89,6 +106,12 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         viewHolder.dayView.text = transaction.date.dayOfMonth.toString()
         viewHolder.amountView.text = DecimalFormat("##0.00").format(transaction.amount)
         viewHolder.currencyView.text = transaction.currency.currencyCode
+
+        // Set long press listener
+        viewHolder.view.setOnLongClickListener {
+            this.onTransactionLongPressListener?.onLongPress(transaction.id)
+            true
+        }
     }
 
     override fun onBindHeaderViewHolder(viewHolder: HeaderViewHolder, sectionIndex: Int, headerType: Int) {

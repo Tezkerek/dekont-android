@@ -17,6 +17,11 @@
     <string name="dialog_message_login_redirect">You are not logged in. Would you like to be redirected to the login screen?</string>
     <string name="dialog_positive_login_redirect">Yes</string>
     <string name="dialog_negative_login_redirect">No</string>
+    <string name="dialog_message_confirm_transaction_deletion">Delete this transaction?</string>
+
+    <!-- Common dialog action names -->
+    <string name="dialog_action_confirm">Confirm</string>
+    <string name="dialog_action_cancel">Cancel</string>
 
     <string name="title_activity_transactions">Transactions</string>
     <string name="error_missing_internet_connection">No internet connection</string>
@@ -29,5 +34,12 @@
     <string name="hint_supplier">Supplier</string>
     <string name="hint_document_type">Document type</string>
     <string name="hint_document_number">Document number</string>
+
+    <!-- Common action names -->
     <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+
+    <string-array name="transaction_options">
+        <item>@string/action_delete</item>
+    </string-array>
 </resources>

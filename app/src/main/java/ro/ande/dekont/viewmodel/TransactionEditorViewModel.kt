@@ -52,4 +52,8 @@ class TransactionEditorViewModel
     ) {
         val transaction = transactionRepository.updateTransaction(id, this.date.value!!, amount, currency, description, supplier, documentType, documentNumber)
     }
+
+    fun deleteTransaction(id: Int) {
+        transactionRepository.deleteTransaction(id)
+    }
 }
