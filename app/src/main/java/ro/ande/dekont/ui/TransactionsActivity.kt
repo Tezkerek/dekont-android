@@ -76,8 +76,6 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
     override fun onTransactionEditFinished(transaction: Transaction) {
         // Go back to the list and refresh it
         supportFragmentManager.popBackStack()
-        (supportFragmentManager.findFragmentByTag(TransactionListFragment.TAG) as TransactionListFragment)
-                .refreshTransactionList()
     }
 
     private fun redirectToLogin() {
