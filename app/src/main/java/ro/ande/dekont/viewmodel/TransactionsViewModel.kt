@@ -8,6 +8,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.vo.Resource
+import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -49,5 +50,9 @@ class TransactionsViewModel
                 }
             }
         }
+    }
+
+    fun deleteTransaction(id: Int): LiveData<ResourceDeletion> {
+        return transactionRepository.deleteTransaction(id)
     }
 }

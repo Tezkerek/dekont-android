@@ -18,6 +18,8 @@ import kotlin.reflect.KClass
  */
 @Suppress("unused")
 sealed class ApiResponse<T> {
+    fun isSuccess() = this is ApiSuccessResponse || this is ApiEmptyResponse
+
     companion object {
         fun <T> create(response: Response<T>): ApiResponse<T> {
             return if (response.isSuccessful) {

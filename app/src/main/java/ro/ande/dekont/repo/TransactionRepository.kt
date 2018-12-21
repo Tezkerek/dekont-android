@@ -10,6 +10,7 @@ import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.*
 import ro.ande.dekont.db.TransactionDao
 import ro.ande.dekont.vo.Resource
+import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
 import java.lang.IllegalStateException
 import java.math.BigDecimal
@@ -93,7 +94,19 @@ class TransactionRepository
         return transaction
     }
 
-    fun deleteTransaction(id: Int): LiveData<> {
-        dekontService.deleteTransaction(id)
+    fun deleteTransaction(id: Int): LiveData<ResourceDeletion> {
+        // Attempt to delete on server.
+        return Transformations.map(dekontService.deleteTransaction(id)) { response ->
+            if (response.isSuccess()) {
+                // Delete locally
+                doAsync {
+                    transactionDao.delete(id)
+                }
+                ResourceDeletion.success()
+            } else {
+                response as ApiErrorResponse
+                ResourceDeletion.error(response.getFirstError())
+            }
+        }
     }
 }

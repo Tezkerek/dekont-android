@@ -2,7 +2,6 @@ package ro.ande.dekont.ui
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +13,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
+import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.StickyHeaderLayoutManager
 import ro.ande.dekont.viewmodel.TransactionsViewModel
 import javax.inject.Inject
-import ro.ande.dekont.R
 
 class TransactionListFragment : Fragment(), Injectable {
     @Inject
@@ -84,7 +83,14 @@ class TransactionListFragment : Fragment(), Injectable {
                             AlertDialog.Builder(this.activity)
                                     .setMessage(R.string.dialog_message_confirm_transaction_deletion)
                                     .setPositiveButton(R.string.dialog_action_confirm) { confirmationDialog, _ ->
-                                        transactionsViewModel.deleteTransaction(transactionId)
+                                        // TODO Progress indicator (maybe on toolbar)
+                                        transactionsViewModel.deleteTransaction(transactionId).observe(this, Observer { deletion ->
+                                            if (deletion.isSuccess()) {
+                                                Snackbar.make(this.view!!, R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
+                                            } else {
+                                                Snackbar.make(this.view!!, deletion.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
+                                            }
+                                        })
                                         confirmationDialog.dismiss()
                                     }
                                     .setNegativeButton(R.string.dialog_action_cancel) { confirmationDialog, _ ->

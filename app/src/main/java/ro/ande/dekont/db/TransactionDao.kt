@@ -16,6 +16,9 @@ abstract class TransactionDao {
     @Update
     abstract fun update(transaction: Transaction)
 
+    @Query("DELETE FROM `transaction` WHERE id = :id")
+    abstract fun delete(id: Int)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertAndReplace(transactions: List<Transaction>)
 

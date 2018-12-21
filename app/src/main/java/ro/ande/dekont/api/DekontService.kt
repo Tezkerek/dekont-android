@@ -21,8 +21,8 @@ interface DekontService {
     @POST("transactions/")
     fun createTransaction(@Body body: Transaction): LiveData<ApiResponse<Transaction>>
 
-    @DELETE("transactions/{id}")
-    fun deleteTransaction(@Path("id") id: Int): LiveData<ApiEmptyResponse<Void>>
+    @DELETE("transactions/{id}/")
+    fun deleteTransaction(@Path("id") id: Int): LiveData<ApiResponse<Void>>
 }
 
 @Target(AnnotationTarget.FUNCTION)
