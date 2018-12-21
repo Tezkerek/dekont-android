@@ -47,15 +47,17 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
                     // Existing sections are expanded if their contents are changed
                     // Otherwise they keep their state
                     val isCollapsed =
-                            let {
                                 if (oldSection != null) {
-                                    val areContentsUnchanged = oldSection.transactions.foldIndexed(true) { i, acc, transaction -> acc && transaction == contents[i] }
-                                    if (areContentsUnchanged) oldSection.isCollapsed else false
+                                    // Contents are unchanged if size is the same, and the elements have not changed
+                                    val areContentsUnchanged = oldSection.transactions.let {
+                                        it.size == contents.size &&
+                                        it.foldIndexed(true) { i, acc, transaction -> acc && transaction == contents[i] }
+                                    }
+                                        if (areContentsUnchanged) oldSection.isCollapsed else false
                                 } else {
                                     // New section is collapsed
                                     false
                                 }
-                            }
 
                     Section(yearMonth, entry.value, isCollapsed)
                 }
