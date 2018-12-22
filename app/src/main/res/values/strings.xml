@@ -40,6 +40,7 @@
     <!-- Common action names -->
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
+    <string name="action_sign_out">Sign out</string>
 
     <string-array name="transaction_options">
         <item>@string/action_delete</item>

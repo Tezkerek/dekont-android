@@ -2,7 +2,9 @@ package ro.ande.dekont.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -20,7 +22,25 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transactions)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(this.toolbar)
+
+        // Show drawer button on toolbar
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu_white_24)
+        }
+
+        // Setup navigation drawer
+        this.nav_drawer.setNavigationItemSelectedListener { item ->
+            item.isChecked = true
+            this.drawer_layout.closeDrawers()
+
+            when (item.itemId) {
+                R.id.nav_logout -> {}
+            }
+
+            true
+        }
 
         // On first creation, add transaction list fragment
         if (savedInstanceState == null) {
@@ -82,6 +102,17 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // Open drawer when pressing the menu button
+                this.drawer_layout.openDrawer(GravityCompat.START)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
