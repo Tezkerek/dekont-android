@@ -63,7 +63,11 @@ class TransactionListFragment : Fragment(), Injectable {
                 }
             }
         })
-        transactionsViewModel.loadTransactions()
+
+        // Load transactions on launch
+        if (transactionsViewModel.transactions.value == null) {
+            transactionsViewModel.loadTransactions()
+        }
 
         transactionsViewModel.snackbarMessage.observe(this, Observer { message ->
             if (message != null) {
