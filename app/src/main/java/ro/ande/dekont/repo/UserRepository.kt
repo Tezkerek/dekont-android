@@ -15,6 +15,8 @@ class UserRepository @Inject constructor(private val dekontService: DekontServic
         return dekontService.login(loginRequest)
     }
 
+    fun logout(): LiveData<ApiResponse<Void>> = dekontService.logout()
+
     fun verifyToken(token: Token) = verifyToken(token.token)
     fun verifyToken(token: String) = dekontService.verifyAuthToken(token)
 }

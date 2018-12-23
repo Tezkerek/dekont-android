@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTransactionEditFinishedListener {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +49,8 @@ class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTra
             openTransactionList()
         }
 
-        val transactionsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
-        transactionsViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
+        mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
+        mainViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
                 redirectToLogin()
             } else {
@@ -57,7 +58,7 @@ class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTra
             }
         })
 
-        transactionsViewModel.verifyLogin()
+        mainViewModel.verifyLogin()
 
         // Show add FAB when at the transaction list
         supportFragmentManager.addOnBackStackChangedListener {
@@ -109,8 +110,12 @@ class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTra
         AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_message_confirm_logout)
                 .setPositiveButton(R.string.action_sign_out) { dialog, _ ->
+                    mainViewModel.logout()
+                    dialog.dismiss()
                 }
                 .setNegativeButton(R.string.dialog_action_cancel) { dialog, _ -> dialog.dismiss() }
+                .create()
+                .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

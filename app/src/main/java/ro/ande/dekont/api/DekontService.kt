@@ -11,6 +11,9 @@ interface DekontService {
     @POST("login/")
     fun login(@Body body: LoginRequest): LiveData<ApiResponse<Token>>
 
+    @POST("logout/")
+    fun logout(): LiveData<ApiResponse<Void>>
+
     @GET("verify-authtoken/{token}")
     fun verifyAuthToken(@Path("token") token: String): Call<ResponseBody>
 
