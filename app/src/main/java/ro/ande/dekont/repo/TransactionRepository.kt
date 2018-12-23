@@ -39,6 +39,10 @@ class TransactionRepository
         return transactionDao.getById(id)
     }
 
+    fun retrieveTransactionById(id: Int): LiveData<Transaction> {
+        return transactionDao.retrieveById(id)
+    }
+
     fun createTransaction(
             date: LocalDate,
             amount: BigDecimal,

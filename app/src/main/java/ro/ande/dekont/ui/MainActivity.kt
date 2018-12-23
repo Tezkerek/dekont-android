@@ -17,7 +17,9 @@ import ro.ande.dekont.viewmodel.MainViewModel
 import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTransactionEditFinishedListener {
+class MainActivity : BaseActivity(), Injectable,
+        TransactionListFragment.OnTransactionClickListener,
+        TransactionEditorFragment.OnTransactionEditFinishedListener {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mainViewModel: MainViewModel
 
@@ -78,6 +80,23 @@ class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTra
                 .commit()
     }
 
+    /** Open a screen containing a detailed view of the transaction */
+    private fun openTransactionDetail(id: Int) {
+        // Hide FAB
+        this.add_transaction_fab.hide()
+
+        val fragment = TransactionDetailFragment()
+        fragment.arguments = Bundle().also {
+            it.putInt(TransactionDetailFragment.ARG_TRANSACTION_ID, id)
+        }
+
+        supportFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
+                .add(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
+    }
+
     /** Show the empty transaction editor fragment */
     private fun openNewTransactionEditor() {
         // Hide FAB
@@ -93,6 +112,10 @@ class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTra
                 .add(R.id.fragment_container, fragment, TransactionEditorFragment.TAG)
                 .addToBackStack(null)
                 .commit()
+    }
+
+    override fun onTransactionClick(id: Int) {
+        openTransactionDetail(id)
     }
 
     override fun onTransactionEditFinished(transaction: Transaction) {

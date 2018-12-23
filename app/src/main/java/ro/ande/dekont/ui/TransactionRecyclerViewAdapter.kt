@@ -19,6 +19,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
     private var transactions: List<Transaction> = listOf()
     private var sections: MutableList<Section> = mutableListOf()
 
+    private var onTransactionClickListener: OnTransactionClickListener? = null
     private var onTransactionLongPressListener: OnTransactionLongPressListener? = null
 
     constructor(transactions: List<Transaction>) : this() {
@@ -71,16 +72,33 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         }
     }
 
+    interface OnTransactionClickListener {
+        fun onClick(transactionId: Int)
+    }
+
     interface OnTransactionLongPressListener {
         fun onLongPress(transactionId: Int)
     }
 
+    /** Sets the listener to be called on a long press */
     fun setOnTransactionLongPressListener(listener: OnTransactionLongPressListener) {
         onTransactionLongPressListener = listener
     }
     fun setOnTransactionLongPressListener(listener: (Int) -> Unit) {
         setOnTransactionLongPressListener(object : OnTransactionLongPressListener {
             override fun onLongPress(transactionId: Int) {
+                listener(transactionId)
+            }
+        })
+    }
+
+    /** Sets the listener to be called on a click */
+    fun setOnTransactionClickListener(listener: OnTransactionClickListener) {
+        onTransactionClickListener = listener
+    }
+    fun setOnTransactionClickListener(listener: (Int) -> Unit) {
+        setOnTransactionClickListener(object : OnTransactionClickListener {
+            override fun onClick(transactionId: Int) {
                 listener(transactionId)
             }
         })
@@ -106,8 +124,13 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         viewHolder as TransactionViewHolder
         val transaction = sections[sectionIndex].transactions[itemIndex]
         viewHolder.dayView.text = transaction.date.dayOfMonth.toString()
-        viewHolder.amountView.text = DecimalFormat("##0.00").format(transaction.amount)
+        viewHolder.amountView.text = transaction.formattedAmount
         viewHolder.currencyView.text = transaction.currency.currencyCode
+
+        // Set click listener
+        viewHolder.view.setOnClickListener {
+            this.onTransactionClickListener?.onClick(transaction.id)
+        }
 
         // Set long press listener
         viewHolder.view.setOnLongClickListener {

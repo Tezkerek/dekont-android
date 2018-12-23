@@ -2,6 +2,7 @@ package ro.ande.dekont.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import ro.ande.dekont.ui.TransactionDetailFragment
 import ro.ande.dekont.ui.TransactionEditorFragment
 import ro.ande.dekont.ui.TransactionListFragment
 
@@ -12,4 +13,7 @@ abstract class FragmentModule {
 
     @ContributesAndroidInjector
     abstract fun contributeTransactionEditorFragment(): TransactionEditorFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeTransactionDetailFragment(): TransactionDetailFragment
 }

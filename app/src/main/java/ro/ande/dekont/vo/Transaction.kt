@@ -6,7 +6,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.util.*
 
 @Entity
@@ -66,6 +68,15 @@ data class Transaction (
             documentType,
             PENDING
     )
+
+    /** Returns a String containing the formatted date */
+    val formattedDate: String
+        get() = this.date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+    /** Returns the amount as a String with two decimal places */
+    val formattedAmount: String
+        get() = DecimalFormat("##0.00").format(this.amount)
+
     companion object {
         const val PENDING = 0
         const val APPROVED = 1

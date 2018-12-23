@@ -46,4 +46,12 @@
     <string-array name="transaction_options">
         <item>@string/action_delete</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_date">Date</string>
+    <string name="label_amount">Amount</string>
+    <string name="label_description">Description</string>
+    <string name="label_supplier">Supplier</string>
+    <string name="label_document_type">Document type</string>
 </resources>

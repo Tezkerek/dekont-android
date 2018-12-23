@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.StickyHeaderLayoutManager
-import ro.ande.dekont.viewmodel.MainViewModel
 import ro.ande.dekont.viewmodel.TransactionListViewModel
 import javax.inject.Inject
 
@@ -24,6 +23,8 @@ class TransactionListFragment : Fragment(), Injectable {
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var transactionListViewModel: TransactionListViewModel
+
+    private var onTransactionClickListener: OnTransactionClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +38,11 @@ class TransactionListFragment : Fragment(), Injectable {
         if (view is RecyclerView) {
             view.layoutManager = StickyHeaderLayoutManager()
             view.adapter = TransactionRecyclerViewAdapter()
-                    .also { it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)} }
+                    .also {
+                        it.setOnTransactionClickListener { id -> onTransactionClickListener?.onTransactionClick(id) }
+                        it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
+                    }
         }
-
-
-        // Long press transaction listener
-
 
         return view
     }
@@ -52,6 +52,9 @@ class TransactionListFragment : Fragment(), Injectable {
 
         activity?.let {
             transactionListViewModel = ViewModelProviders.of(it, mViewModelFactory).get(TransactionListViewModel::class.java)
+
+            // Set transaction click listener
+            onTransactionClickListener = it as OnTransactionClickListener
         }
 
         // Observe transaction list
@@ -111,6 +114,10 @@ class TransactionListFragment : Fragment(), Injectable {
 
     override fun onDetach() {
         super.onDetach()
+    }
+
+    interface OnTransactionClickListener {
+        fun onTransactionClick(id: Int)
     }
 
     companion object {
