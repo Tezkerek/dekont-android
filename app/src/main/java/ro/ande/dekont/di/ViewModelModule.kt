@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import ro.ande.dekont.viewmodel.LoginViewModel
-import ro.ande.dekont.viewmodel.TransactionEditorViewModel
-import ro.ande.dekont.viewmodel.TransactionsViewModel
-import ro.ande.dekont.viewmodel.ViewModelFactory
+import ro.ande.dekont.viewmodel.*
 
 @Module
 abstract class ViewModelModule {
@@ -17,8 +14,12 @@ abstract class ViewModelModule {
     internal abstract fun bindLoginViewModel(loginViewModel: LoginViewModel): ViewModel
 
     @Binds @IntoMap
-    @ViewModelKey(TransactionsViewModel::class)
-    internal abstract fun bindTransactionsViewModel(transactionsViewModel: TransactionsViewModel): ViewModel
+    @ViewModelKey(MainViewModel::class)
+    internal abstract fun bindMainViewModel(mainViewModel: MainViewModel): ViewModel
+
+    @Binds @IntoMap
+    @ViewModelKey(TransactionListViewModel::class)
+    internal abstract fun bindTransactionListViewModel(transactionListViewModel: TransactionListViewModel): ViewModel
 
     @Binds @IntoMap
     @ViewModelKey(TransactionEditorViewModel::class)

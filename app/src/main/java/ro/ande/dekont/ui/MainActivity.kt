@@ -1,5 +1,6 @@
 package ro.ande.dekont.ui
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -12,11 +13,11 @@ import kotlinx.android.synthetic.main.activity_transactions.*
 import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
-import ro.ande.dekont.viewmodel.TransactionsViewModel
+import ro.ande.dekont.viewmodel.MainViewModel
 import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
-class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTransactionEditFinishedListener {
+class MainActivity : BaseActivity(), Injectable, TransactionEditorFragment.OnTransactionEditFinishedListener {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +37,7 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
             this.drawer_layout.closeDrawers()
 
             when (item.itemId) {
-                R.id.nav_logout -> {}
+                R.id.nav_logout -> performLogout()
             }
 
             true
@@ -47,7 +48,7 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
             openTransactionList()
         }
 
-        val transactionsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionsViewModel::class.java)
+        val transactionsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
         transactionsViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
                 redirectToLogin()
@@ -102,6 +103,14 @@ class TransactionsActivity : BaseActivity(), Injectable, TransactionEditorFragme
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun performLogout() {
+        AlertDialog.Builder(this)
+                .setMessage(R.string.dialog_message_confirm_logout)
+                .setPositiveButton(R.string.action_sign_out) { dialog, _ ->
+                }
+                .setNegativeButton(R.string.dialog_action_cancel) { dialog, _ -> dialog.dismiss() }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
