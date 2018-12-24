@@ -18,8 +18,7 @@ data class Transaction (
         val id: Int,
 
         @field:SerializedName("user")
-        @field:Embedded(prefix = "user_")
-        val userRelation: HyperlinkedRelation,
+        val userId: Int,
 
         @field:SerializedName("date")
         var date: LocalDate,
@@ -29,6 +28,9 @@ data class Transaction (
 
         @field:SerializedName("currency")
         var currency: Currency,
+
+        @field:SerializedName("category")
+        val categoryId: Int,
 
         @field:SerializedName("description")
         var description: String,
@@ -52,16 +54,18 @@ data class Transaction (
             date: LocalDate,
             amount: BigDecimal,
             currency: Currency,
+            categoryId: Int,
             description: String,
             supplier: String,
             documentNumber: String,
             documentType: String
     ) : this(
             0,
-            HyperlinkedRelation.empty(),
+            0,
             date,
             amount,
             currency,
+            categoryId,
             description,
             supplier,
             documentNumber,

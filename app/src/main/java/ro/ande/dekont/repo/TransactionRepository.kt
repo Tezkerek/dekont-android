@@ -47,12 +47,13 @@ class TransactionRepository
             date: LocalDate,
             amount: BigDecimal,
             currency: Currency,
+            categoryId: Int,
             description: String,
             supplier: String,
             documentType: String,
             documentNumber: String
     ): LiveData<Resource<Transaction>> {
-        val transaction = Transaction(date, amount, currency, description, supplier, documentType, documentNumber)
+        val transaction = Transaction(date, amount, currency, categoryId, description, supplier, documentType, documentNumber)
 
         // Attempt to insert on server.
         return Transformations.map(dekontService.createTransaction(transaction)) { response ->

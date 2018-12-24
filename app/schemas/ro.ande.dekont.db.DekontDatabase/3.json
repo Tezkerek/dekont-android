@@ -2,15 +2,21 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "a30b461d1ecf54e963aac264a4f4ad71",
+    "identityHash": "824704609bb15c3388c23293470aa2e9",
     "entities": [
       {
         "tableName": "Transaction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `currency` TEXT NOT NULL, `description` TEXT NOT NULL, `supplier` TEXT NOT NULL, `document_number` TEXT NOT NULL, `document_type` TEXT NOT NULL, `status` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `user_url` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `currency` TEXT NOT NULL, `categoryId` INTEGER NOT NULL, `description` TEXT NOT NULL, `supplier` TEXT NOT NULL, `document_number` TEXT NOT NULL, `document_type` TEXT NOT NULL, `status` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -30,6 +36,12 @@
             "fieldPath": "currency",
             "columnName": "currency",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -61,18 +73,6 @@
             "columnName": "status",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "userRelation.id",
-            "columnName": "user_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "userRelation.url",
-            "columnName": "user_url",
-            "affinity": "TEXT",
-            "notNull": false
           }
         ],
         "primaryKey": {
@@ -88,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a30b461d1ecf54e963aac264a4f4ad71\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"824704609bb15c3388c23293470aa2e9\")"
     ]
   }
 }

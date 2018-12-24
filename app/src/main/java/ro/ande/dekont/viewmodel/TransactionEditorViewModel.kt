@@ -30,12 +30,13 @@ class TransactionEditorViewModel
     fun createTransaction(
             amount: BigDecimal,
             currency: Currency,
+            categoryId: Int,
             description: String,
             supplier: String,
             documentType: String,
             documentNumber: String
     ) {
-        val transactionLiveData = transactionRepository.createTransaction(this.date.value!!, amount, currency, description, supplier, documentType, documentNumber)
+        val transactionLiveData = transactionRepository.createTransaction(this.date.value!!, amount, currency, categoryId, description, supplier, documentType, documentNumber)
         _transactionResource.addSource(transactionLiveData) {
             _transactionResource.value = it
         }
