@@ -54,4 +54,5 @@
     <string name="label_description">Description</string>
     <string name="label_supplier">Supplier</string>
     <string name="label_document_type">Document type</string>
+    <string name="label_document_number">Document number</string>
 </resources>

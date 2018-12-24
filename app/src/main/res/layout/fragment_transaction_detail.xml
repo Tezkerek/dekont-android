@@ -111,7 +111,7 @@
         android:id="@+id/document_number_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_supplier"
+        android:text="@string/label_document_number"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/document_type_label"
         app:layout_constraintStart_toStartOf="parent" />
