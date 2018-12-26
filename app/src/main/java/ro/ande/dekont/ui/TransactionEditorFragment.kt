@@ -46,6 +46,11 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
         onEditFinishedListener = this.activity as OnTransactionEditFinishedListener
 
+        // Fake handle a touch event to prevent propagation to the fragment below
+        // We use this instead of making the view clickable because the latter makes
+        // the EditText views flash white when we click the view.
+        this.view?.setOnTouchListener { _, _ -> true }
+
         // Observe date and update the date_view
         editorViewModel.date.observe(this, Observer { date -> setDateViewText(date) })
 
