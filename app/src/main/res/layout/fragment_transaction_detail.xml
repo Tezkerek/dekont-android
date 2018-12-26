@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.TransactionDetailFragment"
     android:background="@color/colorBackground"
-    android:padding="40dp">
+    android:padding="40dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/date_label"
