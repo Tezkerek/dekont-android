@@ -7,7 +7,7 @@ import ro.ande.dekont.vo.Transaction
 
 @Database(
         entities = [Transaction::class],
-        version = 3
+        version = 1
 )
 @TypeConverters(Converters::class)
 abstract class DekontDatabase : RoomDatabase() {
