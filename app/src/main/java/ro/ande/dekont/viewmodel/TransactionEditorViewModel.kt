@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import org.threeten.bp.LocalDate
+import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
+import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Transaction
 import java.math.BigDecimal
@@ -14,9 +16,16 @@ import java.util.*
 import javax.inject.Inject
 
 class TransactionEditorViewModel
-@Inject constructor(app: Application, val transactionRepository: TransactionRepository): AndroidViewModel(app) {
+@Inject constructor(
+        app: Application,
+        private val transactionRepository: TransactionRepository,
+        private val categoryRepository: CategoryRepository
+): AndroidViewModel(app) {
     val date: LiveData<LocalDate>
         get() = _date
+
+    val categories: LiveData<List<Category>> by lazy { categoryRepository.retrieveAll() }
+
     val transactionResource: LiveData<Resource<Transaction>>
         get() = _transactionResource
 
@@ -30,7 +39,7 @@ class TransactionEditorViewModel
     fun createTransaction(
             amount: BigDecimal,
             currency: Currency,
-            categoryId: Int,
+            categoryId: Int?,
             description: String,
             supplier: String,
             documentType: String,

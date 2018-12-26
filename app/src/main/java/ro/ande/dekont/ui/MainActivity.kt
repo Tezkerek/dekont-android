@@ -46,11 +46,6 @@ class MainActivity : BaseActivity(), Injectable,
             true
         }
 
-        // On first creation, add transaction list fragment
-        if (savedInstanceState == null) {
-            openTransactionList()
-        }
-
         mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
         mainViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
@@ -61,6 +56,11 @@ class MainActivity : BaseActivity(), Injectable,
         })
 
         mainViewModel.verifyLogin()
+
+        // On first creation, add transaction list fragment
+        if (savedInstanceState == null) {
+            openTransactionList()
+        }
 
         // Show add FAB when at the transaction list
         supportFragmentManager.addOnBackStackChangedListener {

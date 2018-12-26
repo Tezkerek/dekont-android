@@ -47,7 +47,7 @@ class TransactionRepository
             date: LocalDate,
             amount: BigDecimal,
             currency: Currency,
-            categoryId: Int,
+            categoryId: Int?,
             description: String,
             supplier: String,
             documentType: String,

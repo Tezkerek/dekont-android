@@ -30,7 +30,7 @@ data class Transaction (
         var currency: Currency,
 
         @field:SerializedName("category")
-        val categoryId: Int,
+        val categoryId: Int?,
 
         @field:SerializedName("description")
         var description: String,
@@ -54,7 +54,7 @@ data class Transaction (
             date: LocalDate,
             amount: BigDecimal,
             currency: Currency,
-            categoryId: Int,
+            categoryId: Int?,
             description: String,
             supplier: String,
             documentNumber: String,

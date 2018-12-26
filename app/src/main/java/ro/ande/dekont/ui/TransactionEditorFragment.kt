@@ -54,6 +54,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
             editorViewModel.setDate(LocalDate.now())
         }
         populateCurrencySpinner()
+        populateCategorySpinner()
 
         this.date_view.setOnClickListener {
             openDatePicker()
@@ -87,6 +88,16 @@ class TransactionEditorFragment : Fragment(), Injectable {
         this.currency_spinner.adapter = adapter
     }
 
+    private fun populateCategorySpinner() {
+        editorViewModel.categories.observe(this, Observer { categories ->
+            val choices = listOf("No category") + categories.map { it.name }
+            this.category_spinner.adapter =
+                    ArrayAdapter<String>(this.context!!, android.R.layout.simple_spinner_item, choices).also {
+                        it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    }
+        })
+    }
+
     // DatePicker date set callback
     private val onDateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
         // MonthOfYear uses values between 1 and 12, whereas DatePicker uses 0-11
@@ -108,9 +119,14 @@ class TransactionEditorFragment : Fragment(), Injectable {
     private fun saveTransaction() {
         when (arguments?.getInt(ARG_ACTION)) {
             ACTION_CREATE -> {
+                val categoryId = this.category_spinner.selectedItemPosition.let {
+                    // The first choice represents 'no category'
+                    if (it == 0) null else editorViewModel.categories.value!![it].id
+                }
                 editorViewModel.createTransaction(
                         BigDecimal(this.amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
                         Currency.getInstance(this.currency_spinner.selectedItem.toString()),
+                        categoryId,
                         this.description_input.text.toString(),
                         this.supplier_input.text.toString(),
                         this.document_type_input.text.toString(),

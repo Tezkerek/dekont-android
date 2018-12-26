@@ -73,7 +73,7 @@ class TransactionListFragment : Fragment(), Injectable {
 
         // Load transactions on launch
         if (transactionListViewModel.transactions.value == null) {
-            transactionListViewModel.loadTransactions()
+            transactionListViewModel.loadTransactionsWithCategories()
         }
     }
 

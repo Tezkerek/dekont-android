@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
+import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Token
 import ro.ande.dekont.vo.Transaction
 
@@ -26,6 +27,9 @@ interface DekontService {
 
     @DELETE("transactions/{id}/")
     fun deleteTransaction(@Path("id") id: Int): LiveData<ApiResponse<Void>>
+
+    @GET("categories/")
+    fun listCategories(): LiveData<ApiResponse<List<Category>>>
 }
 
 @Target(AnnotationTarget.FUNCTION)

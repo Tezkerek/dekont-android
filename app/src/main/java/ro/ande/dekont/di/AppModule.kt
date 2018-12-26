@@ -18,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ro.ande.dekont.ui.LoginActivity
 import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.R
+import ro.ande.dekont.db.CategoryDao
 import ro.ande.dekont.db.DekontDatabase
 import ro.ande.dekont.db.TransactionDao
 import ro.ande.dekont.util.*
@@ -110,4 +111,8 @@ class AppModule {
     @Provides
     @Singleton
     fun provideTransactionDao(db: DekontDatabase): TransactionDao = db.transactionDao()
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(db: DekontDatabase): CategoryDao = db.categoryDao()
 }
