@@ -5,13 +5,9 @@ import android.os.Looper
 import android.util.SparseBooleanArray
 import android.view.View
 import android.view.ViewGroup
-
-import java.util.ArrayList
-import java.util.Collections
-import java.util.HashMap
-
 import androidx.recyclerview.widget.RecyclerView
 import ro.ande.dekont.R
+import java.util.*
 
 /**
  * SectioningAdapter
@@ -1291,7 +1287,7 @@ open class SectioningAdapter : RecyclerView.Adapter<SectioningAdapter.ViewHolder
 
     companion object {
 
-        private val TAG = "SectioningAdapter"
+        private const val TAG = "SectioningAdapter"
 
         const val NO_POSITION = -1
 

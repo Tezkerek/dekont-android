@@ -2,7 +2,6 @@ package ro.ande.dekont.util
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.Transformations
 
 /** Similar to the zip function in RxJava. Combines the two LiveData instances into one
  * that emits Pair<A, B> values.

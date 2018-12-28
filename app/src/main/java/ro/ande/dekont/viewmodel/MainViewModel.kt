@@ -5,20 +5,14 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.repo.UserRepository
 import ro.ande.dekont.ui.LoginActivity
-import ro.ande.dekont.vo.Resource
-import ro.ande.dekont.vo.ResourceDeletion
-import ro.ande.dekont.vo.Transaction
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class MainViewModel
 @Inject constructor(
-        val mApplication: Application,
-        val userRepository: UserRepository
+        private val mApplication: Application,
+        private val userRepository: UserRepository
 ) : AndroidViewModel(mApplication) {
     val isLoginValid: LiveData<Boolean>
         get() = _isLoginValid

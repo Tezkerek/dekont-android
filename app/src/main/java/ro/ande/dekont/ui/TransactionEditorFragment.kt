@@ -104,7 +104,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
     }
 
     // DatePicker date set callback
-    private val onDateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+    private val onDateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
         // MonthOfYear uses values between 1 and 12, whereas DatePicker uses 0-11
         editorViewModel.setDate(LocalDate.of(year, month+1, dayOfMonth))
     }
@@ -158,7 +158,5 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
         const val ACTION_CREATE = 0
         const val ACTION_EDIT = 1
-
-        private const val DATE_PICKER_TAG = "DATEPICKER"
     }
 }

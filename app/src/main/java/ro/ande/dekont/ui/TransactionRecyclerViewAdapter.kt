@@ -10,10 +10,9 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.transaction_list_header.view.*
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
 import org.threeten.bp.YearMonth
+import ro.ande.dekont.R
 import ro.ande.dekont.util.SectioningAdapter
 import ro.ande.dekont.vo.Transaction
-import ro.ande.dekont.R
-import java.text.DecimalFormat
 
 class TransactionRecyclerViewAdapter() : SectioningAdapter() {
     private var transactions: List<Transaction> = listOf()
@@ -21,10 +20,6 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
 
     private var onTransactionClickListener: OnTransactionClickListener? = null
     private var onTransactionLongPressListener: OnTransactionLongPressListener? = null
-
-    constructor(transactions: List<Transaction>) : this() {
-        setTransactions(transactions)
-    }
 
     fun setTransactions(transactions: List<Transaction>) {
         val oldTransactions = this.transactions

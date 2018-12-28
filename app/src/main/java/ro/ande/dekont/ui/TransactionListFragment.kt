@@ -1,7 +1,6 @@
 package ro.ande.dekont.ui
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,10 +25,6 @@ class TransactionListFragment : Fragment(), Injectable {
     private lateinit var transactionListViewModel: TransactionListViewModel
 
     private var onTransactionClickListener: OnTransactionClickListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -84,7 +79,7 @@ class TransactionListFragment : Fragment(), Injectable {
 
     private fun openTransactionOptionsMenu(transactionId: Int) {
         AlertDialog.Builder(this.activity)
-                .setItems(R.array.transaction_options) { dialog, optionIndex ->
+                .setItems(R.array.transaction_options) { _, optionIndex ->
                     when (optionIndex) {
                         0 -> {
                             // Show delete confirmation dialog
@@ -121,14 +116,6 @@ class TransactionListFragment : Fragment(), Injectable {
         val message = getString(prefix, resource.message ?: getString(R.string.error_unknown))
 
         Snackbar.make(this.transaction_list, message, Snackbar.LENGTH_INDEFINITE).show()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
     }
 
     interface OnTransactionClickListener {

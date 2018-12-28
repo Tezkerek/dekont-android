@@ -66,6 +66,7 @@
             android:id="@+id/description_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
             android:hint="@string/hint_description" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,6 +80,7 @@
             android:id="@+id/supplier_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textAutoComplete"
             android:hint="@string/hint_supplier" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,6 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:baselineAligned="false"
         android:layout_gravity="bottom"
         app:layout_constraintTop_toBottomOf="@id/supplier_input_layout">
 
@@ -99,6 +102,7 @@
                 android:id="@+id/document_type_input"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="textAutoComplete"
                 android:hint="@string/hint_document_type" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,6 +115,7 @@
                 android:id="@+id/document_number_input"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="text"
                 android:hint="@string/hint_document_number" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>

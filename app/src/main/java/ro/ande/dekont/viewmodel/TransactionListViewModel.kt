@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class TransactionListViewModel
 @Inject constructor(
-        private val mApplication: Application,
+        mApplication: Application,
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {

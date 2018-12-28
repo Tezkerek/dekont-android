@@ -9,13 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.fragment_transaction_detail.*
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionDetailViewModel
 import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.fragment_transaction_detail.*
-import org.threeten.bp.format.DateTimeFormatter
 
 /**
  * A [Fragment] for viewing the details of a [Transaction].

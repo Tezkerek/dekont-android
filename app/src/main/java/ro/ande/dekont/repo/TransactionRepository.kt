@@ -1,18 +1,18 @@
 package ro.ande.dekont.repo
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
-import ro.ande.dekont.api.*
+import ro.ande.dekont.api.ApiErrorResponse
+import ro.ande.dekont.api.ApiResponse
+import ro.ande.dekont.api.ApiSuccessResponse
+import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.db.TransactionDao
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
-import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject

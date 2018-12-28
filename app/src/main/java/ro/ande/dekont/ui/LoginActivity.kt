@@ -15,12 +15,12 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import ro.ande.dekont.BaseActivity
+import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.LoginViewModel
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Token
 import javax.inject.Inject
-import ro.ande.dekont.R
 
 /**
  * A login screen that offers login via email/password.
@@ -172,9 +172,5 @@ class LoginActivity : BaseActivity(), Injectable {
     companion object {
         const val SHARED_PREFERENCES_NAME = "auth"
         const val SHARED_PREFERENCES_TOKEN_KEY = "token"
-
-        const val ARG_ACCOUNT_TYPE = "accountType"
-        const val ARG_AUTH_TYPE = "authType"
-        const val ARG_IS_ADDING_NEW_ACCOUNT = "isAddingNewAccount"
     }
 }

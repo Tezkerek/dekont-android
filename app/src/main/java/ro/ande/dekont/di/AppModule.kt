@@ -15,12 +15,12 @@ import okhttp3.OkHttpClient
 import org.threeten.bp.LocalDate
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ro.ande.dekont.ui.LoginActivity
-import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.R
+import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.db.CategoryDao
 import ro.ande.dekont.db.DekontDatabase
 import ro.ande.dekont.db.TransactionDao
+import ro.ande.dekont.ui.LoginActivity
 import ro.ande.dekont.util.*
 import java.io.IOException
 import java.util.*
@@ -82,7 +82,7 @@ class AppModule {
     @Singleton
     fun provideDekontService(client: OkHttpClient, liveDataCallAdapterFactory: LiveDataCallAdapterFactory, gson: Gson): DekontService =
             Retrofit.Builder()
-                    .baseUrl("http://192.168.0.192:8080")
+                    .baseUrl("http://10.0.2.2:8080")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(liveDataCallAdapterFactory)

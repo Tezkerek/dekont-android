@@ -12,7 +12,7 @@ import ro.ande.dekont.vo.Token
 import javax.inject.Inject
 
 class LoginViewModel
-@Inject constructor(val mApplication: Application, val userRepository: UserRepository) : AndroidViewModel(mApplication) {
+@Inject constructor(app: Application, private val userRepository: UserRepository) : AndroidViewModel(app) {
     val authToken: LiveData<Resource<Token>>
         get() = mediatorAuthToken
 

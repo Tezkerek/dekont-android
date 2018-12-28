@@ -44,7 +44,7 @@ android {
 
 dependencies {
     def dagger_version = "2.16"
-    def room_version = "2.1.0-alpha02"
+    def room_version = "2.1.0-alpha03"
     def anko_version = '0.10.8'
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
