@@ -3,12 +3,13 @@ package ro.ande.dekont.db
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ro.ande.dekont.vo.Category
 
 @Dao
 abstract class CategoryDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(categories: List<Category>): List<Long>
 
     @Query("SELECT * FROM `category`")
