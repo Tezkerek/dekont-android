@@ -17,6 +17,7 @@ import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.StickyHeaderLayoutManager
 import ro.ande.dekont.viewmodel.TransactionListViewModel
+import ro.ande.dekont.vo.Resource
 import javax.inject.Inject
 
 class TransactionListFragment : Fragment(), Injectable {
@@ -58,11 +59,15 @@ class TransactionListFragment : Fragment(), Injectable {
         }
 
         // Observe transaction list
-        transactionListViewModel.transactions.observe(this, Observer { transactionsResource ->
-            if (transactionsResource.isError()) {
-                Snackbar.make(this.transaction_list, transactionsResource.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG)
-            } else {
-                transactionsResource.data?.let { transactions ->
+        transactionListViewModel.transactionsWithCategories.observe(this, Observer { pair ->
+            val transactionsResource = pair.first
+            val categoriesResource = pair.second
+
+            when {
+                transactionsResource.isError() -> showResourceError(transactionsResource, ResourceType.TRANSACTION_LIST)
+                categoriesResource.isError() -> showResourceError(categoriesResource, ResourceType.CATEGORY_LIST)
+
+                else -> transactionsResource.data?.let { transactions ->
                     this.transaction_list.adapter.apply {
                         this as TransactionRecyclerViewAdapter
                         this.setTransactions(transactions)
@@ -108,6 +113,16 @@ class TransactionListFragment : Fragment(), Injectable {
                 .show()
     }
 
+    private fun showResourceError(resource: Resource<*>, type: ResourceType) {
+        val prefix = when (type) {
+            ResourceType.TRANSACTION_LIST -> R.string.error_loading_transactions_prefix
+            ResourceType.CATEGORY_LIST -> R.string.error_loading_categories_prefix
+        }
+        val message = getString(prefix, resource.message ?: getString(R.string.error_unknown))
+
+        Snackbar.make(this.transaction_list, message, Snackbar.LENGTH_INDEFINITE).show()
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -122,5 +137,9 @@ class TransactionListFragment : Fragment(), Injectable {
 
     companion object {
         const val TAG = "TRANSACTION_LIST_FRAGMENT"
+
+        private enum class ResourceType {
+            TRANSACTION_LIST, CATEGORY_LIST
+        }
     }
 }

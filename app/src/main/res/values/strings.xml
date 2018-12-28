@@ -47,12 +47,15 @@
         <item>@string/action_delete</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="label_date">Date</string>
     <string name="label_amount">Amount</string>
     <string name="label_description">Description</string>
     <string name="label_supplier">Supplier</string>
     <string name="label_document_type">Document type</string>
     <string name="label_document_number">Document number</string>
+
+    <!-- Resource error prefixes -->
+    <string name="general_error_prefix">Error: %s</string>
+    <string name="error_loading_transactions_prefix">Error loading transactions: %s</string>
+    <string name="error_loading_categories_prefix">Error loading categories: %s</string>
 </resources>

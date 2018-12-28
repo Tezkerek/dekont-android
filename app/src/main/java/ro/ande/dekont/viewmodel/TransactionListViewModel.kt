@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.Transformations
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.util.zipLiveData
@@ -26,8 +25,12 @@ class TransactionListViewModel
     val categories: LiveData<Resource<List<Category>>>
         get() = _categories
 
+    val transactionsWithCategories: LiveData<Pair<Resource<List<Transaction>>, Resource<List<Category>>>>
+        get() = _transactionsWithCategories
+
     private val _transactions = MediatorLiveData<Resource<List<Transaction>>>()
     private val _categories = MediatorLiveData<Resource<List<Category>>>()
+    private val _transactionsWithCategories = MediatorLiveData<Pair<Resource<List<Transaction>>, Resource<List<Category>>>>()
 
     fun loadTransactions(users: List<Int>? = null) {
         _transactions.addSource(transactionRepository.loadTransactions(users)) {
@@ -41,10 +44,8 @@ class TransactionListViewModel
         loadTransactions(users)
         loadCategories()
 
-        _transactions.addSource(bothLiveData) {
-            _transactions.value = it.first
-            _categories.value = it.second
-            _transactions.removeSource(bothLiveData)
+        _transactionsWithCategories.addSource(bothLiveData) {
+            _transactionsWithCategories.value = it
         }
     }
 
