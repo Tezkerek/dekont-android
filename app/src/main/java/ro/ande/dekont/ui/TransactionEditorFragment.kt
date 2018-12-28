@@ -126,7 +126,8 @@ class TransactionEditorFragment : Fragment(), Injectable {
             ACTION_CREATE -> {
                 val categoryId = this.category_spinner.selectedItemPosition.let {
                     // The first choice represents 'no category'
-                    if (it == 0) null else editorViewModel.categories.value!![it].id
+                    // Since the categories list begins at 0, we must subtract 1 from the position
+                    if (it == 0) null else editorViewModel.categories.value!![it-1].id
                 }
                 editorViewModel.createTransaction(
                         BigDecimal(this.amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
