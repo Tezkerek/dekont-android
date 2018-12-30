@@ -61,13 +61,13 @@ class TransactionListFragment : Fragment(), Injectable {
             when {
                 transactionsResource.isError() -> showResourceError(transactionsResource, ResourceType.TRANSACTION_LIST)
                 categoriesResource.isError() -> showResourceError(categoriesResource, ResourceType.CATEGORY_LIST)
+            }
 
-                else -> transactionsResource.data?.let { transactions ->
-                    this.transaction_list.adapter.apply {
-                        this as TransactionRecyclerViewAdapter
-                        this.setTransactions(transactions)
-                    }
-                }
+            // Set transactions and categories in adapter
+            this.transaction_list.adapter.also { adapter ->
+                adapter as TransactionRecyclerViewAdapter
+                transactionsResource.data?.let { adapter.setTransactions(it) }
+                categoriesResource.data?.let { adapter.setCategories(it) }
             }
         })
 

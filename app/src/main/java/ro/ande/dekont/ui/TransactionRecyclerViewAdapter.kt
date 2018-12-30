@@ -12,10 +12,12 @@ import kotlinx.android.synthetic.main.transaction_list_item.view.*
 import org.threeten.bp.YearMonth
 import ro.ande.dekont.R
 import ro.ande.dekont.util.SectioningAdapter
+import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 
 class TransactionRecyclerViewAdapter() : SectioningAdapter() {
     private var transactions: List<Transaction> = listOf()
+    private var categories: List<Category> = listOf()
     private var sections: MutableList<Section> = mutableListOf()
 
     private var onTransactionClickListener: OnTransactionClickListener? = null
@@ -65,6 +67,11 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         this.sections.forEachIndexed { index, section ->
             setSectionIsCollapsed(index, section.isCollapsed)
         }
+    }
+
+    fun setCategories(categories: List<Category>) {
+        this.categories = categories
+        notifyAllSectionsDataSetChanged()
     }
 
     interface OnTransactionClickListener {
@@ -119,6 +126,10 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         viewHolder as TransactionViewHolder
         val transaction = sections[sectionIndex].transactions[itemIndex]
         viewHolder.dayView.text = transaction.date.dayOfMonth.toString()
+        // Try to find the category of the transaction. If not found, display the category id
+        viewHolder.categoryView.text =
+                if (transaction.categoryId == null) ""
+                else categories.find { it.id == transaction.categoryId }?.name ?: "id: ${transaction.categoryId}"
         viewHolder.amountView.text = transaction.formattedAmount
         viewHolder.currencyView.text = transaction.currency.currencyCode
 
@@ -172,6 +183,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
 
     inner class TransactionViewHolder(val view: View) : ItemViewHolder(view) {
         val dayView: TextView = view.transaction_day
+        val categoryView: TextView = view.transaction_category
         val amountView: TextView = view.transaction_amount
         val currencyView: TextView = view.transaction_currency
     }
