@@ -5,10 +5,7 @@ import androidx.lifecycle.Transformations
 import org.jetbrains.anko.doAsync
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
-import ro.ande.dekont.api.ApiErrorResponse
-import ro.ande.dekont.api.ApiResponse
-import ro.ande.dekont.api.ApiSuccessResponse
-import ro.ande.dekont.api.DekontService
+import ro.ande.dekont.api.*
 import ro.ande.dekont.db.TransactionDao
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.ResourceDeletion
@@ -23,15 +20,18 @@ class TransactionRepository
         private val transactionDao: TransactionDao,
         private val dekontService: DekontService
 ) {
-    fun loadTransactions(users: List<Int>?): LiveData<Resource<List<Transaction>>> {
-        return object : NetworkBoundResource<List<Transaction>, List<Transaction>>(appExecutors) {
-            override fun saveCallResult(result: List<Transaction>) = transactionDao.insertAndReplace(result)
+    fun loadTransactions(page: Int, users: List<Int>?): LiveData<Resource<List<Transaction>>> {
+        // Load transactions from year ($currentYear - $page)
+        val pageDate: LocalDate = LocalDate.now().minusYears(page.toLong()).withDayOfYear(1)
+
+        return object : NetworkBoundResource<List<Transaction>, PaginatedResponse<List<Transaction>>>(appExecutors) {
+            override fun saveCallResult(result: PaginatedResponse<List<Transaction>>) = transactionDao.insertAndReplace(result.data)
 
             override fun shouldFetch(data: List<Transaction>?): Boolean = true
 
-            override fun loadFromDb(): LiveData<List<Transaction>> = transactionDao.retrieveSince(LocalDate.now().withDayOfYear(1))
+            override fun loadFromDb(): LiveData<List<Transaction>> = transactionDao.retrieveFromPeriod(pageDate, pageDate.plusYears(1))
 
-            override fun createCall(): LiveData<ApiResponse<List<Transaction>>> = dekontService.listTransactions(users)
+            override fun createCall(): LiveData<ApiResponse<PaginatedResponse<List<Transaction>>>> = dekontService.listTransactions(pageDate.year, users)
         }.asLiveData()
     }
 

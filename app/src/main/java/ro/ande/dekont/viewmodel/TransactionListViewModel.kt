@@ -21,6 +21,7 @@ class TransactionListViewModel
 ) : AndroidViewModel(mApplication) {
     val transactions: LiveData<Resource<List<Transaction>>>
         get() = _transactions
+    var currentPage: Int = 0
 
     val categories: LiveData<Resource<List<Category>>>
         get() = _categories
@@ -32,16 +33,17 @@ class TransactionListViewModel
     private val _categories = MediatorLiveData<Resource<List<Category>>>()
     private val _transactionsWithCategories = MediatorLiveData<Pair<Resource<List<Transaction>>, Resource<List<Category>>>>()
 
-    fun loadTransactions(users: List<Int>? = null) {
-        _transactions.addSource(transactionRepository.loadTransactions(users)) {
+    fun loadTransactions(page: Int, users: List<Int>? = null) {
+        _transactions.addSource(transactionRepository.loadTransactions(page, users)) {
             _transactions.value = it
+            currentPage = page
         }
     }
 
     /** Same as loadTransactions, but only emits when both transactions and categories are loaded. */
-    fun loadTransactionsWithCategories(users: List<Int>? = null) {
+    fun loadTransactionsWithCategories(page: Int, users: List<Int>? = null) {
         val bothLiveData = zipLiveData(transactions, categories)
-        loadTransactions(users)
+        loadTransactions(page, users)
         loadCategories()
 
         _transactionsWithCategories.addSource(bothLiveData) {

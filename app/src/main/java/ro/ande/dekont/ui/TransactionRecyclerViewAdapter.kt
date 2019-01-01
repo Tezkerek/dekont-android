@@ -10,13 +10,13 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.transaction_list_header.view.*
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
 import org.threeten.bp.YearMonth
+import org.zakariya.stickyheaders.SectioningAdapter
 import ro.ande.dekont.R
-import ro.ande.dekont.util.SectioningAdapter
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 
-class TransactionRecyclerViewAdapter() : SectioningAdapter() {
-    private var transactions: List<Transaction> = listOf()
+class TransactionRecyclerViewAdapter : SectioningAdapter() {
+    private var transactions: MutableList<Transaction> = mutableListOf()
     private var categories: List<Category> = listOf()
     private var sections: MutableList<Section> = mutableListOf()
 
@@ -31,7 +31,7 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
                 .asSequence()
                 .groupBy { YearMonth.from(it.date) }
 
-        this.transactions = transactions
+        this.transactions = transactions.toMutableList()
         this.sections =  byYearMonth
                 .map { entry ->
                     val yearMonth = entry.key
@@ -67,6 +67,22 @@ class TransactionRecyclerViewAdapter() : SectioningAdapter() {
         this.sections.forEachIndexed { index, section ->
             setSectionIsCollapsed(index, section.isCollapsed)
         }
+    }
+
+    fun addTransactions(transactions: List<Transaction>) {
+        // Add transactions
+        this.transactions.addAll(transactions)
+
+        // Add sections to end, expanded by default
+        val newSections = transactions.groupBy { YearMonth.from(it.date) }.map { TransactionRecyclerViewAdapter.Section(it.key, it.value) }
+        val indexOffset = this.sections.size
+        this.sections.addAll(newSections)
+        // Notify new sections inserted
+        newSections.forEachIndexed { index, _ -> notifySectionInserted(indexOffset+index) }
+    }
+
+    fun mergeTransactions(transactions: List<Transaction>) {
+        addTransactions(transactions.minus(this.transactions))
     }
 
     fun setCategories(categories: List<Category>) {

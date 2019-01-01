@@ -12,9 +12,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
+import org.zakariya.stickyheaders.PagedLoadScrollListener
+import org.zakariya.stickyheaders.StickyHeaderLayoutManager
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
-import ro.ande.dekont.util.StickyHeaderLayoutManager
 import ro.ande.dekont.viewmodel.TransactionListViewModel
 import ro.ande.dekont.vo.Resource
 import javax.inject.Inject
@@ -24,6 +25,8 @@ class TransactionListFragment : Fragment(), Injectable {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var transactionListViewModel: TransactionListViewModel
 
+    private var transactionsLoadCompleteNotifier: PagedLoadScrollListener.LoadCompleteNotifier? = null
+
     private var onTransactionClickListener: OnTransactionClickListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -32,12 +35,21 @@ class TransactionListFragment : Fragment(), Injectable {
 
         // Set the adapter
         if (view is RecyclerView) {
-            view.layoutManager = StickyHeaderLayoutManager()
+            val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
+            view.layoutManager = stickyHeaderLayoutManager
             view.adapter = TransactionRecyclerViewAdapter()
                     .also {
                         it.setOnTransactionClickListener { id -> onTransactionClickListener?.onTransactionClick(id) }
                         it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
                     }
+
+            view.addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager) {
+                override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
+                    transactionsLoadCompleteNotifier = loadComplete
+                    transactionListViewModel.loadTransactions(page)
+                }
+
+            })
         }
 
         return view
@@ -66,14 +78,23 @@ class TransactionListFragment : Fragment(), Injectable {
             // Set transactions and categories in adapter
             this.transaction_list.adapter.also { adapter ->
                 adapter as TransactionRecyclerViewAdapter
-                transactionsResource.data?.let { adapter.setTransactions(it) }
+                transactionsResource.data?.let {
+                    if (!transactionsResource.isLoading()) {
+                        if (it.isEmpty()) {
+                            transactionsLoadCompleteNotifier?.notifyLoadExhausted()
+                        } else {
+                            transactionsLoadCompleteNotifier?.notifyLoadComplete()
+                            adapter.mergeTransactions(it)
+                        }
+                    }
+                }
                 categoriesResource.data?.let { adapter.setCategories(it) }
             }
         })
 
         // Load transactions on launch
         if (transactionListViewModel.transactions.value == null) {
-            transactionListViewModel.loadTransactionsWithCategories()
+            transactionListViewModel.loadTransactionsWithCategories(0)
         }
     }
 

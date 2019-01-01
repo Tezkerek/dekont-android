@@ -20,7 +20,10 @@ interface DekontService {
 
     @Auth
     @GET("transactions/")
-    fun listTransactions(@Query("users") users: List<Int>?): LiveData<ApiResponse<List<Transaction>>>
+    fun listTransactions(
+            @Query("year") year: Int?,
+            @Query("users") users: List<Int>?
+    ): LiveData<ApiResponse<PaginatedResponse<List<Transaction>>>>
 
     @POST("transactions/")
     fun createTransaction(@Body body: Transaction): LiveData<ApiResponse<Transaction>>

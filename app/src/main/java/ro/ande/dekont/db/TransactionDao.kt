@@ -28,6 +28,6 @@ abstract class TransactionDao {
     @Query("SELECT * FROM `transaction` WHERE id = :id")
     abstract fun retrieveById(id: Int): LiveData<Transaction>
 
-    @Query("SELECT * FROM `transaction` WHERE date >= :date")
-    abstract fun retrieveSince(date: LocalDate): LiveData<List<Transaction>>
+    @Query("SELECT * FROM `transaction` WHERE date >= :startDate AND date <= :endDate")
+    abstract fun retrieveFromPeriod(startDate: LocalDate, endDate: LocalDate): LiveData<List<Transaction>>
 }
