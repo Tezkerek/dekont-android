@@ -1,12 +1,18 @@
 package ro.ande.dekont.repo
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.doAsync
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
-import ro.ande.dekont.api.*
+import ro.ande.dekont.api.ApiErrorResponse
+import ro.ande.dekont.api.ApiSuccessResponse
+import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.db.TransactionDao
+import ro.ande.dekont.util.LoadMoreLiveData
+import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
@@ -20,19 +26,30 @@ class TransactionRepository
         private val transactionDao: TransactionDao,
         private val dekontService: DekontService
 ) {
-    fun loadTransactions(page: Int, users: List<Int>?): LiveData<Resource<List<Transaction>>> {
-        // Load transactions from year ($currentYear - $page)
-        val pageDate: LocalDate = LocalDate.now().minusYears(page.toLong()).withDayOfYear(1)
+    fun loadTransactions(page: Int, users: List<Int>?): LoadMoreLiveData<List<Transaction>> {
+        val networkState = MutableLiveData<NetworkState>()
 
-        return object : NetworkBoundResource<List<Transaction>, PaginatedResponse<List<Transaction>>>(appExecutors) {
-            override fun saveCallResult(result: PaginatedResponse<List<Transaction>>) = transactionDao.insertAndReplace(result.data)
+        networkState.postValue(NetworkState(NetworkState.Status.LOADING, isExhausted = false))
 
-            override fun shouldFetch(data: List<Transaction>?): Boolean = true
+        appExecutors.networkIO().doAsync {
+            runBlocking {
+                val response = dekontService.listTransactions(page, users).await()
 
-            override fun loadFromDb(): LiveData<List<Transaction>> = transactionDao.retrieveFromPeriod(pageDate, pageDate.plusYears(1))
+                when (response) {
+                    is ApiSuccessResponse -> {
+                        val isDataExhausted = response.body.page == response.body.pageCount
+                        networkState.postValue(NetworkState(NetworkState.Status.SUCCESS, isExhausted = isDataExhausted))
 
-            override fun createCall(): LiveData<ApiResponse<PaginatedResponse<List<Transaction>>>> = dekontService.listTransactions(pageDate.year, users)
-        }.asLiveData()
+                        // The DB LiveData will refresh automatically after insertion
+                        transactionDao.insertAndReplace(response.body.data)
+                    }
+                    is ApiErrorResponse -> {
+                        networkState.postValue(NetworkState(NetworkState.Status.ERROR, message = response.getFirstError()))
+                    }
+                }
+            }
+        }
+        return LoadMoreLiveData(transactionDao.retrievePartial((page-1) * PAGE_SIZE, PAGE_SIZE), networkState)
     }
 
     fun getTransactionById(id: Int): Transaction {
@@ -113,5 +130,9 @@ class TransactionRepository
                 ResourceDeletion.error(response.getFirstError())
             }
         }
+    }
+
+    companion object {
+        const val PAGE_SIZE = 15
     }
 }

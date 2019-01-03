@@ -2,7 +2,6 @@ package ro.ande.dekont.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import org.threeten.bp.LocalDate
 import ro.ande.dekont.vo.Transaction
 
 @Dao
@@ -28,6 +27,6 @@ abstract class TransactionDao {
     @Query("SELECT * FROM `transaction` WHERE id = :id")
     abstract fun retrieveById(id: Int): LiveData<Transaction>
 
-    @Query("SELECT * FROM `transaction` WHERE date >= :startDate AND date <= :endDate")
-    abstract fun retrieveFromPeriod(startDate: LocalDate, endDate: LocalDate): LiveData<List<Transaction>>
+    @Query("SELECT * FROM `transaction` ORDER BY date DESC LIMIT :limit OFFSET :offset")
+    abstract fun retrievePartial(offset: Int, limit: Int): LiveData<List<Transaction>>
 }

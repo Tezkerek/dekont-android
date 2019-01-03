@@ -1,6 +1,7 @@
 package ro.ande.dekont.api
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.Deferred
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -18,12 +19,11 @@ interface DekontService {
     @GET("verify-authtoken/{token}")
     fun verifyAuthToken(@Path("token") token: String): Call<ResponseBody>
 
-    @Auth
     @GET("transactions/")
     fun listTransactions(
-            @Query("year") year: Int?,
+            @Query("page") page: Int,
             @Query("users") users: List<Int>?
-    ): LiveData<ApiResponse<PaginatedResponse<List<Transaction>>>>
+    ): Deferred<ApiResponse<PaginatedResponse<List<Transaction>>>>
 
     @POST("transactions/")
     fun createTransaction(@Body body: Transaction): LiveData<ApiResponse<Transaction>>
@@ -34,6 +34,3 @@ interface DekontService {
     @GET("categories/")
     fun listCategories(): LiveData<ApiResponse<List<Category>>>
 }
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class Auth

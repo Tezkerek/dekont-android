@@ -1,6 +1,5 @@
 package ro.ande.dekont.util
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -20,7 +19,6 @@ class LiveDataCallAdapter<R>(private val responseType: Type) :
     override fun responseType() = responseType
 
     override fun adapt(call: Call<R>): LiveData<ApiResponse<R>> {
-        Log.d("", "adapting call")
         return object : LiveData<ApiResponse<R>>() {
             private var started = AtomicBoolean(false)
 
@@ -33,7 +31,6 @@ class LiveDataCallAdapter<R>(private val responseType: Type) :
                         }
 
                         override fun onFailure(call: Call<R>, throwable: Throwable) {
-                            Log.d("throwable", throwable.message)
                             postValue(ApiResponse.create(throwable))
                         }
                     })

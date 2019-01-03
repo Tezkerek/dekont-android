@@ -16,8 +16,8 @@ import org.zakariya.stickyheaders.PagedLoadScrollListener
 import org.zakariya.stickyheaders.StickyHeaderLayoutManager
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
+import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.viewmodel.TransactionListViewModel
-import ro.ande.dekont.vo.Resource
 import javax.inject.Inject
 
 class TransactionListFragment : Fragment(), Injectable {
@@ -46,9 +46,15 @@ class TransactionListFragment : Fragment(), Injectable {
             view.addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager) {
                 override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
                     transactionsLoadCompleteNotifier = loadComplete
+
+                    // Skip the first page, we will load it with categories later
+                    if (page == 1) {
+                        loadComplete.notifyLoadComplete()
+                        return
+                    }
+
                     transactionListViewModel.loadTransactions(page)
                 }
-
             })
         }
 
@@ -67,34 +73,37 @@ class TransactionListFragment : Fragment(), Injectable {
 
         // Observe transaction list
         transactionListViewModel.transactionsWithCategories.observe(this, Observer { pair ->
-            val transactionsResource = pair.first
+            val transactions = pair.first
             val categoriesResource = pair.second
 
             when {
-                transactionsResource.isError() -> showResourceError(transactionsResource, ResourceType.TRANSACTION_LIST)
-                categoriesResource.isError() -> showResourceError(categoriesResource, ResourceType.CATEGORY_LIST)
+                categoriesResource.isError() -> showResourceError(categoriesResource.message, ResourceType.CATEGORY_LIST)
             }
 
             // Set transactions and categories in adapter
             this.transaction_list.adapter.also { adapter ->
                 adapter as TransactionRecyclerViewAdapter
-                transactionsResource.data?.let {
-                    if (!transactionsResource.isLoading()) {
-                        if (it.isEmpty()) {
-                            transactionsLoadCompleteNotifier?.notifyLoadExhausted()
-                        } else {
-                            transactionsLoadCompleteNotifier?.notifyLoadComplete()
-                            adapter.mergeTransactions(it)
-                        }
-                    }
-                }
+
+                adapter.mergeTransactions(transactions)
+
                 categoriesResource.data?.let { adapter.setCategories(it) }
             }
         })
 
+        // Observe transactions network state
+        transactionListViewModel.transactionsState.observe(this, Observer { state ->
+            // On success or error, notify load complete
+            if (state.state != NetworkState.Status.LOADING) transactionsLoadCompleteNotifier?.notifyLoadComplete()
+
+            if (state.state == NetworkState.Status.ERROR) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
+
+            // Stop loading if data has been exhausted
+            if (state.isExhausted) transactionsLoadCompleteNotifier?.notifyLoadExhausted()
+        })
+
         // Load transactions on launch
         if (transactionListViewModel.transactions.value == null) {
-            transactionListViewModel.loadTransactionsWithCategories(0)
+            transactionListViewModel.loadTransactionsWithCategories(1)
         }
     }
 
@@ -129,14 +138,14 @@ class TransactionListFragment : Fragment(), Injectable {
                 .show()
     }
 
-    private fun showResourceError(resource: Resource<*>, type: ResourceType) {
+    private fun showResourceError(message: String?, type: ResourceType) {
         val prefix = when (type) {
             ResourceType.TRANSACTION_LIST -> R.string.error_loading_transactions_prefix
             ResourceType.CATEGORY_LIST -> R.string.error_loading_categories_prefix
         }
-        val message = getString(prefix, resource.message ?: getString(R.string.error_unknown))
+        val fullMessage = getString(prefix, message ?: getString(R.string.error_unknown))
 
-        Snackbar.make(this.transaction_list, message, Snackbar.LENGTH_INDEFINITE).show()
+        Snackbar.make(this.transaction_list, fullMessage, Snackbar.LENGTH_INDEFINITE).show()
     }
 
     interface OnTransactionClickListener {

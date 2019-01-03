@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
+import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.util.zipLiveData
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Resource
@@ -19,24 +20,33 @@ class TransactionListViewModel
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {
-    val transactions: LiveData<Resource<List<Transaction>>>
+    val transactions: LiveData<List<Transaction>>
         get() = _transactions
-    var currentPage: Int = 0
+
+    val transactionsState: LiveData<NetworkState>
+        get() = _transactionsState
 
     val categories: LiveData<Resource<List<Category>>>
         get() = _categories
 
-    val transactionsWithCategories: LiveData<Pair<Resource<List<Transaction>>, Resource<List<Category>>>>
+    val transactionsWithCategories: LiveData<Pair<List<Transaction>, Resource<List<Category>>>>
         get() = _transactionsWithCategories
 
-    private val _transactions = MediatorLiveData<Resource<List<Transaction>>>()
+
+    private val _transactions = MediatorLiveData<List<Transaction>>()
+    private val _transactionsState = MediatorLiveData<NetworkState>()
     private val _categories = MediatorLiveData<Resource<List<Category>>>()
-    private val _transactionsWithCategories = MediatorLiveData<Pair<Resource<List<Transaction>>, Resource<List<Category>>>>()
+    private val _transactionsWithCategories = MediatorLiveData<Pair<List<Transaction>, Resource<List<Category>>>>()
 
     fun loadTransactions(page: Int, users: List<Int>? = null) {
-        _transactions.addSource(transactionRepository.loadTransactions(page, users)) {
-            _transactions.value = it
-            currentPage = page
+        transactionRepository.loadTransactions(page, users).let {
+            _transactions.addSource(it.data) { transactions ->
+                _transactions.value = transactions
+            }
+
+            _transactionsState.addSource(it.networkState) { state ->
+                _transactionsState.value = state
+            }
         }
     }
 
