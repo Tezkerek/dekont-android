@@ -70,19 +70,81 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
     }
 
     fun addTransactions(transactions: List<Transaction>) {
-        // Add transactions
+        // Add the transactions
         this.transactions.addAll(transactions)
 
-        // Add sections to end, expanded by default
-        val newSections = transactions.groupBy { YearMonth.from(it.date) }.map { TransactionRecyclerViewAdapter.Section(it.key, it.value) }
-        val indexOffset = this.sections.size
-        this.sections.addAll(newSections)
-        // Notify new sections inserted
-        newSections.forEachIndexed { index, _ -> notifySectionInserted(indexOffset+index) }
+        // Group the new transactions in sections
+        val newSections = transactions.groupBy { YearMonth.from(it.date) }.map { TransactionRecyclerViewAdapter.Section(it.key, it.value) }.toMutableList()
+
+        // Merge existing sections, removing them from newSections after merge
+        this.sections.forEachIndexed { sectionIndex, section ->
+            newSections.find { it.yearMonth == section.yearMonth }?.let { newSection ->
+                section.transactions.run {
+                    // Copy the new transactions
+                    addAll(newSection.transactions)
+
+                    // Sort them
+                    sortByDescending { it.date }
+
+                    // Obtain the positions of the newly inserted transactions, after sort
+                    // and notify their insertion
+                    mapIndexedNotNull {
+                        index, transaction -> if (transaction in newSection.transactions) index else null
+                    }.forEach { transactionIndex -> notifySectionItemInserted(sectionIndex, transactionIndex) }
+                }
+
+                // Remove the merged section from the list
+                newSections.remove(newSection)
+            }
+        }
+
+        // Add the remaining sections and sort
+        this.sections.run {
+            addAll(newSections)
+            sortByDescending { it.yearMonth }
+
+            // Obtain the positions of the newly inserted sections, after sort
+            // and notify their insertion
+            mapIndexedNotNull {
+                index, section -> if (section in newSections) index else null
+            }.forEach { sectionIndex -> notifySectionInserted(sectionIndex) }
+        }
     }
 
     fun mergeTransactions(transactions: List<Transaction>) {
         addTransactions(transactions.minus(this.transactions))
+    }
+
+    /** Removes a transaction from the RecyclerView.
+     * @return Whether the transaction was found and removed.
+     */
+    fun removeTransaction(id: Int): Boolean {
+        var removedItemIndexInSection = -1
+
+        // Remove item from sections
+        val sectionIndexOfRemovedItem = this.sections.indexOfFirst { section ->
+            // Obtain the index of the first section that contains the item
+            section.transactions.indexOfFirst { it.id == id }.let { index ->
+                if (index > -1) {
+                    // Save the item index, remove the item, and stop at the current section
+                    removedItemIndexInSection = index
+                    section.transactions.removeAt(index)
+                    return@indexOfFirst true
+                }
+                // Continue to the next section
+                return@indexOfFirst false
+            }
+        }
+
+        // Remove item from transaction list
+        this.transactions.removeAll { it.id == id }
+
+        if (removedItemIndexInSection < 0) return false
+
+        // Notify removal of item
+        notifySectionItemRemoved(sectionIndexOfRemovedItem, removedItemIndexInSection)
+
+        return true
     }
 
     fun setCategories(categories: List<Category>) {

@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import org.zakariya.stickyheaders.PagedLoadScrollListener
 import org.zakariya.stickyheaders.StickyHeaderLayoutManager
@@ -42,6 +43,7 @@ class TransactionListFragment : Fragment(), Injectable {
                         it.setOnTransactionClickListener { id -> onTransactionClickListener?.onTransactionClick(id) }
                         it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
                     }
+            view.itemAnimator = SlideInLeftAnimator()
 
             view.addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager) {
                 override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
@@ -119,6 +121,11 @@ class TransactionListFragment : Fragment(), Injectable {
                                         // TODO Progress indicator (maybe on toolbar)
                                         transactionListViewModel.deleteTransaction(transactionId).observe(this, Observer { deletion ->
                                             if (deletion.isSuccess()) {
+                                                // Remove item manually from list
+                                                this.transaction_list.adapter.let { adapter ->
+                                                    adapter as TransactionRecyclerViewAdapter
+                                                    adapter.removeTransaction(transactionId)
+                                                }
                                                 Snackbar.make(this.view!!, R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
                                             } else {
                                                 Snackbar.make(this.view!!, deletion.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
