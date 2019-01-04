@@ -1,11 +1,13 @@
 package ro.ande.dekont.ui
 
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -75,6 +77,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
         })
 
         this.save_button.setOnClickListener {
+            closeKeyboard()
             saveTransaction()
         }
     }
@@ -138,6 +141,15 @@ class TransactionEditorFragment : Fragment(), Injectable {
                         this.document_type_input.text.toString(),
                         this.document_number_input.text.toString()
                 )
+            }
+        }
+    }
+
+    private fun closeKeyboard() {
+        activity?.let { activity ->
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE).let {
+                it as InputMethodManager
+                it.hideSoftInputFromWindow(activity.currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
             }
         }
     }
