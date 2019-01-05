@@ -69,31 +69,23 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
         }
     }
 
-    fun addTransactions(transactions: List<Transaction>) {
+    fun addTransactions(newTransactions: List<Transaction>) {
         // Add the transactions
-        this.transactions.addAll(transactions)
+        this.transactions.addAll(newTransactions)
 
         // Group the new transactions in sections
-        val newSections = transactions.groupBy { YearMonth.from(it.date) }.map { TransactionRecyclerViewAdapter.Section(it.key, it.value) }.toMutableList()
+        val newSections = newTransactions.groupBy { YearMonth.from(it.date) }.map { TransactionRecyclerViewAdapter.Section(it.key, it.value) }.toMutableList()
 
         // Merge existing sections, removing them from newSections after merge
-        this.sections.forEachIndexed { sectionIndex, section ->
+        this.sections.forEach { section ->
             newSections.find { it.yearMonth == section.yearMonth }?.let { newSection ->
+                // Copy the new transactions and sort
                 section.transactions.run {
-                    // Copy the new transactions
                     addAll(newSection.transactions)
-
-                    // Sort them
                     sortByDescending { it.date }
-
-                    // Obtain the positions of the newly inserted transactions, after sort
-                    // and notify their insertion
-                    mapIndexedNotNull {
-                        index, transaction -> if (transaction in newSection.transactions) index else null
-                    }.forEach { transactionIndex -> notifySectionItemInserted(sectionIndex, transactionIndex) }
                 }
 
-                // Remove the merged section from the list
+                // Remove the merged section from the new sections list
                 newSections.remove(newSection)
             }
         }
@@ -102,12 +94,21 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
         this.sections.run {
             addAll(newSections)
             sortByDescending { it.yearMonth }
+        }
 
-            // Obtain the positions of the newly inserted sections, after sort
-            // and notify their insertion
-            mapIndexedNotNull {
-                index, section -> if (section in newSections) index else null
-            }.forEach { sectionIndex -> notifySectionInserted(sectionIndex) }
+        // Find the positions of the inserted items and sections
+        // and notify the adapter of their insertion
+        this.sections.forEachIndexed { sectionIndex, section ->
+            if (section in newSections) {
+                // The entire section is new
+                notifySectionInserted(sectionIndex)
+            } else {
+                // Find the positions of newly inserted transactions, if any
+                // and notify the adapter of their insertion
+                section.transactions.mapIndexedNotNull { index, transaction ->
+                    if (transaction in newTransactions) index else null
+                }.forEach { transactionIndex -> notifySectionItemInserted(sectionIndex, transactionIndex) }
+            }
         }
     }
 
