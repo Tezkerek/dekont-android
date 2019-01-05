@@ -9,7 +9,9 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.activity_transactions.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
@@ -19,13 +21,14 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity(), Injectable,
         TransactionListFragment.OnTransactionClickListener,
+        TransactionListFragment.OnAddTransactionFabClickListener,
         TransactionEditorFragment.OnTransactionEditFinishedListener {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_transactions)
+        setContentView(R.layout.activity_main)
         setSupportActionBar(this.toolbar)
 
         // Show drawer button on toolbar
@@ -61,16 +64,6 @@ class MainActivity : BaseActivity(), Injectable,
         if (savedInstanceState == null) {
             openTransactionList()
         }
-
-        // Show add FAB when at the transaction list
-        supportFragmentManager.addOnBackStackChangedListener {
-            val currentFragment = supportFragmentManager.fragments.last()
-            if (currentFragment is TransactionListFragment) {
-                this.add_transaction_fab.show()
-            }
-        }
-
-        this.add_transaction_fab.setOnClickListener { openNewTransactionEditor() }
     }
 
     /** Show the transaction list fragment */
@@ -82,9 +75,6 @@ class MainActivity : BaseActivity(), Injectable,
 
     /** Open a screen containing a detailed view of the transaction */
     private fun openTransactionDetail(id: Int) {
-        // Hide FAB
-        this.add_transaction_fab.hide()
-
         val fragment = TransactionDetailFragment()
         fragment.arguments = Bundle().also {
             it.putInt(TransactionDetailFragment.ARG_TRANSACTION_ID, id)
@@ -99,9 +89,6 @@ class MainActivity : BaseActivity(), Injectable,
 
     /** Show the empty transaction editor fragment */
     private fun openNewTransactionEditor() {
-        // Hide FAB
-        this.add_transaction_fab.hide()
-
         val fragment = TransactionEditorFragment()
         val args = Bundle()
         args.putInt(TransactionEditorFragment.ARG_ACTION, TransactionEditorFragment.ACTION_CREATE)
@@ -116,6 +103,10 @@ class MainActivity : BaseActivity(), Injectable,
 
     override fun onTransactionClick(id: Int) {
         openTransactionDetail(id)
+    }
+
+    override fun onAddTransactionFabClick(fab: FloatingActionButton) {
+        openNewTransactionEditor()
     }
 
     override fun onTransactionEditFinished(transaction: Transaction) {

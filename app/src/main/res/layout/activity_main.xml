@@ -25,15 +25,7 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <include layout="@layout/content_transactions" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_transaction_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/baseline_add_white_48" />
+        <include layout="@layout/content_main" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
