@@ -68,7 +68,7 @@ class TransactionListFragment : Fragment(), Injectable {
             this.transaction_list.adapter.also { adapter ->
                 adapter as TransactionRecyclerViewAdapter
 
-                adapter.mergeTransactions(transactions)
+                adapter.mergeTransactions(transactions.getAll())
 
                 categoriesResource.data?.let { adapter.setCategories(it) }
             }
@@ -77,7 +77,10 @@ class TransactionListFragment : Fragment(), Injectable {
         // Observe transactions network state
         transactionListViewModel.transactionsState.observe(this, Observer { state ->
             // On success or error, notify load complete
-            if (state.state != NetworkState.Status.LOADING) transactionsLoadCompleteNotifier?.notifyLoadComplete()
+            if (state.state != NetworkState.Status.LOADING) {
+                transactionsLoadCompleteNotifier?.notifyLoadComplete()
+                transactionListViewModel.transactionsLastLoadedPage++
+            }
 
             if (state.state == NetworkState.Status.ERROR) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
 
@@ -115,6 +118,17 @@ class TransactionListFragment : Fragment(), Injectable {
                         loadComplete.notifyLoadComplete()
                         return
                     }
+
+                    // Compare with ViewModel state
+                    // Check if data is exhausted
+                    if (transactionListViewModel.transactionsState.value?.isExhausted == true) {
+                        loadComplete.notifyLoadExhausted()
+                        return
+                    }
+
+                    // Skip pages that we already loaded
+                    if (page <= transactionListViewModel.transactionsLastLoadedPage)
+                        return
 
                     transactionListViewModel.loadTransactions(page)
                 }

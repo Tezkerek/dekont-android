@@ -7,6 +7,7 @@ import androidx.lifecycle.MediatorLiveData
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.util.NetworkState
+import ro.ande.dekont.util.PagedList
 import ro.ande.dekont.util.zipLiveData
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Resource
@@ -20,28 +21,33 @@ class TransactionListViewModel
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {
-    val transactions: LiveData<List<Transaction>>
+    val transactions: LiveData<PagedList<Transaction>>
         get() = _transactions
 
     val transactionsState: LiveData<NetworkState>
         get() = _transactionsState
 
+    var transactionsLastLoadedPage: Int = 0
+
     val categories: LiveData<Resource<List<Category>>>
         get() = _categories
 
-    val transactionsWithCategories: LiveData<Pair<List<Transaction>, Resource<List<Category>>>>
+    val transactionsWithCategories: LiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>
         get() = _transactionsWithCategories
 
 
-    private val _transactions = MediatorLiveData<List<Transaction>>()
+    private val _transactions = MediatorLiveData<PagedList<Transaction>>()
     private val _transactionsState = MediatorLiveData<NetworkState>()
     private val _categories = MediatorLiveData<Resource<List<Category>>>()
-    private val _transactionsWithCategories = MediatorLiveData<Pair<List<Transaction>, Resource<List<Category>>>>()
+    private val _transactionsWithCategories = MediatorLiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>()
 
     fun loadTransactions(page: Int, users: List<Int>? = null) {
         transactionRepository.loadTransactions(page, users).let {
             _transactions.addSource(it.data) { transactions ->
-                _transactions.value = transactions
+                // Update page with the new data
+                _transactions.run {
+                    value = (value ?: PagedList()).apply { setPageContents(page, transactions) }
+                }
             }
 
             _transactionsState.addSource(it.networkState) { state ->
