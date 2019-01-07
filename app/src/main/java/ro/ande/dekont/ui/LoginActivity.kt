@@ -39,7 +39,7 @@ class LoginActivity : BaseActivity(), Injectable {
         mViewModel.authToken.observe(this, LoginObserver())
 
         // Set up the login form.
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+        login_password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin()
                 return@OnEditorActionListener true
@@ -57,31 +57,31 @@ class LoginActivity : BaseActivity(), Injectable {
      */
     private fun attemptLogin() {
         // Reset errors.
-        email.error = null
-        password.error = null
+        login_email.error = null
+        login_password.error = null
 
         // Store values at the time of the login attempt.
-        val emailStr = email.text.toString()
-        val passwordStr = password.text.toString()
+        val emailStr = login_email.text.toString()
+        val passwordStr = login_password.text.toString()
 
         var cancel = false
         var focusView: View? = null
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
-            password.error = getString(R.string.error_invalid_password)
-            focusView = password
+            login_password.error = getString(R.string.error_invalid_password)
+            focusView = login_password
             cancel = true
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(emailStr)) {
-            email.error = getString(R.string.error_field_required)
-            focusView = email
+            login_email.error = getString(R.string.error_field_required)
+            focusView = login_email
             cancel = true
         } else if (!isEmailValid(emailStr)) {
-            email.error = getString(R.string.error_invalid_email)
-            focusView = email
+            login_email.error = getString(R.string.error_invalid_email)
+            focusView = login_email
             cancel = true
         }
 
@@ -118,7 +118,7 @@ class LoginActivity : BaseActivity(), Injectable {
             } else {
                 // Display an error popup
 //                Snackbar.make(this@LoginActivity.login_form, R.string.error_sign_in_failed, Snackbar.LENGTH_SHORT).show()
-                Snackbar.make(this@LoginActivity.login_form, tokenResource.message!!, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(this@LoginActivity.email_login_form, tokenResource.message!!, Snackbar.LENGTH_SHORT).show()
             }
 
             showProgress(false)
@@ -153,12 +153,12 @@ class LoginActivity : BaseActivity(), Injectable {
                     }
                 })
 
-        login_progress.animate()
+        progress_indicator.animate()
                 .setDuration(shortAnimTime)
                 .alpha((if (show) 1 else 0).toFloat())
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator) {
-                        login_progress.visibility = if (show) View.VISIBLE else View.GONE
+                        progress_indicator.visibility = if (show) View.VISIBLE else View.GONE
                     }
                 })
     }

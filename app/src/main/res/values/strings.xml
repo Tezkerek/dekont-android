@@ -5,7 +5,6 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_in_short">Sign in</string>
 
     <string name="error_server_unreachable">Unable to reach server.</string>
     <string name="error_internal_server_error">An internal server error has occurred.</string>
@@ -59,4 +58,6 @@
     <string name="general_error_prefix">Error: %s</string>
     <string name="error_loading_transactions_prefix">Error loading transactions: %s</string>
     <string name="error_loading_categories_prefix">Error loading categories: %s</string>
+    <string name="action_register">Sign up</string>
+    <string name="login_registration_forms_separator_text">or</string>
 </resources>
