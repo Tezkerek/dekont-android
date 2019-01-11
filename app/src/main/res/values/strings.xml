@@ -60,4 +60,5 @@
     <string name="error_loading_categories_prefix">Error loading categories: %s</string>
     <string name="action_register">Sign up</string>
     <string name="login_registration_forms_separator_text">or</string>
+    <string name="message_registration_successful">Account created! Signing you in...</string>
 </resources>

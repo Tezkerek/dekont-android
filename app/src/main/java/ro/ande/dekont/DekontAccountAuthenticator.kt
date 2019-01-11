@@ -7,7 +7,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import ro.ande.dekont.ui.LoginActivity
+import ro.ande.dekont.ui.AuthActivity
 
 class DekontAccountAuthenticator(val mContext: Context) : AbstractAccountAuthenticator(mContext) {
     override fun getAuthTokenLabel(p0: String?): String {
@@ -42,7 +42,7 @@ class DekontAccountAuthenticator(val mContext: Context) : AbstractAccountAuthent
     }
 
     override fun addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String, requiredFeatures: Array<String>, options: Bundle): Bundle {
-        val intent = Intent(mContext, LoginActivity::class.java)
+        val intent = Intent(mContext, AuthActivity::class.java)
 
         val bundle = Bundle()
         bundle.putParcelable(AccountManager.KEY_INTENT, intent)

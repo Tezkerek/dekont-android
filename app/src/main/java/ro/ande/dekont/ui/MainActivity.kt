@@ -115,7 +115,7 @@ class MainActivity : BaseActivity(), Injectable,
     }
 
     private fun redirectToLogin() {
-        val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
         finish()
     }

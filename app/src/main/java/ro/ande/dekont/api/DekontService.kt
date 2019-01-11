@@ -8,10 +8,14 @@ import retrofit2.http.*
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Token
 import ro.ande.dekont.vo.Transaction
+import ro.ande.dekont.vo.User
 
 interface DekontService {
     @POST("login/")
     fun login(@Body body: LoginRequest): LiveData<ApiResponse<Token>>
+
+    @POST("register/")
+    fun register(@Body body: RegistrationRequest): Deferred<ApiResponse<User>>
 
     @POST("logout/")
     fun logout(): LiveData<ApiResponse<Void>>

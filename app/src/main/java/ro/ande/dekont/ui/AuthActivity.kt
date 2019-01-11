@@ -16,8 +16,11 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
+import ro.ande.dekont.api.ApiErrorResponse
+import ro.ande.dekont.api.ApiErrors
+import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.di.Injectable
-import ro.ande.dekont.viewmodel.LoginViewModel
+import ro.ande.dekont.viewmodel.AuthViewModel
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Token
 import javax.inject.Inject
@@ -25,18 +28,30 @@ import javax.inject.Inject
 /**
  * A login screen that offers login via email/password.
  */
-class LoginActivity : BaseActivity(), Injectable {
+class AuthActivity : BaseActivity(), Injectable {
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var mViewModel: LoginViewModel
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LoginViewModel::class.java)
+        authViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AuthViewModel::class.java)
 
-        mViewModel.authToken.observe(this, LoginObserver())
+        authViewModel.authToken.observe(this, LoginObserver())
+
+        authViewModel.registrationResponse.observe(this, Observer { response ->
+            when (response) {
+                is ApiSuccessResponse -> {
+                    // Show message and attempt login
+                    Snackbar.make(this.registration_form, R.string.message_registration_successful, Snackbar.LENGTH_LONG).show()
+                    finishRegistration()
+                }
+                is ApiErrorResponse -> showRegistrationErrors(response.errors)
+            }
+            showRegistrationProgress(false)
+        })
 
         // Set up the login form.
         login_password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -48,10 +63,11 @@ class LoginActivity : BaseActivity(), Injectable {
         })
 
         email_sign_in_button.setOnClickListener { attemptLogin() }
+        register_button.setOnClickListener { attemptRegistration() }
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
+     * Attempts to sign in the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
@@ -92,12 +108,59 @@ class LoginActivity : BaseActivity(), Injectable {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true)
+            showLoginProgress(true)
 
-            // Generate a random number to identify device
-            val deviceName = "android-" + Math.ceil(Math.random() * 100)
+            authViewModel.attemptLogin(emailStr, passwordStr)
+        }
+    }
 
-            mViewModel.attemptLogin(emailStr, passwordStr, deviceName)
+    private fun attemptRegistration() {
+        // Reset errors.
+        registration_email.error = null
+        registration_password.error = null
+
+        // Store values at the time of the login attempt.
+        val emailStr = registration_email.text.toString()
+        val passwordStr = registration_password.text.toString()
+
+        var cancel = false
+        var focusView: View? = null
+
+        // Check for a valid password, if the user entered one.
+        if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
+            registration_password.error = getString(R.string.error_invalid_password)
+            focusView = registration_password
+            cancel = true
+        }
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(emailStr)) {
+            registration_email.error = getString(R.string.error_field_required)
+            focusView = registration_email
+            cancel = true
+        } else if (!isEmailValid(emailStr)) {
+            registration_email.error = getString(R.string.error_invalid_email)
+            focusView = registration_email
+            cancel = true
+        }
+
+        if (cancel) {
+            // Focus the field with the error
+            focusView?.requestFocus()
+        } else {
+            // Show a progress spinner, and attempt registration.
+            showRegistrationProgress(true)
+
+            authViewModel.attemptRegistration(emailStr, passwordStr)
+        }
+    }
+
+    private fun showRegistrationErrors(errors: ApiErrors) {
+        errors.detail?.let { Snackbar.make(this.registration_form, it, Snackbar.LENGTH_LONG).show() }
+        errors.nonFieldErrors.takeIf { it.isNotEmpty() }?.let { Snackbar.make(this.registration_form, it.first(), Snackbar.LENGTH_LONG).show() }
+        errors.fieldErrors.also { fieldErrors ->
+            fieldErrors["email"]?.let { this.registration_email.error = it.first() }
+            fieldErrors["password"]?.let { this.registration_password.error = it.first() }
         }
     }
 
@@ -117,11 +180,10 @@ class LoginActivity : BaseActivity(), Injectable {
                 finishLogin()
             } else {
                 // Display an error popup
-//                Snackbar.make(this@LoginActivity.login_form, R.string.error_sign_in_failed, Snackbar.LENGTH_SHORT).show()
-                Snackbar.make(this@LoginActivity.email_login_form, tokenResource.message!!, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(this@AuthActivity.email_login_form, tokenResource.message!!, Snackbar.LENGTH_SHORT).show()
             }
 
-            showProgress(false)
+            showLoginProgress(false)
         }
     }
 
@@ -135,16 +197,17 @@ class LoginActivity : BaseActivity(), Injectable {
         return password.length > 4
     }
 
+    private fun showLoginProgress(show: Boolean) = showProgress(show, this.email_sign_in_button)
+
+    private fun showRegistrationProgress(show: Boolean) = showProgress(show, this.register_button)
+
     /**
-     * Shows the progress UI and hides the login form.
+     * Shows the progress indicator and hides [viewToHide].
      */
-    private fun showProgress(show: Boolean) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
+    private fun showProgress(show: Boolean, viewToHide: View) {
         val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
-        email_sign_in_button.animate()
+        viewToHide.animate()
                 .setDuration(shortAnimTime)
                 .alpha((if (show) 0 else 1).toFloat())
                 .setListener(object : AnimatorListenerAdapter() {
@@ -167,6 +230,12 @@ class LoginActivity : BaseActivity(), Injectable {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun finishRegistration() {
+        // Attempt login
+        authViewModel.attemptLogin(this.registration_email.text.toString(), this.registration_password.text.toString())
+        showLoginProgress(true)
     }
 
     companion object {

@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ro.ande.dekont.repo.UserRepository
-import ro.ande.dekont.ui.LoginActivity
+import ro.ande.dekont.ui.AuthActivity
 import javax.inject.Inject
 
 class MainViewModel
@@ -31,9 +31,9 @@ class MainViewModel
         userRepository.logout().also {
             _isLoginValid.addSource(it) { response ->
                 // Delete token and invalidate login
-                mApplication.getSharedPreferences(LoginActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                mApplication.getSharedPreferences(AuthActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
                         .edit()
-                        .remove(LoginActivity.SHARED_PREFERENCES_TOKEN_KEY)
+                        .remove(AuthActivity.SHARED_PREFERENCES_TOKEN_KEY)
                         .apply()
 
                 _isLoginValid.value = false

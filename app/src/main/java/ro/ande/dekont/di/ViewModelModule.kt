@@ -10,8 +10,8 @@ import ro.ande.dekont.viewmodel.*
 @Module
 abstract class ViewModelModule {
     @Binds @IntoMap
-    @ViewModelKey(LoginViewModel::class)
-    internal abstract fun bindLoginViewModel(loginViewModel: LoginViewModel): ViewModel
+    @ViewModelKey(AuthViewModel::class)
+    internal abstract fun bindLoginViewModel(authViewModel: AuthViewModel): ViewModel
 
     @Binds @IntoMap
     @ViewModelKey(MainViewModel::class)

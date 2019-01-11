@@ -61,32 +61,28 @@ class ApiEmptyResponse<T> : ApiResponse<T>()
 class ApiSuccessResponse<T>(val body: T) : ApiResponse<T>()
 
 class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
-    private var detail: String? = null
-
-    private var nonFieldErrors: List<String>? = null
-    private val fieldErrors: Map<String, List<String>>
+    val errors: ApiErrors
 
     init {
         // Extract detail from the error response
-        if (errorResponse.has("detail")) {
-            detail = errorResponse.getString("detail")
-            errorResponse.remove("detail")
-        }
+        val detail = errorResponse.optString("detail", null)
+        if (detail != null) errorResponse.remove("detail")
 
-        val mutableFieldErrors: MutableMap<String, List<String>> = mutableMapOf()
-
-        for (key in errorResponse.keys()) {
-            val errorsList: List<String> = getListFromJsonArray(errorResponse.getJSONArray(key)!!)
-
-            if (key == "non_field_errors") {
-                // non_field_errors are stored in a separate variable
-                nonFieldErrors = errorsList
-            } else {
-                mutableFieldErrors[key] =  errorsList
+        // Extract non-field errors
+        val nonFieldErrors: List<String> = errorResponse.optJSONArray("non_field_errors").let {
+            if (it == null) listOf()
+            else {
+                errorResponse.remove("non_field_errors")
+                getListFromJsonArray(it)
             }
         }
 
-        fieldErrors = mutableFieldErrors
+        // Collect remaining errors in a map
+        val fieldErrors = errorResponse.keys().asSequence().associate { field ->
+            field to getListFromJsonArray<String>(errorResponse.getJSONArray(field))
+        }.toMap()
+
+        errors = ApiErrors(detail, fieldErrors, nonFieldErrors)
     }
 
     constructor(json: String?) : this(
@@ -98,22 +94,7 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
             }
     )
 
-    /**
-     * Retrieves the errors for the field. Returns null if no errors are found.
-     */
-    fun getFieldErrors(field: String): List<String>? {
-        return fieldErrors[field]
-    }
-
-    fun getErrorDetail(): String = detail ?: "Unknown error"
-
-    fun getNonFieldErrors(): List<String>? = nonFieldErrors
-
-    fun getFirstError(): String =
-            detail
-            ?: nonFieldErrors?.first()
-            ?: fieldErrors.entries.iterator().run { if (hasNext()) next().run { "$key: ${value.first()}" } else null }
-            ?: "No error response from server"
+    fun getFirstError(): String = errors.getFirstError()
 
     companion object {
         fun <T> createFromThrowable(throwable: Throwable): ApiErrorResponse<T> {
@@ -144,11 +125,20 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
                     ?: Pair(R.string.error_unknown, "Unknown error")
         }
 
-        private fun <T> getListFromJsonArray(array: JSONArray): List<T> {
+        /**
+         * Collects all of the [JSONArray]'s elements of type [T] into a list.
+         * @param T The type of the elements to collect
+         * @param array
+         */
+        private inline fun <reified T> getListFromJsonArray(array: JSONArray): List<T> {
             val mutableNonFieldErrors = mutableListOf<T>()
 
             for (i in 0 until array.length()) {
-                mutableNonFieldErrors.add(array.get(i) as T)
+                array.get(i).let {
+                    if (it is T) {
+                        mutableNonFieldErrors.add(array.get(i) as T)
+                    }
+                }
             }
 
             return mutableNonFieldErrors
@@ -164,4 +154,16 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
 
         private val malformedResponseMessage = createSingleMessage("Unknown error: server response is malformed")
     }
+}
+
+class ApiErrors(
+        val detail: String?,
+        val fieldErrors: Map<String, List<String>>,
+        val nonFieldErrors: List<String>
+) {
+    fun getFirstError(): String =
+            detail
+                    ?: nonFieldErrors.first()
+                    ?: fieldErrors.entries.iterator().run { if (hasNext()) next().run { "$key: ${value.first()}" } else null }
+                    ?: "No error response from server"
 }

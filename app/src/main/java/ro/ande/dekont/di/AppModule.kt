@@ -20,7 +20,7 @@ import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.db.CategoryDao
 import ro.ande.dekont.db.DekontDatabase
 import ro.ande.dekont.db.TransactionDao
-import ro.ande.dekont.ui.LoginActivity
+import ro.ande.dekont.ui.AuthActivity
 import ro.ande.dekont.util.*
 import java.io.IOException
 import java.util.*
@@ -35,7 +35,7 @@ class AppModule {
             OkHttpClient.Builder()
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .addInterceptor { chain ->
-                        val token = app.getSharedPreferences(LoginActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).getString("token", null)
+                        val token = app.getSharedPreferences(AuthActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).getString("token", null)
 
                         val originalRequest = chain.request()
 
