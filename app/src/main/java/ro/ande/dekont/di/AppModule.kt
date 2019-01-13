@@ -82,7 +82,7 @@ class AppModule {
     @Singleton
     fun provideDekontService(client: OkHttpClient, gson: Gson): DekontService =
             Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:8080")
+                    .baseUrl(DEKONT_BASE_URL)
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(LiveDataCallAdapterFactory())
@@ -113,4 +113,8 @@ class AppModule {
     @Provides
     @Singleton
     fun provideCategoryDao(db: DekontDatabase): CategoryDao = db.categoryDao()
+
+    companion object {
+        const val DEKONT_BASE_URL = "http://192.168.0.192:8080"
+    }
 }
