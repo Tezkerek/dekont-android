@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class UserRepository @Inject constructor(private val dekontService: DekontService) {
 
-    fun login(email: String, password: String, name: String): LiveData<ApiResponse<Token>> {
+    fun login(email: String, password: String, name: String): Deferred<ApiResponse<Token>> {
         val loginRequest = LoginRequest(email, password, name)
 
         return dekontService.login(loginRequest)

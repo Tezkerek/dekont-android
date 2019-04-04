@@ -12,7 +12,7 @@ import ro.ande.dekont.vo.User
 
 interface DekontService {
     @POST("login/")
-    fun login(@Body body: LoginRequest): LiveData<ApiResponse<Token>>
+    fun login(@Body body: LoginRequest): Deferred<ApiResponse<Token>>
 
     @POST("register/")
     fun register(@Body body: RegistrationRequest): Deferred<ApiResponse<User>>

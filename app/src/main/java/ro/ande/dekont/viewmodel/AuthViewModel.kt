@@ -34,9 +34,8 @@ class AuthViewModel
         // Generate a random number to identify device
         val deviceName = "android-" + Math.ceil(Math.random() * 100)
 
-        val login = userRepository.login(email, password, deviceName)
-
-        mediatorAuthToken.addSource(login) { response ->
+        coroutineScope.launch {
+            val response = userRepository.login(email, password, deviceName).await()
             when (response) {
                 is ApiSuccessResponse -> mediatorAuthToken.value = Resource.success(response.body)
                 is ApiErrorResponse -> mediatorAuthToken.value = Resource.error(response.getFirstError(), null)

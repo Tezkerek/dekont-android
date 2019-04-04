@@ -159,5 +159,11 @@ class MainActivity : BaseActivity(), Injectable,
 
     companion object {
         const val STATE_ARG_SHOW_ADD_FAB = "SHOW_ADD_FAB"
+        const val INTENT_ARG_START_SCREEN = "START_SCREEN"
+
+        enum class Screens {
+            TRANSACTION_LIST,
+
+        }
     }
 }
