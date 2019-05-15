@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import org.zakariya.stickyheaders.PagedLoadScrollListener
 import org.zakariya.stickyheaders.StickyHeaderLayoutManager
@@ -68,9 +67,8 @@ class TransactionListFragment : Fragment(), Injectable {
             this.transaction_list.adapter.also { adapter ->
                 adapter as TransactionRecyclerViewAdapter
 
-                adapter.mergeTransactions(transactions.getAll())
-
                 categoriesResource.data?.let { adapter.setCategories(it) }
+                adapter.mergeTransactions(transactions.getAll())
             }
         })
 
@@ -108,7 +106,6 @@ class TransactionListFragment : Fragment(), Injectable {
                         it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
                     }
 //            itemAnimator = SlideInLeftAnimator()
-
 
             addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager, 2) {
                 override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {

@@ -74,7 +74,7 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
         this.transactions.addAll(newTransactions)
 
         // Group the new transactions in sections
-        val newSections = newTransactions.groupBy { YearMonth.from(it.date) }.map { TransactionRecyclerViewAdapter.Section(it.key, it.value) }.toMutableList()
+        val newSections = newTransactions.groupBy { YearMonth.from(it.date) }.map { Section(it.key, it.value) }.toMutableList()
 
         // Merge existing sections, removing them from newSections after merge
         this.sections.forEach { section ->
@@ -150,7 +150,6 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
 
     fun setCategories(categories: List<Category>) {
         this.categories = categories
-        notifyAllSectionsDataSetChanged()
     }
 
     interface OnTransactionClickListener {
