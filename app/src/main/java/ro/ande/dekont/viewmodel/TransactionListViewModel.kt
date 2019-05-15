@@ -44,9 +44,18 @@ class TransactionListViewModel
     fun loadTransactions(page: Int, users: List<Int>? = null) {
         transactionRepository.loadTransactions(page, users).let {
             _transactions.addSource(it.data) { transactions ->
-                // Update page with the new data
-                _transactions.run {
-                    value = (value ?: PagedList()).apply { setPageContents(page, transactions) }
+                // When the page is empty, exhaust the source.
+                // This can happen if there is a network error,
+                // and the local source is exhausted.
+                if (transactions.isEmpty()) {
+                    _transactionsState.postValue(_transactionsState.value?.also { prevState ->
+                        NetworkState(prevState.state, prevState.message, isExhausted = true)
+                    })
+                } else {
+                    // Update page with the new data
+                    _transactions.run {
+                        value = (value ?: PagedList()).apply { setPageContents(page, transactions) }
+                    }
                 }
             }
 

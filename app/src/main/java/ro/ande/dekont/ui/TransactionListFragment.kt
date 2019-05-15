@@ -107,9 +107,10 @@ class TransactionListFragment : Fragment(), Injectable {
                         it.setOnTransactionClickListener { id -> onTransactionClickListener?.onTransactionClick(id) }
                         it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
                     }
-            itemAnimator = SlideInLeftAnimator()
+//            itemAnimator = SlideInLeftAnimator()
 
-            addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager) {
+
+            addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager, 2) {
                 override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
                     transactionsLoadCompleteNotifier = loadComplete
 
