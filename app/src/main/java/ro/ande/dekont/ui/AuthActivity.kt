@@ -227,7 +227,9 @@ class AuthActivity : BaseActivity(), Injectable {
     }
 
     private fun finishLogin() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra(MainActivity.INTENT_ARG_IS_POST_LOGIN, true)
+        }
         startActivity(intent)
         finish()
     }

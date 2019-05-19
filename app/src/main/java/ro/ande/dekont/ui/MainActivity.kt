@@ -31,13 +31,28 @@ class MainActivity : BaseActivity(), Injectable,
         setContentView(R.layout.activity_main)
         setSupportActionBar(this.toolbar)
 
+        /* UI Setup */
         // Show drawer button on toolbar
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu_white_24)
         }
+        setupNavigationDrawer()
 
-        // Setup navigation drawer
+        /* ViewModel Setup */
+        mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
+        setupLoginCheck()
+
+        // Post-login actions
+        if (this.intent.getBooleanExtra(INTENT_ARG_IS_POST_LOGIN, false)) executePostLogin()
+
+        // On first creation, add transaction list fragment
+        if (savedInstanceState == null) {
+            openTransactionList()
+        }
+    }
+
+    private fun setupNavigationDrawer() {
         this.nav_drawer.setNavigationItemSelectedListener { item ->
             item.isChecked = true
             this.drawer_layout.closeDrawers()
@@ -48,22 +63,19 @@ class MainActivity : BaseActivity(), Injectable,
 
             true
         }
+    }
 
-        mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
+    private fun setupLoginCheck() {
         mainViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
                 redirectToLogin()
-            } else {
-                Toast.makeText(this, "You are logged in", Toast.LENGTH_SHORT).show()
             }
         })
-
         mainViewModel.verifyLogin()
+    }
 
-        // On first creation, add transaction list fragment
-        if (savedInstanceState == null) {
-            openTransactionList()
-        }
+    private fun executePostLogin() {
+        
     }
 
     /** Show the transaction list fragment */
@@ -160,6 +172,7 @@ class MainActivity : BaseActivity(), Injectable,
     companion object {
         const val STATE_ARG_SHOW_ADD_FAB = "SHOW_ADD_FAB"
         const val INTENT_ARG_START_SCREEN = "START_SCREEN"
+        const val INTENT_ARG_IS_POST_LOGIN = "IS_POST_LOGIN"
 
         enum class Screens {
             TRANSACTION_LIST,

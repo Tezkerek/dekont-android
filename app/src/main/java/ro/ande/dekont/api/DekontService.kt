@@ -5,10 +5,7 @@ import kotlinx.coroutines.Deferred
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
-import ro.ande.dekont.vo.Category
-import ro.ande.dekont.vo.Token
-import ro.ande.dekont.vo.Transaction
-import ro.ande.dekont.vo.User
+import ro.ande.dekont.vo.*
 
 interface DekontService {
     @POST("login/")
@@ -22,6 +19,12 @@ interface DekontService {
 
     @GET("verify-authtoken/{token}")
     fun verifyAuthToken(@Path("token") token: String): Call<ResponseBody>
+
+    @GET("current-user/")
+    fun retrieveCurrentUser(): Deferred<ApiResponse<User>>
+
+    @GET("current-group/")
+    fun retrieveCurrentUserGroup(): Deferred<ApiResponse<Group>>
 
     @GET("transactions/")
     fun listTransactions(
