@@ -10,5 +10,5 @@ data class User(
         val username: String,
 
         @field:SerializedName("group")
-        val group: Int
+        val group: Int?
 )

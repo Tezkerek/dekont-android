@@ -13,6 +13,7 @@ import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.GroupSettingsViewModel
 import javax.inject.Inject
+import kotlinx.android.synthetic.main.fragment_group_settings.*
 
 class GroupSettingsFragment : Fragment(), Injectable {
     @Inject
@@ -36,10 +37,14 @@ class GroupSettingsFragment : Fragment(), Injectable {
                     showGroupJoinScreen()
                 }
             } else if (userResource.isError()) {
-                Snackbar.make()
+                Snackbar.make(this.group_settings_view!!, getString(R.string.general_error_prefix, userResource.message), Snackbar.LENGTH_LONG).show()
             }
 
         })
         groupSettingsViewModel.loadCurrentGroup()
+    }
+
+    private fun showGroupJoinScreen() {
+
     }
 }

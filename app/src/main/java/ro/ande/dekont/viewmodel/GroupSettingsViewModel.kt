@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ro.ande.dekont.repo.GroupRepository
-import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.repo.UserRepository
 import ro.ande.dekont.vo.Group
 import ro.ande.dekont.vo.Resource
