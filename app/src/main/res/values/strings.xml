@@ -61,4 +61,6 @@
     <string name="action_register">Sign up</string>
     <string name="login_registration_forms_separator_text">or</string>
     <string name="message_registration_successful">Account created! Signing you in...</string>
+    <string name="action_join_group">Join a group</string>
+    <string name="action_create_group">Create a group</string>
 </resources>

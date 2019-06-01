@@ -31,10 +31,12 @@ class GroupSettingsFragment : Fragment(), Injectable {
 
         groupSettingsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GroupSettingsViewModel::class.java)
 
+        setupButtonActions()
+
         groupSettingsViewModel.user.observe(this, Observer { userResource ->
             if (userResource.isSuccess()) {
                 if (userResource.data?.group == null) {
-                    showGroupJoinScreen()
+                    showOutsideGroupControls()
                 }
             } else if (userResource.isError()) {
                 Snackbar.make(this.group_settings_view!!, getString(R.string.general_error_prefix, userResource.message), Snackbar.LENGTH_LONG).show()
@@ -44,7 +46,11 @@ class GroupSettingsFragment : Fragment(), Injectable {
         groupSettingsViewModel.loadCurrentGroup()
     }
 
-    private fun showGroupJoinScreen() {
+    private fun showOutsideGroupControls() {
+        this.outside_group_controls.visibility = View.VISIBLE
+    }
 
+    private fun setupButtonActions() {
+        this.join_group_button.setOnClickListener {  }
     }
 }
