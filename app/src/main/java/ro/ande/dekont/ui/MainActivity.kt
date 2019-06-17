@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -59,6 +60,7 @@ class MainActivity : BaseActivity(), Injectable,
 
             when (item.itemId) {
                 R.id.nav_logout -> performLogout()
+                R.id.nav_group -> openGroupSettings()
             }
 
             true
@@ -92,11 +94,7 @@ class MainActivity : BaseActivity(), Injectable,
             it.putInt(TransactionDetailFragment.ARG_TRANSACTION_ID, id)
         }
 
-        supportFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
-                .add(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+        addAnimatedFragmentToBackStack(fragment)
     }
 
     /** Show the empty transaction editor fragment */
@@ -106,9 +104,17 @@ class MainActivity : BaseActivity(), Injectable,
         args.putInt(TransactionEditorFragment.ARG_ACTION, TransactionEditorFragment.ACTION_CREATE)
         fragment.arguments = args
 
+        addAnimatedFragmentToBackStack(fragment, TransactionEditorFragment.TAG)
+    }
+
+    private fun openGroupSettings() {
+        addAnimatedFragmentToBackStack(GroupSettingsFragment())
+    }
+
+    private fun addAnimatedFragmentToBackStack(fragment: Fragment, tag: String? = null) {
         supportFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
-                .add(R.id.fragment_container, fragment, TransactionEditorFragment.TAG)
+                .add(R.id.fragment_container, fragment, tag)
                 .addToBackStack(null)
                 .commit()
     }

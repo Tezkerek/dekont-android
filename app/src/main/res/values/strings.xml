@@ -63,4 +63,5 @@
     <string name="message_registration_successful">Account created! Signing you in...</string>
     <string name="action_join_group">Join a group</string>
     <string name="action_create_group">Create a group</string>
+    <string name="nav_item_group">Group</string>
 </resources>

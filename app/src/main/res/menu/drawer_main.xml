@@ -6,5 +6,9 @@
             android:icon="@drawable/ic_sign_out_white_48"
             android:title="@string/action_sign_out"
             android:checkable="false" />
+        <item
+            android:id="@+id/nav_group"
+            android:title="@string/nav_item_group"
+            android:checkable="false" />
     </group>
 </menu>

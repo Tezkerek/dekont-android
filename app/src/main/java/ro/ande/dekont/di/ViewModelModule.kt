@@ -29,6 +29,10 @@ abstract class ViewModelModule {
     @ViewModelKey(TransactionDetailViewModel::class)
     internal abstract fun bindTransactionDetailViewModel(transactionDetailViewModel: TransactionDetailViewModel): ViewModel
 
+    @Binds @IntoMap
+    @ViewModelKey(GroupSettingsViewModel::class)
+    internal abstract fun bindGroupSettingsViewModel(groupSettingsViewModel: GroupSettingsViewModel): ViewModel
+
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 }

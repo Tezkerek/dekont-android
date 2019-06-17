@@ -43,7 +43,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
             }
 
         })
-        groupSettingsViewModel.loadCurrentGroup()
+        groupSettingsViewModel.loadCurrentUser()
     }
 
     private fun showOutsideGroupControls() {
@@ -52,5 +52,9 @@ class GroupSettingsFragment : Fragment(), Injectable {
 
     private fun setupButtonActions() {
         this.join_group_button.setOnClickListener {  }
+    }
+
+    private fun showInviteCodeInputDialog() {
+
     }
 }

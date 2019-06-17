@@ -3,12 +3,14 @@
     android:id="@+id/group_settings_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/outside_group_controls">
+        android:id="@+id/outside_group_controls"
+        android:visibility="gone">
 
         <Button
             android:layout_width="match_parent"
