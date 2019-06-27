@@ -115,6 +115,6 @@ class AppModule {
     fun provideCategoryDao(db: DekontDatabase): CategoryDao = db.categoryDao()
 
     companion object {
-        const val DEKONT_BASE_URL = "http://192.168.0.194:8080"
+        const val DEKONT_BASE_URL = "http://192.168.0.192:8080"
     }
 }
