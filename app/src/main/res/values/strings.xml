@@ -65,4 +65,6 @@
     <string name="action_create_group">Create a group</string>
     <string name="nav_item_group">Group</string>
     <string name="action_retry">Retry</string>
+    <string name="hint_invite_code">Invite code</string>
+    <string name="action_join">Join</string>
 </resources>

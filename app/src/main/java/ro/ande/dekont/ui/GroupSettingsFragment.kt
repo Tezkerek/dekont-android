@@ -36,17 +36,19 @@ class GroupSettingsFragment : Fragment(), Injectable {
         this.view?.setOnTouchListener { _, _ -> true }
         setupButtonActions()
 
+        // Attempt to load the user information
         groupSettingsViewModel.user.observe(this, Observer { userResource ->
             toggleProgressBar(false)
 
             if (userResource.isSuccess()) {
+                // Check if user is in a group or not
                 if (userResource.data?.group == null) {
                     showOutsideGroupControls()
                 }
             } else if (userResource.isError()) {
                 activeSnackbar = Snackbar.make(this.group_settings_view!!, getString(R.string.general_error_prefix, userResource.message), Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.action_retry) { loadCurrentUser() }
-                activeSnackbar?.show()
+                        .also { it.show() }
             }
         })
         loadCurrentUser()
@@ -66,11 +68,11 @@ class GroupSettingsFragment : Fragment(), Injectable {
     }
 
     private fun setupButtonActions() {
-        this.join_group_button.setOnClickListener {  }
+        this.join_group_button.setOnClickListener { showInviteCodeInputScreen() }
     }
 
-    private fun showInviteCodeInputDialog() {
-
+    private fun showInviteCodeInputScreen() {
+        val codeInputView = View.inflate(this.activity, R.layout.view_group_join_code_input, activity?.findViewById(android.R.id.content))
     }
 
     override fun onDestroy() {
