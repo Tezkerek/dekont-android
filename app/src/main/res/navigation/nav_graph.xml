@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/transactionListFragment">
+
+    <fragment
+        android:id="@+id/transactionListFragment"
+        android:name="ro.ande.dekont.ui.TransactionListFragment"
+        android:label="fragment_transaction_list"
+        tools:layout="@layout/fragment_transaction_list" >
+        <action
+            android:id="@+id/action_transactionListFragment_to_transactionEditorFragment"
+            app:destination="@id/transactionEditorFragment" />
+        <action
+            android:id="@+id/action_transactionListFragment_to_transactionDetailFragment"
+            app:destination="@id/transactionDetailFragment" />
+        <action
+            android:id="@+id/action_transactionListFragment_to_authActivity"
+            app:destination="@id/authActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionEditorFragment"
+        android:name="ro.ande.dekont.ui.TransactionEditorFragment"
+        android:label="fragment_transaction_editor"
+        tools:layout="@layout/fragment_transaction_editor" />
+    <fragment
+        android:id="@+id/transactionDetailFragment"
+        android:name="ro.ande.dekont.ui.TransactionDetailFragment"
+        android:label="fragment_transaction_detail"
+        tools:layout="@layout/fragment_transaction_detail" />
+    <activity
+        android:id="@+id/authActivity"
+        android:name="ro.ande.dekont.ui.AuthActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
+</navigation>
