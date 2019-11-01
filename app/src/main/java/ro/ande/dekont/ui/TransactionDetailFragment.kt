@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_transaction_detail.*
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
@@ -23,6 +24,8 @@ import javax.inject.Inject
 class TransactionDetailFragment : Fragment(), Injectable {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var transactionDetailViewModel: TransactionDetailViewModel
+
+    private val navArgs: TransactionDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -40,7 +43,7 @@ class TransactionDetailFragment : Fragment(), Injectable {
 
         // Load transaction on launch
         if (transactionDetailViewModel.transaction.value == null) {
-            val id = arguments!!.getInt(ARG_TRANSACTION_ID)
+            val id = navArgs.transactionId
             transactionDetailViewModel.loadTransaction(id)
         }
     }

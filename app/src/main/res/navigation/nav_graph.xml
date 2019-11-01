@@ -24,12 +24,19 @@
         android:id="@+id/transactionEditorFragment"
         android:name="ro.ande.dekont.ui.TransactionEditorFragment"
         android:label="fragment_transaction_editor"
-        tools:layout="@layout/fragment_transaction_editor" />
+        tools:layout="@layout/fragment_transaction_editor" >
+        <argument
+            android:name="editorAction"
+            app:argType="ro.ande.dekont.ui.TransactionEditorFragment$Action" />
+    </fragment>
     <fragment
         android:id="@+id/transactionDetailFragment"
         android:name="ro.ande.dekont.ui.TransactionDetailFragment"
         android:label="fragment_transaction_detail"
-        tools:layout="@layout/fragment_transaction_detail" />
+        tools:layout="@layout/fragment_transaction_detail" >
+        <argument android:name="transactionId"
+            app:argType="integer" />
+    </fragment>
     <activity
         android:id="@+id/authActivity"
         android:name="ro.ande.dekont.ui.AuthActivity"

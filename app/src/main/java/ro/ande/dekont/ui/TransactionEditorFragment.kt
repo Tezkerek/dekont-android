@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_editor.*
 import org.threeten.bp.LocalDate
@@ -33,7 +35,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var editorViewModel: TransactionEditorViewModel
 
-    private lateinit var onEditFinishedListener: OnTransactionEditFinishedListener
+    private val navArgs: TransactionEditorFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -45,8 +47,6 @@ class TransactionEditorFragment : Fragment(), Injectable {
         super.onActivityCreated(savedInstanceState)
 
         editorViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionEditorViewModel::class.java)
-
-        onEditFinishedListener = this.activity as OnTransactionEditFinishedListener
 
         // Fake handle a touch event to prevent propagation to the fragment below
         // We use this instead of making the view clickable because the latter makes
@@ -70,7 +70,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
         // Observe result transaction
         editorViewModel.transactionResource.observe(this, Observer { transactionResource ->
             if (transactionResource.isSuccess()) {
-                finishEditing(transactionResource.data!!)
+                finishEditing()
             } else if (transactionResource.isError()) {
                 Snackbar.make(this.main_inputs_layout, transactionResource.message ?: "", Snackbar.LENGTH_SHORT).show()
             }
@@ -125,8 +125,8 @@ class TransactionEditorFragment : Fragment(), Injectable {
     }
 
     private fun saveTransaction() {
-        when (arguments?.getInt(ARG_ACTION)) {
-            ACTION_CREATE -> {
+        when (navArgs.editorAction) {
+            Action.CREATE -> {
                 val categoryId = this.category_spinner.selectedItemPosition.let {
                     // The first choice represents 'no category'
                     // Since the categories list begins at 0, we must subtract 1 from the position
@@ -142,6 +142,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
                         this.document_number_input.text.toString()
                 )
             }
+            Action.EDIT -> {}
         }
     }
 
@@ -154,21 +155,15 @@ class TransactionEditorFragment : Fragment(), Injectable {
         }
     }
 
-    private fun finishEditing(transaction: Transaction) {
-        this.onEditFinishedListener.onTransactionEditFinished(transaction)
+    private fun finishEditing() {
+        findNavController().popBackStack()
     }
 
-    /** Interface for transaction edit callback. */
-    interface OnTransactionEditFinishedListener {
-        fun onTransactionEditFinished(transaction: Transaction)
+    enum class Action {
+        CREATE, EDIT
     }
 
     companion object {
         const val TAG = "TRANSACTION_EDITOR_FRAGMENT"
-
-        const val ARG_ACTION = "ACTION"
-
-        const val ACTION_CREATE = 0
-        const val ACTION_EDIT = 1
     }
 }

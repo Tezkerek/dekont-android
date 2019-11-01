@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -28,9 +29,6 @@ class TransactionListFragment : Fragment(), Injectable {
 
     private var transactionsLoadCompleteNotifier: PagedLoadScrollListener.LoadCompleteNotifier? = null
 
-    private var onTransactionClickListener: OnTransactionClickListener? = null
-    private var onAddTransactionFabClickListener: OnAddTransactionFabClickListener? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_transaction_list, container, false)
@@ -41,18 +39,12 @@ class TransactionListFragment : Fragment(), Injectable {
 
         activity?.let {
             transactionListViewModel = ViewModelProviders.of(it, mViewModelFactory).get(TransactionListViewModel::class.java)
-
-            // Set transaction click listener
-            onTransactionClickListener = it as OnTransactionClickListener
-
-            // Set add transaction FAB click listener
-            onAddTransactionFabClickListener = it as OnAddTransactionFabClickListener
         }
 
         initTransactionList()
 
         // Callback for add transaction FAB
-        this.add_transaction_fab.setOnClickListener { onAddTransactionFabClickListener?.onAddTransactionFabClick(it as FloatingActionButton) }
+        this.add_transaction_fab.setOnClickListener { navigateToNewTransactionEditor() }
 
         // Observe transaction list
         transactionListViewModel.transactionsWithCategories.observe(this, Observer { pair ->
@@ -102,7 +94,7 @@ class TransactionListFragment : Fragment(), Injectable {
             layoutManager = stickyHeaderLayoutManager
             adapter = TransactionRecyclerViewAdapter()
                     .also {
-                        it.setOnTransactionClickListener { id -> onTransactionClickListener?.onTransactionClick(id) }
+                        it.setOnTransactionClickListener { id -> onTransactionClick(id) }
                         it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
                     }
 //            itemAnimator = SlideInLeftAnimator()
@@ -192,12 +184,13 @@ class TransactionListFragment : Fragment(), Injectable {
         Snackbar.make(this.transaction_list, fullMessage, Snackbar.LENGTH_INDEFINITE).show()
     }
 
-    interface OnTransactionClickListener {
-        fun onTransactionClick(id: Int)
+    private fun onTransactionClick(id: Int) {
+        // Navigate to TransactionDetail
+        findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToTransactionDetailFragment(id))
     }
 
-    interface OnAddTransactionFabClickListener {
-        fun onAddTransactionFabClick(fab: FloatingActionButton)
+    private fun navigateToNewTransactionEditor() {
+        findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToTransactionEditorFragment(TransactionEditorFragment.Action.CREATE))
     }
 
     companion object {

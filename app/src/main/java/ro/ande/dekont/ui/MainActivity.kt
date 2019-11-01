@@ -4,26 +4,20 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.MainViewModel
-import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), Injectable,
-        TransactionListFragment.OnTransactionClickListener,
-        TransactionListFragment.OnAddTransactionFabClickListener,
-        TransactionEditorFragment.OnTransactionEditFinishedListener {
+class MainActivity : BaseActivity(), Injectable {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mainViewModel: MainViewModel
 
@@ -46,11 +40,6 @@ class MainActivity : BaseActivity(), Injectable,
 
         // Post-login actions
         if (this.intent.getBooleanExtra(INTENT_ARG_IS_POST_LOGIN, false)) executePostLogin()
-
-        // On first creation, add transaction list fragment
-        if (savedInstanceState == null) {
-            openTransactionList()
-        }
     }
 
     private fun setupNavigationDrawer() {
@@ -80,13 +69,6 @@ class MainActivity : BaseActivity(), Injectable,
         
     }
 
-    /** Show the transaction list fragment */
-    private fun openTransactionList() {
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, TransactionListFragment(), TransactionListFragment.TAG)
-                .commit()
-    }
-
     /** Open a screen containing a detailed view of the transaction */
     private fun openTransactionDetail(id: Int) {
         val fragment = TransactionDetailFragment()
@@ -95,16 +77,6 @@ class MainActivity : BaseActivity(), Injectable,
         }
 
         addAnimatedFragmentToBackStack(fragment)
-    }
-
-    /** Show the empty transaction editor fragment */
-    private fun openNewTransactionEditor() {
-        val fragment = TransactionEditorFragment()
-        val args = Bundle()
-        args.putInt(TransactionEditorFragment.ARG_ACTION, TransactionEditorFragment.ACTION_CREATE)
-        fragment.arguments = args
-
-        addAnimatedFragmentToBackStack(fragment, TransactionEditorFragment.TAG)
     }
 
     private fun openGroupSettings() {
@@ -117,19 +89,6 @@ class MainActivity : BaseActivity(), Injectable,
                 .add(R.id.fragment_container, fragment, tag)
                 .addToBackStack(null)
                 .commit()
-    }
-
-    override fun onTransactionClick(id: Int) {
-        openTransactionDetail(id)
-    }
-
-    override fun onAddTransactionFabClick(fab: FloatingActionButton) {
-        openNewTransactionEditor()
-    }
-
-    override fun onTransactionEditFinished(transaction: Transaction) {
-        // Go back to the list and refresh it
-        supportFragmentManager.popBackStack()
     }
 
     private fun redirectToLogin() {
