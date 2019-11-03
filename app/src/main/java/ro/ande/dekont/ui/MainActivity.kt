@@ -5,10 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.onNavDestinationSelected
+import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import ro.ande.dekont.BaseActivity
@@ -20,19 +24,22 @@ import javax.inject.Inject
 class MainActivity : BaseActivity(), Injectable {
     @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(this.toolbar)
 
+        navController = findNavController(R.id.main_nav_host)
+
         /* UI Setup */
         // Show drawer button on toolbar
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_white_24)
-        }
-        setupNavigationDrawer()
+//        supportActionBar?.apply {
+//            setDisplayHomeAsUpEnabled(true)
+//            setHomeAsUpIndicator(R.drawable.ic_menu_white_24)
+//        }
+        setupNavigationUI()
 
         /* ViewModel Setup */
         mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
@@ -42,17 +49,21 @@ class MainActivity : BaseActivity(), Injectable {
         if (this.intent.getBooleanExtra(INTENT_ARG_IS_POST_LOGIN, false)) executePostLogin()
     }
 
-    private fun setupNavigationDrawer() {
+    private fun setupNavigationUI() {
+        // Setup toolbar and drawer
+        val appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
+        nav_drawer.setupWithNavController(navController)
+        toolbar.setupWithNavController(navController, appBarConfiguration)
+
         this.nav_drawer.setNavigationItemSelectedListener { item ->
             item.isChecked = true
             this.drawer_layout.closeDrawers()
 
             when (item.itemId) {
                 R.id.nav_logout -> performLogout()
-                R.id.nav_group -> openGroupSettings()
             }
 
-            true
+            item.onNavDestinationSelected(navController)
         }
     }
 
@@ -67,28 +78,6 @@ class MainActivity : BaseActivity(), Injectable {
 
     private fun executePostLogin() {
         
-    }
-
-    /** Open a screen containing a detailed view of the transaction */
-    private fun openTransactionDetail(id: Int) {
-        val fragment = TransactionDetailFragment()
-        fragment.arguments = Bundle().also {
-            it.putInt(TransactionDetailFragment.ARG_TRANSACTION_ID, id)
-        }
-
-        addAnimatedFragmentToBackStack(fragment)
-    }
-
-    private fun openGroupSettings() {
-        addAnimatedFragmentToBackStack(GroupSettingsFragment())
-    }
-
-    private fun addAnimatedFragmentToBackStack(fragment: Fragment, tag: String? = null) {
-        supportFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
-                .add(R.id.fragment_container, fragment, tag)
-                .addToBackStack(null)
-                .commit()
     }
 
     private fun redirectToLogin() {
@@ -110,14 +99,13 @@ class MainActivity : BaseActivity(), Injectable {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+        when (item.itemId) {
             android.R.id.home -> {
                 // Open drawer when pressing the menu button
                 this.drawer_layout.openDrawer(GravityCompat.START)
-                true
             }
-            else -> super.onOptionsItemSelected(item)
         }
+        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_transactionListFragment_to_authActivity"
             app:destination="@id/authActivity" />
+        <action
+            android:id="@+id/action_transactionListFragment_to_groupSettingsFragment"
+            app:destination="@id/groupSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionEditorFragment"
@@ -42,4 +45,8 @@
         android:name="ro.ande.dekont.ui.AuthActivity"
         android:label="activity_login"
         tools:layout="@layout/activity_login" />
+    <fragment
+        android:id="@+id/groupSettingsFragment"
+        android:name="ro.ande.dekont.ui.GroupSettingsFragment"
+        android:label="GroupSettingsFragment" />
 </navigation>

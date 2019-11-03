@@ -7,7 +7,7 @@
             android:title="@string/action_sign_out"
             android:checkable="false" />
         <item
-            android:id="@+id/nav_group"
+            android:id="@id/groupSettingsFragment"
             android:title="@string/nav_item_group"
             android:checkable="false" />
     </group>
