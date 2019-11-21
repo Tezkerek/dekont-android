@@ -22,7 +22,7 @@ class GroupRepository @Inject constructor(
 
         appExecutors.networkIO().doAsync {
             runBlocking {
-                val response = dekontService.retrieveCurrentUserGroup().await()
+                val response = dekontService.retrieveCurrentUserGroup()
                 when (response) {
                     is ApiSuccessResponse -> {
                         groupLiveData.postValue(Resource.success(response.body))

@@ -20,3 +20,8 @@ class RegistrationRequest(
         @field:SerializedName("reporting_currency")
         val reportingCurrency: Currency?
 )
+
+class GroupJoinRequest(
+        @field:SerializedName("invite_code")
+        val inviteCode: String
+)

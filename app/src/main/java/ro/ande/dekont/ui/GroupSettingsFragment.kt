@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -43,7 +44,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
             if (userResource.isSuccess()) {
                 // Check if user is in a group or not
                 if (userResource.data?.group == null) {
-                    showOutsideGroupControls()
+                    showNotInGroupControls()
                 }
             } else if (userResource.isError()) {
                 activeSnackbar = Snackbar.make(this.group_settings_view!!, getString(R.string.general_error_prefix, userResource.message), Snackbar.LENGTH_INDEFINITE)
@@ -63,8 +64,8 @@ class GroupSettingsFragment : Fragment(), Injectable {
         this.progress_bar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun showOutsideGroupControls() {
-        this.outside_group_controls.visibility = View.VISIBLE
+    private fun showNotInGroupControls() {
+        this.not_in_group_controls.visibility = View.VISIBLE
     }
 
     private fun setupButtonActions() {
@@ -72,7 +73,9 @@ class GroupSettingsFragment : Fragment(), Injectable {
     }
 
     private fun showInviteCodeInputScreen() {
-        val codeInputView = View.inflate(this.activity, R.layout.view_group_join_code_input, activity?.findViewById(android.R.id.content))
+        val codeInputView = View.inflate(this.activity, R.layout.view_group_join_code_input, this.not_in_group_controls)
+
+        codeInputView.findViewById<Button>(R.id.invite_code_submit_button).setOnClickListener { view -> }
     }
 
     override fun onDestroy() {

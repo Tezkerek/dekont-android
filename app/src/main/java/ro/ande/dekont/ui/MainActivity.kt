@@ -34,15 +34,11 @@ class MainActivity : BaseActivity(), Injectable {
         navController = findNavController(R.id.main_nav_host)
 
         /* UI Setup */
-        // Show drawer button on toolbar
-//        supportActionBar?.apply {
-//            setDisplayHomeAsUpEnabled(true)
-//            setHomeAsUpIndicator(R.drawable.ic_menu_white_24)
-//        }
         setupNavigationUI()
 
         /* ViewModel Setup */
         mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
+
         setupLoginCheck()
 
         // Post-login actions
@@ -77,7 +73,7 @@ class MainActivity : BaseActivity(), Injectable {
     }
 
     private fun executePostLogin() {
-        
+        // TODO Open group settings here, if user is not already in a group
     }
 
     private fun redirectToLogin() {
