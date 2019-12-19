@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import kotlinx.coroutines.Deferred
+import ro.ande.dekont.api.ApiResponse
 import ro.ande.dekont.repo.GroupRepository
 import ro.ande.dekont.repo.UserRepository
 import ro.ande.dekont.vo.Group
@@ -37,4 +39,7 @@ class GroupSettingsViewModel
             _user.value = user
         }
     }
+
+    fun joinGroup(inviteCode: String): Deferred<ApiResponse<Void>> =
+            groupRepository.joinGroup(inviteCode)
 }

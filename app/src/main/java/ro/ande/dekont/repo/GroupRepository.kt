@@ -1,13 +1,15 @@
 package ro.ande.dekont.repo
 
+import android.provider.Settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.doAsync
 import ro.ande.dekont.AppExecutors
-import ro.ande.dekont.api.ApiErrorResponse
-import ro.ande.dekont.api.ApiSuccessResponse
-import ro.ande.dekont.api.DekontService
+import ro.ande.dekont.api.*
 import ro.ande.dekont.vo.Group
 import ro.ande.dekont.vo.Resource
 import javax.inject.Inject
@@ -36,4 +38,7 @@ class GroupRepository @Inject constructor(
 
         return groupLiveData
     }
+
+    fun joinGroup(inviteCode: String): Deferred<ApiResponse<Void>> =
+            dekontService.joinGroup(GroupJoinRequest(inviteCode))
 }

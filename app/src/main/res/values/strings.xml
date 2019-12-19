@@ -20,10 +20,6 @@
     <string name="dialog_negative_login_redirect">No</string>
     <string name="dialog_message_confirm_transaction_deletion">Delete this transaction?</string>
 
-    <!-- Common dialog action names -->
-    <string name="dialog_action_confirm">Confirm</string>
-    <string name="dialog_action_cancel">Cancel</string>
-
     <string name="title_activity_transactions">Transactions</string>
     <string name="error_missing_internet_connection">No internet connection</string>
     <string name="error_network">A network error has occurred.</string>
@@ -38,6 +34,8 @@
 
     <!-- Common action names -->
     <string name="action_save">Save</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_sign_out">Sign out</string>
     <string name="action_collapse_expand">Collapse/Expand</string>
@@ -60,7 +58,7 @@
     <string name="error_loading_categories_prefix">Error loading categories: %s</string>
     <string name="action_register">Sign up</string>
     <string name="login_registration_forms_separator_text">or</string>
-    <string name="message_registration_successful">Account created! Signing you in...</string>
+    <string name="message_registration_successful">Account created! Signing you in…</string>
     <string name="action_join_group">Join a group</string>
     <string name="action_create_group">Create a group</string>
     <string name="nav_item_group">Group</string>

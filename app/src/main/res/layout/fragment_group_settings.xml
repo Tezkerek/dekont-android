@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/not_in_group_controls"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <Button
             android:layout_width="match_parent"

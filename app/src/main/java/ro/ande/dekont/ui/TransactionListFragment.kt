@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import org.zakariya.stickyheaders.PagedLoadScrollListener
@@ -146,7 +145,7 @@ class TransactionListFragment : Fragment(), Injectable {
                             // Show delete confirmation dialog
                             AlertDialog.Builder(this.activity)
                                     .setMessage(R.string.dialog_message_confirm_transaction_deletion)
-                                    .setPositiveButton(R.string.dialog_action_confirm) { confirmationDialog, _ ->
+                                    .setPositiveButton(R.string.action_confirm) { confirmationDialog, _ ->
                                         // TODO Progress indicator (maybe on toolbar)
                                         transactionListViewModel.deleteTransaction(transactionId).observe(this, Observer { deletion ->
                                             if (deletion.isSuccess()) {
@@ -162,7 +161,7 @@ class TransactionListFragment : Fragment(), Injectable {
                                         })
                                         confirmationDialog.dismiss()
                                     }
-                                    .setNegativeButton(R.string.dialog_action_cancel) { confirmationDialog, _ ->
+                                    .setNegativeButton(R.string.action_cancel) { confirmationDialog, _ ->
                                         confirmationDialog.dismiss()
                                     }
                                     .create()

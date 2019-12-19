@@ -89,7 +89,7 @@ class MainActivity : BaseActivity(), Injectable {
                     mainViewModel.logout()
                     dialog.dismiss()
                 }
-                .setNegativeButton(R.string.dialog_action_cancel) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
                 .create()
                 .show()
     }
