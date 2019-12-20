@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
-import android.widget.Toast
 import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -71,7 +70,7 @@ class AppModule {
                         val response = chain.proceed(request)
 
                         if (response.code() == 500) {
-                            Toast.makeText(app, R.string.error_internal_server_error, Toast.LENGTH_SHORT).show()
+//                            Toast.makeText(app, R.string.error_internal_server_error, Toast.LENGTH_SHORT).show()
                         }
 
                         response
@@ -115,6 +114,6 @@ class AppModule {
     fun provideCategoryDao(db: DekontDatabase): CategoryDao = db.categoryDao()
 
     companion object {
-        const val DEKONT_BASE_URL = "http://192.168.43.101:8080"
+        const val DEKONT_BASE_URL = "http://192.168.7.109:8080"
     }
 }

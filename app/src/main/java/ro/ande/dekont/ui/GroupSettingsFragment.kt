@@ -63,7 +63,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
     }
 
     private fun loadCurrentUser() {
-//        toggleNotInGroupControls(false)
+        toggleNotInGroupControls(false)
         toggleProgressBar(true)
         groupSettingsViewModel.loadCurrentUser()
     }
