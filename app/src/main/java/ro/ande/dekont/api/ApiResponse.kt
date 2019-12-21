@@ -163,7 +163,7 @@ class ApiErrors(
 ) {
     fun getFirstError(): String =
             detail
-                    ?: nonFieldErrors.first()
+                    ?: nonFieldErrors.firstOrNull()
                     ?: fieldErrors.entries.iterator().run { if (hasNext()) next().run { "$key: ${value.first()}" } else null }
                     ?: "No error response from server"
 }
