@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/not_in_group_controls"
+        style="?android:buttonBarStyle"
         android:visibility="visible">
 
         <Button
@@ -24,6 +25,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/join_group_button"
+            style="?android:buttonBarButtonStyle"
             android:text="@string/action_join_group" />
 
         <Button
@@ -31,6 +33,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/create_group_button"
+            style="?android:buttonBarButtonStyle"
             android:text="@string/action_create_group" />
     </LinearLayout>
 
