@@ -65,16 +65,6 @@ class AppModule {
 
                         chain.proceed(chain.request())
                     }
-                    .addInterceptor { chain: Interceptor.Chain ->
-                        val request = chain.request()
-                        val response = chain.proceed(request)
-
-                        if (response.code() == 500) {
-//                            Toast.makeText(app, R.string.error_internal_server_error, Toast.LENGTH_SHORT).show()
-                        }
-
-                        response
-                    }
                     .build()
 
     @Provides
