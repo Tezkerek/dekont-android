@@ -52,6 +52,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
                 // Check if user is in a group or not
                 if (userResource.data?.group == null) {
                     toggleNotInGroupControls(true)
+                    toggleGroupScreen(false)
                 } else {
                     toggleNotInGroupControls(false)
                     toggleGroupScreen(true)
@@ -66,7 +67,6 @@ class GroupSettingsFragment : Fragment(), Injectable {
     }
 
     private fun loadCurrentUser() {
-        toggleNotInGroupControls(false)
         toggleProgressBar(true)
         groupSettingsViewModel.loadCurrentUser()
     }
@@ -80,7 +80,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
     }
 
     private fun toggleGroupScreen(show: Boolean) {
-
+        this.group_screen.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun setupButtonActions() {
