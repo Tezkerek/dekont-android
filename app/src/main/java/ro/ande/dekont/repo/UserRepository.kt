@@ -17,6 +17,9 @@ class UserRepository @Inject constructor(
         private val dekontService: DekontService
 ) {
 
+    private val _currentUser = MutableLiveData<Resource<User>>()
+    val currentUser: LiveData<Resource<User>> = _currentUser
+
     fun login(email: String, password: String, name: String): Deferred<ApiResponse<Token>> {
         val loginRequest = LoginRequest(email, password, name)
 
@@ -32,23 +35,15 @@ class UserRepository @Inject constructor(
     fun verifyToken(token: Token) = verifyToken(token.token)
     fun verifyToken(token: String) = dekontService.verifyAuthToken(token)
 
-    fun retrieveCurrentUser(): LiveData<Resource<User>> {
-        val userLiveData: MutableLiveData<Resource<User>> = MutableLiveData()
-
-        appExecutors.networkIO().doAsync {
-            runBlocking {
-                val response = dekontService.retrieveCurrentUser().await()
-                when (response) {
-                    is ApiSuccessResponse -> {
-                        userLiveData.postValue(Resource.success(response.body))
-                    }
-                    is ApiErrorResponse -> {
-                        userLiveData.postValue(Resource.error(response.getFirstError(), null))
-                    }
-                }
+    suspend fun fetchCurrentUser() {
+        val response = dekontService.retrieveCurrentUser()
+        when (response) {
+            is ApiSuccessResponse -> {
+                _currentUser.value = Resource.success(response.body)
+            }
+            is ApiErrorResponse -> {
+                _currentUser.value = Resource.error(response.getFirstError(), null)
             }
         }
-
-        return userLiveData
     }
 }

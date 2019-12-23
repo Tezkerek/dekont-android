@@ -9,7 +9,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.threeten.bp.LocalDate
 import retrofit2.Retrofit
@@ -75,6 +74,7 @@ class AppModule {
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(LiveDataCallAdapterFactory())
+                    .addCallAdapterFactory(ApiResponseCallAdapterFactory())
                     .addCallAdapterFactory(CoroutineCallAdapterFactory())
                     .build()
                     .create(DekontService::class.java)
@@ -104,6 +104,6 @@ class AppModule {
     fun provideCategoryDao(db: DekontDatabase): CategoryDao = db.categoryDao()
 
     companion object {
-        const val DEKONT_BASE_URL = "http://192.168.7.109:8080"
+        const val DEKONT_BASE_URL = "http://192.168.7.185:8080"
     }
 }

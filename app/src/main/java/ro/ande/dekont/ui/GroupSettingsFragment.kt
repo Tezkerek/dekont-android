@@ -48,6 +48,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
         groupSettingsViewModel.user.observe(this, Observer { userResource ->
             toggleProgressBar(false)
 
+
             if (userResource.isSuccess()) {
                 // Check if user is in a group or not
                 if (userResource.data?.group == null) {

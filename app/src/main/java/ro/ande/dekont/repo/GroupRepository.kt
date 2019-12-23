@@ -1,13 +1,10 @@
 package ro.ande.dekont.repo
 
-import android.provider.Settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.Dispatchers
 import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.*
 import ro.ande.dekont.vo.Group
@@ -19,24 +16,15 @@ class GroupRepository @Inject constructor(
         private val dekontService: DekontService
 ) {
 
-    fun retrieveCurrentUserGroup(): LiveData<Resource<Group>> {
-        val groupLiveData: MutableLiveData<Resource<Group>> = MutableLiveData()
+    private val _currentUserGroup = MutableLiveData<Resource<Group>>()
+    val currentUserGroup: LiveData<Resource<Group>> = _currentUserGroup
 
-        appExecutors.networkIO().doAsync {
-            runBlocking {
-                val response = dekontService.retrieveCurrentUserGroup()
-                when (response) {
-                    is ApiSuccessResponse -> {
-                        groupLiveData.postValue(Resource.success(response.body))
-                    }
-                    is ApiErrorResponse -> {
-                        groupLiveData.postValue(Resource.error(response.getFirstError(), null))
-                    }
-                }
-            }
+    suspend fun fetchCurrentUserGroup() {
+        val response = dekontService.retrieveCurrentUserGroup()
+        when (response) {
+            is ApiSuccessResponse -> _currentUserGroup.value = Resource.success(response.body)
+            is ApiErrorResponse -> _currentUserGroup.value = Resource.error(response.getFirstError(), null)
         }
-
-        return groupLiveData
     }
 
     fun joinGroup(inviteCode: String): Deferred<ApiResponse<Void>> =

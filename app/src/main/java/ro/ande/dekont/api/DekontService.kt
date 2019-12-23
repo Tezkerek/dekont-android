@@ -21,7 +21,7 @@ interface DekontService {
     fun verifyAuthToken(@Path("token") token: String): Call<ResponseBody>
 
     @GET("users/0/")
-    fun retrieveCurrentUser(): Deferred<ApiResponse<User>>
+    suspend fun retrieveCurrentUser(): ApiResponse<User>
 
     @POST("users/0/group/")
     fun joinGroup(@Body inviteCode: GroupJoinRequest): Deferred<ApiResponse<Void>>

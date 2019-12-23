@@ -45,7 +45,7 @@ class CoroutineCallAdapterFactory : CallAdapter.Factory() {
                 throw IllegalStateException(
                         "Response must be parameterized as Response<Foo> or Response<out Foo>")
             }
-            ApiResponseCallAdapter<Any>(getParameterUpperBound(0, responseType))
+            DeferredApiResponseCallAdapter<Any>(getParameterUpperBound(0, responseType))
         } else {
             BodyCallAdapter<Any>(responseType)
         }
@@ -85,7 +85,7 @@ private class BodyCallAdapter<T>(
     }
 }
 
-private class ApiResponseCallAdapter<T>(
+private class DeferredApiResponseCallAdapter<T>(
         private val responseType: Type
 ) : CallAdapter<T, Deferred<ApiResponse<T>>> {
 
