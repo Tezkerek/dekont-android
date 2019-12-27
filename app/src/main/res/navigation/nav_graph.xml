@@ -12,10 +12,14 @@
         tools:layout="@layout/fragment_transaction_list" >
         <action
             android:id="@+id/action_transactionListFragment_to_transactionEditorFragment"
-            app:destination="@id/transactionEditorFragment" />
+            app:destination="@id/transactionEditorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_transactionListFragment_to_transactionDetailFragment"
-            app:destination="@id/transactionDetailFragment" />
+            app:destination="@id/transactionDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_transactionListFragment_to_authActivity"
             app:destination="@id/authActivity" />

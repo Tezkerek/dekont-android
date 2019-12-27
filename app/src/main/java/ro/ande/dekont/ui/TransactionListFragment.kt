@@ -99,7 +99,6 @@ class TransactionListFragment : Fragment(), Injectable {
                         it.setOnTransactionClickListener { id -> onTransactionClick(id) }
                         it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
                     }
-//            itemAnimator = SlideInLeftAnimator()
 
             addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager, 2) {
                 override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
