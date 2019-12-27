@@ -1,10 +1,7 @@
 package ro.ande.dekont.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,6 +14,7 @@ import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Token
 import ro.ande.dekont.vo.User
 import javax.inject.Inject
+import kotlin.math.ceil
 
 class AuthViewModel
 @Inject constructor(app: Application, private val userRepository: UserRepository) : AndroidViewModel(app) {
@@ -32,10 +30,10 @@ class AuthViewModel
 
     fun attemptLogin(email: String, password: String) {
         // Generate a random number to identify device
-        val deviceName = "android-" + Math.ceil(Math.random() * 100)
+        val deviceName = "android-" + ceil(Math.random() * 100)
 
-        coroutineScope.launch {
-            val response = userRepository.login(email, password, deviceName).await()
+        viewModelScope.launch {
+            val response = userRepository.login(email, password, deviceName)
             when (response) {
                 is ApiSuccessResponse -> mediatorAuthToken.value = Resource.success(response.body)
                 is ApiErrorResponse -> mediatorAuthToken.value = Resource.error(response.getFirstError(), null)
@@ -44,9 +42,8 @@ class AuthViewModel
     }
 
     fun attemptRegistration(email: String, password: String) {
-        coroutineScope.launch {
-            val response = userRepository.register(email, password).await()
-
+        viewModelScope.launch {
+            val response = userRepository.register(email, password)
             _registrationResponse.value = response
         }
     }

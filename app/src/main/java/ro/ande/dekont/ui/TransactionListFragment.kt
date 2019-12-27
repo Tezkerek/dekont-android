@@ -46,7 +46,7 @@ class TransactionListFragment : Fragment(), Injectable {
         this.add_transaction_fab.setOnClickListener { navigateToNewTransactionEditor() }
 
         // Observe transaction list
-        transactionListViewModel.transactionsWithCategories.observe(this, Observer { pair ->
+        transactionListViewModel.transactionsWithCategories.observe(viewLifecycleOwner, Observer { pair ->
             val transactions = pair.first
             val categoriesResource = pair.second
 
@@ -64,17 +64,20 @@ class TransactionListFragment : Fragment(), Injectable {
         })
 
         // Observe transactions network state
-        transactionListViewModel.transactionsState.observe(this, Observer { state ->
-            // On success or error, notify load complete
-            if (state.state != NetworkState.Status.LOADING) {
-                transactionsLoadCompleteNotifier?.notifyLoadComplete()
-                transactionListViewModel.transactionsLastLoadedPage++
+        transactionListViewModel.transactionsState.observe(viewLifecycleOwner, Observer { state: NetworkState? ->
+            // Sometimes state is null after login, no idea why
+            if (state != null) {
+                // On success or error, notify load complete
+                if (state.state != NetworkState.Status.LOADING) {
+                    transactionsLoadCompleteNotifier?.notifyLoadComplete()
+                    transactionListViewModel.transactionsLastLoadedPage++
+                }
+
+                if (state.state == NetworkState.Status.ERROR) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
+
+                // Stop loading if data has been exhausted
+                if (state.isExhausted) transactionsLoadCompleteNotifier?.notifyLoadExhausted()
             }
-
-            if (state.state == NetworkState.Status.ERROR) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
-
-            // Stop loading if data has been exhausted
-            if (state.isExhausted) transactionsLoadCompleteNotifier?.notifyLoadExhausted()
         })
 
         // Load transactions on launch
@@ -147,7 +150,7 @@ class TransactionListFragment : Fragment(), Injectable {
                                     .setMessage(R.string.dialog_message_confirm_transaction_deletion)
                                     .setPositiveButton(R.string.action_confirm) { confirmationDialog, _ ->
                                         // TODO Progress indicator (maybe on toolbar)
-                                        transactionListViewModel.deleteTransaction(transactionId).observe(this, Observer { deletion ->
+                                        transactionListViewModel.deleteTransaction(transactionId).observe(viewLifecycleOwner, Observer { deletion ->
                                             if (deletion.isSuccess()) {
                                                 // Remove item manually from list
                                                 this.transaction_list.adapter.let { adapter ->

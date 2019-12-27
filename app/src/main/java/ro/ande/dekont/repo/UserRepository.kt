@@ -3,8 +3,6 @@ package ro.ande.dekont.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.anko.doAsync
 import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.*
 import ro.ande.dekont.vo.Resource
@@ -20,20 +18,14 @@ class UserRepository @Inject constructor(
     private val _currentUser = MutableLiveData<Resource<User>>()
     val currentUser: LiveData<Resource<User>> = _currentUser
 
-    fun login(email: String, password: String, name: String): Deferred<ApiResponse<Token>> {
-        val loginRequest = LoginRequest(email, password, name)
+    suspend fun login(email: String, password: String, deviceName: String): ApiResponse<Token> =
+            dekontService.login(LoginRequest(email, password, deviceName))
 
-        return dekontService.login(loginRequest)
-    }
-
-    fun register(email: String, password: String): Deferred<ApiResponse<User>> {
+    suspend fun register(email: String, password: String): ApiResponse<User> {
         return dekontService.register(RegistrationRequest(email, password, null))
     }
 
-    fun logout(): LiveData<ApiResponse<Void>> = dekontService.logout()
-
-    fun verifyToken(token: Token) = verifyToken(token.token)
-    fun verifyToken(token: String) = dekontService.verifyAuthToken(token)
+    suspend fun logout(): ApiResponse<Void> = dekontService.logout()
 
     suspend fun fetchCurrentUser() {
         val response = dekontService.retrieveCurrentUser()

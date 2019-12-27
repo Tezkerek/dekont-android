@@ -27,6 +27,6 @@ class GroupRepository @Inject constructor(
         }
     }
 
-    fun joinGroup(inviteCode: String): Deferred<ApiResponse<Void>> =
+    suspend fun joinGroup(inviteCode: String): ApiResponse<Void> =
             dekontService.joinGroup(GroupJoinRequest(inviteCode))
 }

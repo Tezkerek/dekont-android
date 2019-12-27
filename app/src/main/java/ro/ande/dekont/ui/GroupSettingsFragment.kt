@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_group_settings.*
 import kotlinx.coroutines.CoroutineScope
@@ -107,8 +108,8 @@ class GroupSettingsFragment : Fragment(), Injectable {
             val inviteCodeEditText = codeInputView.findViewById<EditText>(R.id.invite_code_input)
             val inviteCode = inviteCodeEditText.text.toString()
             toggleProgressBar(true)
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = groupSettingsViewModel.joinGroup(inviteCode).await()
+            lifecycleScope.launch {
+                val response = groupSettingsViewModel.joinGroup(inviteCode)
                 withContext(Dispatchers.Main) {
                     when (response) {
                         is ApiSuccessResponse -> {

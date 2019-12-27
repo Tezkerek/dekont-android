@@ -9,31 +9,28 @@ import ro.ande.dekont.vo.*
 
 interface DekontService {
     @POST("login/")
-    fun login(@Body body: LoginRequest): Deferred<ApiResponse<Token>>
+    suspend fun login(@Body body: LoginRequest): ApiResponse<Token>
 
     @POST("register/")
-    fun register(@Body body: RegistrationRequest): Deferred<ApiResponse<User>>
+    suspend fun register(@Body body: RegistrationRequest): ApiResponse<User>
 
     @POST("logout/")
-    fun logout(): LiveData<ApiResponse<Void>>
-
-    @GET("verify-authtoken/{token}")
-    fun verifyAuthToken(@Path("token") token: String): Call<ResponseBody>
+    suspend fun logout(): ApiResponse<Void>
 
     @GET("users/0/")
     suspend fun retrieveCurrentUser(): ApiResponse<User>
 
     @POST("users/0/group/")
-    fun joinGroup(@Body inviteCode: GroupJoinRequest): Deferred<ApiResponse<Void>>
+    suspend fun joinGroup(@Body inviteCode: GroupJoinRequest): ApiResponse<Void>
 
     @GET("current-group/")
     suspend fun retrieveCurrentUserGroup(): ApiResponse<Group>
 
     @GET("transactions/")
-    fun listTransactions(
+    suspend fun listTransactions(
             @Query("page") page: Int,
             @Query("users") users: List<Int>?
-    ): Deferred<ApiResponse<PaginatedResponse<List<Transaction>>>>
+    ): ApiResponse<PaginatedResponse<List<Transaction>>>
 
     @POST("transactions/")
     fun createTransaction(@Body body: Transaction): LiveData<ApiResponse<Transaction>>

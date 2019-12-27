@@ -37,6 +37,6 @@ class GroupSettingsViewModel
         }
     }
 
-    fun joinGroup(inviteCode: String): Deferred<ApiResponse<Void>> =
+    suspend fun joinGroup(inviteCode: String): ApiResponse<Void> =
             groupRepository.joinGroup(inviteCode)
 }

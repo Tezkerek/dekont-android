@@ -21,25 +21,21 @@ class TransactionListViewModel
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {
-    val transactions: LiveData<PagedList<Transaction>>
-        get() = _transactions
+    private val _transactions = MediatorLiveData<PagedList<Transaction>>()
+    val transactions: LiveData<PagedList<Transaction>> = _transactions
 
-    val transactionsState: LiveData<NetworkState>
-        get() = _transactionsState
+    private val _transactionsState = MediatorLiveData<NetworkState>()
+    val transactionsState: LiveData<NetworkState> = _transactionsState
+
+    private val _categories = MediatorLiveData<Resource<List<Category>>>()
+    val categories: LiveData<Resource<List<Category>>> = _categories
+
+    private val _transactionsWithCategories = MediatorLiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>()
+    val transactionsWithCategories: LiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>
+            = _transactionsWithCategories
 
     var transactionsLastLoadedPage: Int = 0
 
-    val categories: LiveData<Resource<List<Category>>>
-        get() = _categories
-
-    val transactionsWithCategories: LiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>
-        get() = _transactionsWithCategories
-
-
-    private val _transactions = MediatorLiveData<PagedList<Transaction>>()
-    private val _transactionsState = MediatorLiveData<NetworkState>()
-    private val _categories = MediatorLiveData<Resource<List<Category>>>()
-    private val _transactionsWithCategories = MediatorLiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>()
 
     fun loadTransactions(page: Int, users: List<Int>? = null) {
         transactionRepository.loadTransactions(page, users).let {

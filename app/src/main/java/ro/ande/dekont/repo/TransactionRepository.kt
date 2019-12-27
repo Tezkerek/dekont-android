@@ -3,6 +3,8 @@ package ro.ande.dekont.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.liveData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.doAsync
 import org.threeten.bp.LocalDate
@@ -26,30 +28,31 @@ class TransactionRepository
         private val transactionDao: TransactionDao,
         private val dekontService: DekontService
 ) {
+    /** Retrieve the cached page, and simultaneously fetch changes from the server. */
     fun loadTransactions(page: Int, users: List<Int>?): LoadMoreLiveData<List<Transaction>> {
-        val networkState = MutableLiveData<NetworkState>()
+        val cachedData = transactionDao.retrievePartial((page-1) * PAGE_SIZE, PAGE_SIZE)
 
-        networkState.postValue(NetworkState(NetworkState.Status.LOADING, isExhausted = false))
+        val networkState = liveData(Dispatchers.IO) {
+            // Emit loading state
+            emit(NetworkState(NetworkState.Status.LOADING, isExhausted = false))
 
-        appExecutors.networkIO().doAsync {
-            runBlocking {
-                val response = dekontService.listTransactions(page, users).await()
+            // Retrieve data from server
+            val response = dekontService.listTransactions(page, users)
+            when (response) {
+                is ApiSuccessResponse -> {
+                    val isDataExhausted = response.body.page == response.body.pageCount
+                    emit(NetworkState(NetworkState.Status.SUCCESS, isExhausted = isDataExhausted))
 
-                when (response) {
-                    is ApiSuccessResponse -> {
-                        val isDataExhausted = response.body.page == response.body.pageCount
-                        networkState.postValue(NetworkState(NetworkState.Status.SUCCESS, isExhausted = isDataExhausted))
-
-                        // The DB LiveData will refresh automatically after insertion
-                        transactionDao.insertAndReplace(response.body.data)
-                    }
-                    is ApiErrorResponse -> {
-                        networkState.postValue(NetworkState(NetworkState.Status.ERROR, message = response.getFirstError()))
-                    }
+                    // The DB LiveData will refresh automatically after insertion
+                    transactionDao.insertAndReplace(response.body.data)
+                }
+                is ApiErrorResponse -> {
+                    emit(NetworkState(NetworkState.Status.ERROR, message = response.getFirstError()))
                 }
             }
         }
-        return LoadMoreLiveData(transactionDao.retrievePartial((page-1) * PAGE_SIZE, PAGE_SIZE), networkState)
+
+        return LoadMoreLiveData(cachedData, networkState)
     }
 
     fun getTransactionById(id: Int): Transaction {
