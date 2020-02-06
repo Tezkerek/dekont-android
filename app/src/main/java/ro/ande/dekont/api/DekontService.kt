@@ -1,9 +1,6 @@
 package ro.ande.dekont.api
 
 import androidx.lifecycle.LiveData
-import kotlinx.coroutines.Deferred
-import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.http.*
 import ro.ande.dekont.vo.*
 

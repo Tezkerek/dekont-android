@@ -3,9 +3,7 @@ package ro.ande.dekont.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import ro.ande.dekont.api.ApiResponse
 import ro.ande.dekont.repo.GroupRepository

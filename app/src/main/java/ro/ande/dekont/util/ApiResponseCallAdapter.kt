@@ -1,6 +1,5 @@
 package ro.ande.dekont.util
 
-import kotlinx.coroutines.Deferred
 import okhttp3.Request
 import retrofit2.*
 import ro.ande.dekont.api.ApiResponse

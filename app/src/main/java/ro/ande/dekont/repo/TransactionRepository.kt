@@ -1,11 +1,9 @@
 package ro.ande.dekont.repo
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.liveData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.doAsync
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
