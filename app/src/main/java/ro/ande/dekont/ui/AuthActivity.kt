@@ -187,15 +187,9 @@ class AuthActivity : BaseActivity(), Injectable {
         }
     }
 
-    private fun isEmailValid(email: String): Boolean {
-        //TODO: Replace this with your own logic
-        return email.contains("@")
-    }
+    private fun isEmailValid(email: String): Boolean = email.contains("@")
 
-    private fun isPasswordValid(password: String): Boolean {
-        //TODO: Replace this with your own logic
-        return password.length > 4
-    }
+    private fun isPasswordValid(password: String): Boolean = password.length > 4
 
     private fun showLoginProgress(show: Boolean) = showProgress(show, this.email_sign_in_button)
 
