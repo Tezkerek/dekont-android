@@ -4,7 +4,6 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
 
     <string name="error_server_unreachable">Unable to reach server.</string>
     <string name="error_internal_server_error">An internal server error has occurred.</string>
@@ -32,13 +31,23 @@
     <string name="hint_document_type">Document type</string>
     <string name="hint_document_number">Document number</string>
 
+    <!-- Strings related to transaction detail -->
+    <string name="message_description_unavailable"><i>No description provided.</i></string>
+
     <!-- Common action names -->
     <string name="action_save">Save</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Sign up</string>
     <string name="action_sign_out">Sign out</string>
     <string name="action_collapse_expand">Collapse/Expand</string>
+    <string name="action_join">Join</string>
+    <string name="action_leave_group">Leave group</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_join_group">Join a group</string>
+    <string name="action_create_group">Create a group</string>
     <string name="dialog_message_confirm_logout">Are you sure you want to sign out?</string>
 
     <string-array name="transaction_options">
@@ -56,14 +65,15 @@
     <string name="general_error_prefix">Error: %s</string>
     <string name="error_loading_transactions_prefix">Error loading transactions: %s</string>
     <string name="error_loading_categories_prefix">Error loading categories: %s</string>
-    <string name="action_register">Sign up</string>
     <string name="login_registration_forms_separator_text">or</string>
     <string name="message_registration_successful">Account created! Signing you in…</string>
-    <string name="action_join_group">Join a group</string>
-    <string name="action_create_group">Create a group</string>
     <string name="nav_item_group">Group</string>
-    <string name="action_retry">Retry</string>
     <string name="hint_invite_code">Invite code</string>
-    <string name="action_join">Join</string>
-    <string name="action_leave_group">Leave group</string>
+
+    <!-- Activity and fragment labels -->
+    <string name="label_fragment_transaction_list">Transactions</string>
+    <string name="label_fragment_transaction_editor">Transaction Editor</string>
+    <string name="label_fragment_transaction_detail">Details</string>
+    <string name="label_fragment_group_settings">Group Settings</string>
+    <string name="label_activity_auth">Authentication</string>
 </resources>

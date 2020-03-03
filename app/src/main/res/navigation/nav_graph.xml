@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/transactionListFragment"
         android:name="ro.ande.dekont.ui.TransactionListFragment"
-        android:label="fragment_transaction_list"
+        android:label="@string/label_fragment_transaction_list"
         tools:layout="@layout/fragment_transaction_list" >
         <action
             android:id="@+id/action_transactionListFragment_to_transactionEditorFragment"
@@ -30,7 +30,7 @@
     <fragment
         android:id="@+id/transactionEditorFragment"
         android:name="ro.ande.dekont.ui.TransactionEditorFragment"
-        android:label="fragment_transaction_editor"
+        android:label="@string/label_fragment_transaction_editor"
         tools:layout="@layout/fragment_transaction_editor" >
         <argument
             android:name="editorAction"
@@ -39,7 +39,7 @@
     <fragment
         android:id="@+id/transactionDetailFragment"
         android:name="ro.ande.dekont.ui.TransactionDetailFragment"
-        android:label="fragment_transaction_detail"
+        android:label="@string/label_fragment_transaction_detail"
         tools:layout="@layout/fragment_transaction_detail" >
         <argument android:name="transactionId"
             app:argType="integer" />
@@ -47,10 +47,10 @@
     <activity
         android:id="@+id/authActivity"
         android:name="ro.ande.dekont.ui.AuthActivity"
-        android:label="activity_login"
+        android:label="@string/label_activity_auth"
         tools:layout="@layout/activity_login" />
     <fragment
         android:id="@+id/groupSettingsFragment"
         android:name="ro.ande.dekont.ui.GroupSettingsFragment"
-        android:label="GroupSettingsFragment" />
+        android:label="@string/label_fragment_group_settings" />
 </navigation>

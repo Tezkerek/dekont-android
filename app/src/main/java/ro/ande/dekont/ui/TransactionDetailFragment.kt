@@ -53,7 +53,11 @@ class TransactionDetailFragment : Fragment(), Injectable {
         this.date_view.text = transaction.formattedDate
         this.amount_view.text = transaction.formattedAmount
         this.currency_view.text = transaction.currency.currencyCode
-        this.description_view.text = transaction.description
+        this.description_view.text = transaction.description.let {
+            if (it.isEmpty())
+                getString(R.string.message_description_unavailable)
+            else it
+        }
         this.supplier_view.text = transaction.supplier
         this.document_type_view.text = transaction.documentType
         this.document_number_view.text = transaction.documentNumber
