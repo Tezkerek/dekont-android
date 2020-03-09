@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -19,12 +17,10 @@ import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.viewmodel.TransactionListViewModel
-import javax.inject.Inject
+import ro.ande.dekont.viewmodel.injectableViewModel
 
 class TransactionListFragment : Fragment(), Injectable {
-    @Inject
-    lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var transactionListViewModel: TransactionListViewModel
+    private val transactionListViewModel: TransactionListViewModel by injectableViewModel()
 
     private var transactionsLoadCompleteNotifier: PagedLoadScrollListener.LoadCompleteNotifier? = null
 
@@ -35,10 +31,6 @@ class TransactionListFragment : Fragment(), Injectable {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        activity?.let {
-            transactionListViewModel = ViewModelProviders.of(it, mViewModelFactory).get(TransactionListViewModel::class.java)
-        }
 
         initTransactionList()
 

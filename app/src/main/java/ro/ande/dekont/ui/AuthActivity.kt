@@ -10,8 +10,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import ro.ande.dekont.BaseActivity
@@ -21,23 +19,19 @@ import ro.ande.dekont.api.ApiErrors
 import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.AuthViewModel
+import ro.ande.dekont.viewmodel.injectableViewModel
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Token
-import javax.inject.Inject
 
 /**
  * A login screen that offers login via email/password.
  */
 class AuthActivity : BaseActivity(), Injectable {
-    @Inject
-    lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var authViewModel: AuthViewModel
+    private  val authViewModel: AuthViewModel by injectableViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        authViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AuthViewModel::class.java)
 
         authViewModel.authToken.observe(this, LoginObserver())
 

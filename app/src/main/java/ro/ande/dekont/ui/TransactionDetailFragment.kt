@@ -7,23 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_transaction_detail.*
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionDetailViewModel
+import ro.ande.dekont.viewmodel.injectableViewModel
 import ro.ande.dekont.vo.Transaction
-import javax.inject.Inject
 
 /**
  * A [Fragment] for viewing the details of a [Transaction].
  *
  */
 class TransactionDetailFragment : Fragment(), Injectable {
-    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var transactionDetailViewModel: TransactionDetailViewModel
+    private val transactionDetailViewModel: TransactionDetailViewModel by injectableViewModel()
 
     private val navArgs: TransactionDetailFragmentArgs by navArgs()
 
@@ -36,10 +33,8 @@ class TransactionDetailFragment : Fragment(), Injectable {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        transactionDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionDetailViewModel::class.java)
-
         // Observe transaction
-        transactionDetailViewModel.transaction.observe(this, Observer { transaction -> showTransactionDetails(transaction) })
+        transactionDetailViewModel.transaction.observe(viewLifecycleOwner, Observer { transaction -> showTransactionDetails(transaction) })
 
         // Load transaction on launch
         if (transactionDetailViewModel.transaction.value == null) {

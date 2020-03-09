@@ -1,6 +1,7 @@
 package ro.ande.dekont.di
 
 import android.app.Application
+import androidx.lifecycle.ViewModelProvider
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -22,4 +23,6 @@ interface AppComponent : AndroidInjector<DekontApp> {
         fun application(app: Application): Builder
         fun build(): AppComponent
     }
+
+    fun viewModelProviderFactory(): ViewModelProvider.Factory
 }

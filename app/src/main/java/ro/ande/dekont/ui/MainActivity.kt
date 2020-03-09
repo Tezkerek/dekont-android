@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -19,11 +17,10 @@ import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.MainViewModel
-import javax.inject.Inject
+import ro.ande.dekont.viewmodel.injectableViewModel
 
 class MainActivity : BaseActivity(), Injectable {
-    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by injectableViewModel()
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,9 +32,6 @@ class MainActivity : BaseActivity(), Injectable {
 
         /* UI Setup */
         setupNavigationUI()
-
-        /* ViewModel Setup */
-        mainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
 
         setupLoginCheck()
 

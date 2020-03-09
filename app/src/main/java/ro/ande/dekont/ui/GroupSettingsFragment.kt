@@ -8,8 +8,6 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_group_settings.*
@@ -21,13 +19,10 @@ import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.GroupSettingsViewModel
-import javax.inject.Inject
+import ro.ande.dekont.viewmodel.injectableViewModel
 
 class GroupSettingsFragment : Fragment(), Injectable {
-    @Inject
-    lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var groupSettingsViewModel: GroupSettingsViewModel
-
+    private val groupSettingsViewModel: GroupSettingsViewModel by injectableViewModel()
     private var activeSnackbar: Snackbar? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -39,13 +34,11 @@ class GroupSettingsFragment : Fragment(), Injectable {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        groupSettingsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GroupSettingsViewModel::class.java)
-
         this.view?.setOnTouchListener { _, _ -> true }
         setupButtonActions()
 
         // Attempt to load the user information
-        groupSettingsViewModel.user.observe(this, Observer { userResource ->
+        groupSettingsViewModel.user.observe(viewLifecycleOwner, Observer { userResource ->
             toggleProgressBar(false)
 
 

@@ -11,8 +11,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -22,18 +20,17 @@ import org.threeten.bp.format.DateTimeFormatter
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionEditorViewModel
+import ro.ande.dekont.viewmodel.injectableViewModel
 import ro.ande.dekont.vo.Transaction
 import java.math.BigDecimal
 import java.util.*
-import javax.inject.Inject
 
 /**
  * A [Fragment] for editing a [Transaction].
  *
  */
 class TransactionEditorFragment : Fragment(), Injectable {
-    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var editorViewModel: TransactionEditorViewModel
+    private val editorViewModel: TransactionEditorViewModel by injectableViewModel()
 
     private val navArgs: TransactionEditorFragmentArgs by navArgs()
 
@@ -46,15 +43,13 @@ class TransactionEditorFragment : Fragment(), Injectable {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        editorViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TransactionEditorViewModel::class.java)
-
         // Fake handle a touch event to prevent propagation to the fragment below
         // We use this instead of making the view clickable because the latter makes
         // the EditText views flash white when we click the view.
         this.view?.setOnTouchListener { _, _ -> true }
 
         // Observe date and update the date_view
-        editorViewModel.date.observe(this, Observer { date -> setDateViewText(date) })
+        editorViewModel.date.observe(viewLifecycleOwner, Observer { date -> setDateViewText(date) })
 
         // Setup data
         if (editorViewModel.date.value == null) {
@@ -68,7 +63,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
         }
 
         // Observe result transaction
-        editorViewModel.transactionResource.observe(this, Observer { transactionResource ->
+        editorViewModel.transactionResource.observe(viewLifecycleOwner, Observer { transactionResource ->
             if (transactionResource.isSuccess()) {
                 finishEditing()
             } else if (transactionResource.isError()) {
@@ -97,7 +92,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
     }
 
     private fun populateCategorySpinner() {
-        editorViewModel.categories.observe(this, Observer { categories ->
+        editorViewModel.categories.observe(viewLifecycleOwner, Observer { categories ->
             val choices = listOf("No category") + categories.map { it.name }
             this.category_spinner.adapter =
                     ArrayAdapter<String>(this.context!!, android.R.layout.simple_spinner_item, choices).also {
