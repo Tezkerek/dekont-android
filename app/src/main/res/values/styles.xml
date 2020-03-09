@@ -20,7 +20,9 @@
     </style>
 
     <style name="MaterialButton" parent="Widget.MaterialComponents.Button">
-    </style>
+        <item name="backgroundTint">?attr/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
+   </style>
 
     <style name="Title">
         <item name="android:textStyle">bold</item>
