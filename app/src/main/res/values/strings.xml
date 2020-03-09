@@ -4,7 +4,11 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
+    <string name="message_registration_successful">Account created! Signing you in…</string>
 
+    <string name="error_missing_internet_connection">No internet connection</string>
+    <string name="error_network">A network error has occurred.</string>
+    <string name="error_unknown">Unknown error</string>
     <string name="error_server_unreachable">Unable to reach server.</string>
     <string name="error_internal_server_error">An internal server error has occurred.</string>
     <string name="error_invalid_email">This email address is invalid</string>
@@ -12,17 +16,13 @@
     <string name="error_sign_in_failed">Failed to sign in with the given credentials</string>
     <string name="error_field_required">This field is required</string>
 
-    <string name="message_transaction_deletion_success">The transaction has been deleted.</string>
-
     <string name="dialog_message_login_redirect">You are not logged in. Would you like to be redirected to the login screen?</string>
     <string name="dialog_positive_login_redirect">Yes</string>
     <string name="dialog_negative_login_redirect">No</string>
     <string name="dialog_message_confirm_transaction_deletion">Delete this transaction?</string>
 
-    <string name="title_activity_transactions">Transactions</string>
-    <string name="error_missing_internet_connection">No internet connection</string>
-    <string name="error_network">A network error has occurred.</string>
-    <string name="error_unknown">Unknown error</string>
+    <!-- Strings related to transaction list -->
+    <string name="message_transaction_deletion_success">The transaction has been deleted.</string>
 
     <!-- Strings related to transaction editor -->
     <string name="hint_amount">Amount</string>
@@ -31,7 +31,10 @@
     <string name="hint_document_type">Document type</string>
     <string name="hint_document_number">Document number</string>
 
-    <!-- Strings related to transaction detail -->
+    <!-- Groups -->
+    <string name="hint_invite_code">Invite code</string>
+
+    <!-- TransactionDetail -->
     <string name="message_description_unavailable"><i>No description provided.</i></string>
 
     <!-- Common action names -->
@@ -54,9 +57,6 @@
         <item>@string/action_delete</item>
     </string-array>
 
-    <string name="label_date">Date</string>
-    <string name="label_amount">Amount</string>
-    <string name="label_description">Description</string>
     <string name="label_supplier">Supplier</string>
     <string name="label_document_type">Document type</string>
     <string name="label_document_number">Document number</string>
@@ -66,11 +66,11 @@
     <string name="error_loading_transactions_prefix">Error loading transactions: %s</string>
     <string name="error_loading_categories_prefix">Error loading categories: %s</string>
     <string name="login_registration_forms_separator_text">or</string>
-    <string name="message_registration_successful">Account created! Signing you in…</string>
+
     <string name="nav_item_group">Group</string>
-    <string name="hint_invite_code">Invite code</string>
 
     <!-- Activity and fragment labels -->
+    <string name="title_activity_transactions">Transactions</string>
     <string name="label_fragment_transaction_list">Transactions</string>
     <string name="label_fragment_transaction_editor">Transaction Editor</string>
     <string name="label_fragment_transaction_detail">Details</string>
