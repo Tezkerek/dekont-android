@@ -1,6 +1,7 @@
 package ro.ande.dekont.util
 
 import okhttp3.Request
+import okio.Timeout
 import retrofit2.*
 import ro.ande.dekont.api.ApiResponse
 import java.lang.reflect.ParameterizedType
@@ -61,4 +62,5 @@ private class ApiResponseCall<T>(private val proxy: Call<T>): Call<ApiResponse<T
     override fun cancel() = proxy.cancel()
     override fun execute(): Response<ApiResponse<T>> = throw NotImplementedError("Don't try to execute this call")
     override fun request(): Request = proxy.request()
+    override fun timeout(): Timeout = proxy.timeout()
 }
