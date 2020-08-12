@@ -44,7 +44,7 @@ class GroupSettingsFragment : Fragment(), Injectable {
 
             if (userResource.isSuccess()) {
                 // Check if user is in a group or not
-                if (userResource.data?.group == null) {
+                if (userResource.data?.isInGroup() == true) {
                     toggleNotInGroupControls(true)
                     toggleGroupScreen(false)
                 } else {

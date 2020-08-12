@@ -2,13 +2,15 @@ package ro.ande.dekont.api
 
 import android.content.Context
 import android.util.Log
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
 import ro.ande.dekont.R
+import ro.ande.dekont.util.getStringOrNull
+import ro.ande.dekont.util.toList
 import java.io.IOException
 import java.net.ConnectException
+import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import kotlin.reflect.KClass
 
@@ -19,6 +21,7 @@ import kotlin.reflect.KClass
 @Suppress("unused")
 sealed class ApiResponse<T> {
     fun isSuccess() = this is ApiSuccessResponse || this is ApiEmptyResponse
+    fun isError() = this is ApiErrorResponse
 
     companion object {
         fun <T> create(response: Response<T>): ApiResponse<T> {
@@ -30,17 +33,7 @@ sealed class ApiResponse<T> {
                 } else {
                     ApiSuccessResponse(body)
                 }
-            } else {
-                // Get error message
-                val bodyMsg = response.errorBody()?.string()
-                val errorMsg = if (bodyMsg.isNullOrEmpty()) {
-                    response.message()
-                } else {
-                    bodyMsg
-                }
-
-                ApiErrorResponse(errorMsg)
-            }
+            } else ApiErrorResponse(response)
         }
 
         fun <T> create(error: Throwable): ApiErrorResponse<T> {
@@ -60,39 +53,59 @@ class ApiEmptyResponse<T> : ApiResponse<T>()
 
 class ApiSuccessResponse<T>(val body: T) : ApiResponse<T>()
 
-class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
+class ApiErrorResponse<T> : ApiResponse<T> {
+    val type: ApiErrorType
     val errors: ApiErrors
 
-    init {
-        // Extract detail from the error response
-        val detail = errorResponse.optString("detail", null)
-        if (detail != null) errorResponse.remove("detail")
-
-        // Extract non-field errors
-        val nonFieldErrors: List<String> = errorResponse.optJSONArray("non_field_errors").let {
-            if (it == null) listOf()
-            else {
-                errorResponse.remove("non_field_errors")
-                getListFromJsonArray(it)
-            }
-        }
-
-        // Collect remaining errors in a map
-        val fieldErrors = errorResponse.keys().asSequence().associate { field ->
-            field to getListFromJsonArray<String>(errorResponse.getJSONArray(field))
-        }.toMap()
-
-        errors = ApiErrors(detail, fieldErrors, nonFieldErrors)
+    constructor(response: Response<*>) : super() {
+        type = ApiErrorType.fromHttpCode(response.code())
+        errors = parseErrors(response)
     }
 
-    constructor(json: String?) : this(
-            if (json == null) malformedResponseMessage
-            else try {
-                JSONObject(json)
-            } catch (e: JSONException) {
-                malformedResponseMessage
-            }
-    )
+    constructor(message: String) {
+        type = ApiErrorType.UNKNOWN
+        errors = ApiErrors(message)
+    }
+
+//    private fun
+
+    /**
+     * Collects the errors from the response into an [ApiErrors] object.
+     */
+    private fun parseErrors(response: Response<*>): ApiErrors {
+        // Try to retrieve the errors in the body first,
+        // and fall back to the HTTP message.
+        val bodyMsg = response.errorBody()?.string()
+        val errorString = if (bodyMsg.isNullOrEmpty()) response.message() else bodyMsg
+
+        if (errorString == null)
+            return ApiErrors()
+
+        val errorJson =
+                try {
+                    JSONObject(errorString)
+                } catch (e: JSONException) {
+                    return ApiErrors()
+                }
+
+        // Extract detail from the error response
+        val detail: String? = errorJson.getStringOrNull("detail")
+        errorJson.remove("detail")
+
+        // Extract non-field errors
+        val nonFieldErrors: List<String> =
+                errorJson.optJSONArray("non_field_errors")?.toList()
+                        ?: listOf()
+        errorJson.remove("non_field_errors")
+
+        // Collect remaining errors in a map
+        val fieldErrors: Map<String, List<String>> =
+                errorJson.keys().asSequence().associateWith { field ->
+                    errorJson.getJSONArray(field).toList<String>()
+                }
+
+        return ApiErrors(detail, fieldErrors, nonFieldErrors)
+    }
 
     fun getFirstError(): String = errors.getFirstError()
 
@@ -100,12 +113,12 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
         fun <T> createFromThrowable(throwable: Throwable): ApiErrorResponse<T> {
             throwable.printStackTrace()
             val message = getMessageByException(throwable).second
-            return ApiErrorResponse(createSingleMessage(message))
+            return ApiErrorResponse(message)
         }
 
         fun <T> createFromThrowable(context: Context, throwable: Throwable): ApiErrorResponse<T> {
             val message = context.getString(getMessageByException(throwable).first)
-            return ApiErrorResponse(createSingleMessage(message))
+            return ApiErrorResponse(message)
         }
 
         /** A mapping of exception classes to error messages */
@@ -124,46 +137,30 @@ class ApiErrorResponse<T>(errorResponse: JSONObject) : ApiResponse<T>() {
             return exceptionToMessageMap[exception::class]
                     ?: Pair(R.string.error_unknown, "Unknown error")
         }
-
-        /**
-         * Collects all of the [JSONArray]'s elements of type [T] into a list.
-         * @param T The type of the elements to collect
-         * @param array
-         */
-        private inline fun <reified T> getListFromJsonArray(array: JSONArray): List<T> {
-            val mutableNonFieldErrors = mutableListOf<T>()
-
-            for (i in 0 until array.length()) {
-                array.get(i).let {
-                    if (it is T) {
-                        mutableNonFieldErrors.add(array.get(i) as T)
-                    }
-                }
-            }
-
-            return mutableNonFieldErrors
-        }
-
-        private fun createSingleMessage(message: String, key: String = "detail"): JSONObject {
-            val converted = when (key) {
-                "detail" -> message
-                else -> JSONArray(listOf(message))
-            }
-            return JSONObject().put(key, converted)
-        }
-
-        private val malformedResponseMessage = createSingleMessage("Unknown error: server response is malformed")
     }
 }
 
 class ApiErrors(
-        val detail: String?,
-        val fieldErrors: Map<String, List<String>>,
-        val nonFieldErrors: List<String>
+        val detail: String? = null,
+        val fieldErrors: Map<String, List<String>> = mapOf(),
+        val nonFieldErrors: List<String> = listOf()
 ) {
     fun getFirstError(): String =
             detail
                     ?: nonFieldErrors.firstOrNull()
                     ?: fieldErrors.entries.iterator().run { if (hasNext()) next().run { "$key: ${value.first()}" } else null }
                     ?: "No error response from server"
+}
+
+enum class ApiErrorType {
+    UNKNOWN,
+    NOT_FOUND;
+
+    companion object {
+        fun fromHttpCode(code: Int) =
+                when (code) {
+                    HttpURLConnection.HTTP_NOT_FOUND -> NOT_FOUND
+                    else -> UNKNOWN
+                }
+    }
 }

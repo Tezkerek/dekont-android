@@ -1,13 +1,13 @@
 package ro.ande.dekont.repo
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.liveData
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.ApiErrorResponse
+import ro.ande.dekont.api.ApiErrorType
 import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.db.TransactionDao
@@ -28,7 +28,7 @@ class TransactionRepository
 ) {
     /** Retrieve the cached page, and simultaneously fetch changes from the server. */
     fun loadTransactions(page: Int, users: List<Int>?): LoadMoreLiveData<List<Transaction>> {
-        val cachedData = transactionDao.retrievePartial((page-1) * PAGE_SIZE, PAGE_SIZE)
+        val cachedData = transactionDao.retrievePartial((page - 1) * PAGE_SIZE, PAGE_SIZE)
 
         val networkState = liveData(Dispatchers.IO) {
             // Emit loading state
@@ -61,35 +61,23 @@ class TransactionRepository
         return transactionDao.retrieveById(id)
     }
 
-    fun createTransaction(
-            date: LocalDate,
-            amount: BigDecimal,
-            currency: Currency,
-            categoryId: Int?,
-            description: String,
-            supplier: String,
-            documentType: String,
-            documentNumber: String
-    ): LiveData<Resource<Transaction>> {
-        val transaction = Transaction(date, amount, currency, categoryId, description, supplier, documentType, documentNumber)
+    suspend fun createTransaction(transaction: Transaction): Resource<Transaction> =
+            withContext(Dispatchers.IO) {
+                // Attempt to insert on server.
+                val response = dekontService.createTransaction(transaction)
 
-        // Attempt to insert on server.
-        return Transformations.map(dekontService.createTransaction(transaction)) { response ->
-            when (response) {
-                is ApiSuccessResponse -> {
-                    // Insert locally.
-                    val newTransaction = response.body
-                    doAsync {
-                        transactionDao.insert(newTransaction)
+                when (response) {
+                    is ApiSuccessResponse -> {
+                        // Insert locally.
+                        val newTransaction = response.body
+                        transactionDao.insert(response.body)
+
+                        Resource.success(newTransaction)
                     }
-
-                    Resource.success(newTransaction)
+                    is ApiErrorResponse -> Resource.error(response.getFirstError(), null)
+                    else -> Resource.error("Unexpected error: response is empty", null)
                 }
-                is ApiErrorResponse -> Resource.error(response.getFirstError(), null)
-                else -> Resource.error("Unexpected error: response is empty", null)
             }
-        }
-    }
 
     fun updateTransaction(
             id: Int,
@@ -117,21 +105,24 @@ class TransactionRepository
         return transaction
     }
 
-    fun deleteTransaction(id: Int): LiveData<ResourceDeletion> {
-        // Attempt to delete on server.
-        return Transformations.map(dekontService.deleteTransaction(id)) { response ->
-            if (response.isSuccess()) {
-                // Delete locally
-                doAsync {
+    suspend fun deleteTransaction(id: Int): ResourceDeletion =
+            withContext(Dispatchers.IO) {
+                // Attempt to delete on server.
+                val response = dekontService.deleteTransaction(id)
+
+                // Delete locally even if the resource was not found on the server
+                val shouldDeleteLocally =
+                        response is ApiErrorResponse && response.type == ApiErrorType.NOT_FOUND
+
+                if (response.isSuccess() || shouldDeleteLocally) {
+                    // Delete locally
                     transactionDao.delete(id)
+                    ResourceDeletion.success()
+                } else {
+                    response as ApiErrorResponse
+                    ResourceDeletion.error(response.getFirstError())
                 }
-                ResourceDeletion.success()
-            } else {
-                response as ApiErrorResponse
-                ResourceDeletion.error(response.getFirstError())
             }
-        }
-    }
 
     companion object {
         const val PAGE_SIZE = 15

@@ -11,4 +11,6 @@ data class User(
 
         @field:SerializedName("group")
         val group: Int?
-)
+) {
+        fun isInGroup(): Boolean = group != null
+}

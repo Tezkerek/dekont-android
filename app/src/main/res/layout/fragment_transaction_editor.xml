@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,123 +9,9 @@
     android:background="@color/colorBackground"
     android:paddingRight="20dp">
 
-    <LinearLayout
-        android:id="@+id/main_inputs_layout"
+    <ro.ande.dekont.ui.TransactionEditorForm
+        android:id="@+id/transaction_editor_form"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/date_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:background="@drawable/rounded_corners_rectangle"
-            android:gravity="center"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="11-11-2018"
-            android:textSize="@dimen/date_view_text_size" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3">
-
-            <EditText
-                android:id="@+id/amount_input"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/hint_amount"
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Spinner
-            android:id="@+id/currency_spinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:gravity="bottom" />
-    </LinearLayout>
-
-    <Spinner
-        android:id="@+id/category_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/main_inputs_layout" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/description_input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/category_spinner">
-
-        <EditText
-            android:id="@+id/description_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:hint="@string/hint_description" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/supplier_input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/description_input_layout">
-
-        <EditText
-            android:id="@+id/supplier_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textAutoComplete"
-            android:hint="@string/hint_supplier" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <LinearLayout
-        android:id="@+id/document_inputs_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:layout_gravity="bottom"
-        app:layout_constraintTop_toBottomOf="@id/supplier_input_layout">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3">
-
-            <EditText
-                android:id="@+id/document_type_input"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textAutoComplete"
-                android:hint="@string/hint_document_type" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2">
-
-            <EditText
-                android:id="@+id/document_number_input"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="text"
-                android:hint="@string/hint_document_number" />
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/save_button"
-        style="@style/MaterialButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/document_inputs_layout"
-        android:text="@string/action_save" />
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

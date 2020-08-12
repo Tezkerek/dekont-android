@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -38,7 +38,7 @@ class TransactionListFragment : Fragment(), Injectable {
         this.add_transaction_fab.setOnClickListener { navigateToNewTransactionEditor() }
 
         // Observe transaction list
-        transactionListViewModel.transactionsWithCategories.observe(viewLifecycleOwner, Observer { pair ->
+        transactionListViewModel.transactionsWithCategories.observe(viewLifecycleOwner) { pair ->
             val transactions = pair.first
             val categoriesResource = pair.second
 
@@ -53,24 +53,24 @@ class TransactionListFragment : Fragment(), Injectable {
                 categoriesResource.data?.let { adapter.setCategories(it) }
                 adapter.mergeTransactions(transactions.getAll())
             }
-        })
+        }
 
         // Observe transactions network state
-        transactionListViewModel.transactionsState.observe(viewLifecycleOwner, Observer { state: NetworkState? ->
+        transactionListViewModel.transactionsState.observe(viewLifecycleOwner) { state: NetworkState? ->
             // Sometimes state is null after login, no idea why
-            if (state != null) {
-                // On success or error, notify load complete
-                if (state.state != NetworkState.Status.LOADING) {
-                    transactionsLoadCompleteNotifier?.notifyLoadComplete()
-                    transactionListViewModel.transactionsLastLoadedPage++
-                }
+            if (state == null) return@observe
 
-                if (state.state == NetworkState.Status.ERROR) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
-
-                // Stop loading if data has been exhausted
-                if (state.isExhausted) transactionsLoadCompleteNotifier?.notifyLoadExhausted()
+            // On success or error, notify load complete
+            if (state.state != NetworkState.Status.LOADING) {
+                transactionsLoadCompleteNotifier?.notifyLoadComplete()
+                transactionListViewModel.transactionsLastLoadedPage++
             }
-        })
+
+            if (state.state == NetworkState.Status.ERROR) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
+
+            // Stop loading if data has been exhausted
+            if (state.isExhausted) transactionsLoadCompleteNotifier?.notifyLoadExhausted()
+        }
 
         // Load transactions on launch
         if (transactionListViewModel.transactions.value == null) {
@@ -89,7 +89,7 @@ class TransactionListFragment : Fragment(), Injectable {
             adapter = TransactionRecyclerViewAdapter()
                     .also {
                         it.setOnTransactionClickListener { id -> onTransactionClick(id) }
-                        it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id)}
+                        it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id) }
                     }
 
             addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager, 2) {
@@ -132,36 +132,42 @@ class TransactionListFragment : Fragment(), Injectable {
     }
 
     private fun openTransactionOptionsMenu(transactionId: Int) {
-        AlertDialog.Builder(this.activity)
+        AlertDialog.Builder(this.context)
                 .setItems(R.array.transaction_options) { _, optionIndex ->
                     when (optionIndex) {
-                        0 -> {
-                            // Show delete confirmation dialog
-                            AlertDialog.Builder(this.activity)
-                                    .setMessage(R.string.dialog_message_confirm_transaction_deletion)
-                                    .setPositiveButton(R.string.action_confirm) { confirmationDialog, _ ->
-                                        // TODO Progress indicator (maybe on toolbar)
-                                        transactionListViewModel.deleteTransaction(transactionId).observe(viewLifecycleOwner, Observer { deletion ->
-                                            if (deletion.isSuccess()) {
-                                                // Remove item manually from list
-                                                this.transaction_list.adapter.let { adapter ->
-                                                    adapter as TransactionRecyclerViewAdapter
-                                                    adapter.removeTransaction(transactionId)
-                                                }
-                                                Snackbar.make(this.view!!, R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
-                                            } else {
-                                                Snackbar.make(this.view!!, deletion.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
-                                            }
-                                        })
-                                        confirmationDialog.dismiss()
-                                    }
-                                    .setNegativeButton(R.string.action_cancel) { confirmationDialog, _ ->
-                                        confirmationDialog.dismiss()
-                                    }
-                                    .create()
-                                    .show()
+                        0 -> confirmTransactionDeletion(transactionId)
+                    }
+                }
+                .create()
+                .show()
+    }
+
+    /**
+     * Show a confirmation dialog and delete the transaction if answer is positive.
+     */
+    private fun confirmTransactionDeletion(transactionId: Int) {
+        // Show delete confirmation dialog
+        AlertDialog.Builder(this.context)
+                .setMessage(R.string.dialog_message_confirm_transaction_deletion)
+                .setPositiveButton(R.string.action_confirm) { confirmationDialog, _ ->
+                    // TODO Progress indicator (maybe on toolbar)
+                    transactionListViewModel.deleteTransaction(transactionId).observe(viewLifecycleOwner) { deletion ->
+                        if (deletion.isSuccess()) {
+                            // Remove item manually from list
+                            this.transaction_list.adapter.let { adapter ->
+                                adapter as TransactionRecyclerViewAdapter
+                                adapter.removeTransaction(transactionId)
+                            }
+                            Snackbar.make(this.view!!, R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
+                        } else {
+                            Snackbar.make(this.view!!, deletion.message
+                                    ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
                         }
                     }
+                    confirmationDialog.dismiss()
+                }
+                .setNegativeButton(R.string.action_cancel) { confirmationDialog, _ ->
+                    confirmationDialog.dismiss()
                 }
                 .create()
                 .show()

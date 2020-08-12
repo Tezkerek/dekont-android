@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.liveData
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.util.NetworkState
@@ -31,8 +32,7 @@ class TransactionListViewModel
     val categories: LiveData<Resource<List<Category>>> = _categories
 
     private val _transactionsWithCategories = MediatorLiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>()
-    val transactionsWithCategories: LiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>
-            = _transactionsWithCategories
+    val transactionsWithCategories: LiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>> = _transactionsWithCategories
 
     var transactionsLastLoadedPage: Int = 0
 
@@ -78,7 +78,8 @@ class TransactionListViewModel
         }
     }
 
-    fun deleteTransaction(id: Int): LiveData<ResourceDeletion> {
-        return transactionRepository.deleteTransaction(id)
-    }
+    fun deleteTransaction(id: Int): LiveData<ResourceDeletion> =
+        liveData {
+            emit(transactionRepository.deleteTransaction(id))
+        }
 }

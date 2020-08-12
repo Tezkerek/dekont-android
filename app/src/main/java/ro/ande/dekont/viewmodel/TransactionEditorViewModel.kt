@@ -1,10 +1,9 @@
 package ro.ande.dekont.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
@@ -26,6 +25,21 @@ class TransactionEditorViewModel
 
     val categories: LiveData<List<Category>> by lazy { categoryRepository.retrieveAll() }
 
+    val currencies: LiveData<List<String>> by lazy {
+        val liveData = MutableLiveData<List<String>>()
+
+        // Retrieve currencies from the app's assets
+        viewModelScope.launch(Dispatchers.IO) {
+            val currencies = app.assets.open("currencies.csv")
+                    .bufferedReader()
+                    .use { it.readText() }
+                    .split('\n')
+            liveData.postValue(currencies)
+        }
+
+        liveData
+    }
+
     val transactionResource: LiveData<Resource<Transaction>>
         get() = _transactionResource
 
@@ -36,18 +50,10 @@ class TransactionEditorViewModel
         _date.value = date
     }
 
-    fun createTransaction(
-            amount: BigDecimal,
-            currency: Currency,
-            categoryId: Int?,
-            description: String,
-            supplier: String,
-            documentType: String,
-            documentNumber: String
-    ) {
-        val transactionLiveData = transactionRepository.createTransaction(this.date.value!!, amount, currency, categoryId, description, supplier, documentType, documentNumber)
-        _transactionResource.addSource(transactionLiveData) {
-            _transactionResource.value = it
+    fun createTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            val resource = transactionRepository.createTransaction(transaction)
+            _transactionResource.value = resource
         }
     }
 

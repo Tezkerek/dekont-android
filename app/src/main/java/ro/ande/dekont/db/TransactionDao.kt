@@ -7,7 +7,7 @@ import ro.ande.dekont.vo.Transaction
 @Dao
 abstract class TransactionDao {
     @Insert
-    abstract fun insert(transactions: Transaction): Long
+    abstract suspend fun insert(transactions: Transaction): Long
 
     @Insert
     abstract fun insert(transactions: List<Transaction>): List<Long>

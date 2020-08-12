@@ -59,7 +59,7 @@ buildscript {
 
 dependencies {
     def dagger_version = "2.25.3"
-    def room_version = "2.2.4"
+    def room_version = "2.2.5"
     def anko_version = '0.10.8'
     def coroutines_version = "1.1.0"
     def appcompat_version = "1.1.0"
@@ -68,7 +68,6 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
@@ -98,6 +97,7 @@ dependencies {
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
     implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'

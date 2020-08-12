@@ -30,10 +30,10 @@ interface DekontService {
     ): ApiResponse<PaginatedResponse<List<Transaction>>>
 
     @POST("transactions/")
-    fun createTransaction(@Body body: Transaction): LiveData<ApiResponse<Transaction>>
+    suspend fun createTransaction(@Body body: Transaction): ApiResponse<Transaction>
 
     @DELETE("transactions/{id}/")
-    fun deleteTransaction(@Path("id") id: Int): LiveData<ApiResponse<Void>>
+    suspend fun deleteTransaction(@Path("id") id: Int): ApiResponse<Void>
 
     @GET("categories/")
     fun listCategories(): LiveData<ApiResponse<List<Category>>>
