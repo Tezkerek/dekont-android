@@ -12,7 +12,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_transaction_list.*
 import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
@@ -98,22 +97,7 @@ class MainActivity : BaseActivity(), Injectable {
         return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(STATE_ARG_SHOW_ADD_FAB, this.add_transaction_fab.isOrWillBeShown)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        // Show add_fab
-        if (savedInstanceState.getBoolean(STATE_ARG_SHOW_ADD_FAB)) {
-            this.add_transaction_fab.show()
-        } else {
-            this.add_transaction_fab.hide()
-        }
-    }
-
     companion object {
-        const val STATE_ARG_SHOW_ADD_FAB = "SHOW_ADD_FAB"
         const val INTENT_ARG_START_SCREEN = "START_SCREEN"
         const val INTENT_ARG_IS_POST_LOGIN = "IS_POST_LOGIN"
 
