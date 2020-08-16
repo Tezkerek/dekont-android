@@ -7,7 +7,7 @@ import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
@@ -27,7 +27,9 @@ class MainActivity : BaseActivity(), Injectable {
         setContentView(R.layout.activity_main)
         setSupportActionBar(this.toolbar)
 
-        navController = findNavController(R.id.main_nav_host)
+        // https://stackoverflow.com/a/62612502/4904553
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_nav_host) as NavHostFragment
+        navController = navHostFragment.navController
 
         /* UI Setup */
         setupNavigationUI()
