@@ -8,6 +8,7 @@
             android:checkable="false" />
         <item
             android:id="@id/groupSettingsFragment"
+            android:icon="@drawable/ic_group_white_24"
             android:title="@string/nav_item_group"
             android:checkable="false" />
     </group>
