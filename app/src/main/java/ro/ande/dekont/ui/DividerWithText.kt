@@ -6,14 +6,14 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.Gravity
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import ro.ande.dekont.R
 
 /**
  * A divider with text attached.
  * The text floats in the center of the line, and can have padding on its sides.
  */
-class DividerWithText(context: Context, attrs: AttributeSet) : TextView(context, attrs) {
+class DividerWithText(context: Context, attrs: AttributeSet) : AppCompatTextView(context, attrs) {
     private val paint = Paint()
     private val textBounds = Rect()
     private var textPadding: Float = 1f

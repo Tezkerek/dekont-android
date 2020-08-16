@@ -158,9 +158,9 @@ class TransactionListFragment : Fragment(), Injectable {
                                 adapter as TransactionRecyclerViewAdapter
                                 adapter.removeTransaction(transactionId)
                             }
-                            Snackbar.make(this.view!!, R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(this.requireView(), R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
                         } else {
-                            Snackbar.make(this.view!!, deletion.message
+                            Snackbar.make(this.requireView(), deletion.message
                                     ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
                         }
                     }

@@ -59,7 +59,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
             if (transactionResource.isSuccess()) {
                 finishEditing()
             } else if (transactionResource.isError()) {
-                Snackbar.make(this.view!!, transactionResource.message ?: "", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(this.requireView(), transactionResource.message ?: "", Snackbar.LENGTH_SHORT).show()
             }
         })
 
