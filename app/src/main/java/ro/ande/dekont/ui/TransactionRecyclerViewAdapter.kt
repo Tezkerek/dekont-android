@@ -12,6 +12,8 @@ import kotlinx.android.synthetic.main.transaction_list_item.view.*
 import org.threeten.bp.YearMonth
 import org.zakariya.stickyheaders.SectioningAdapter
 import ro.ande.dekont.R
+import ro.ande.dekont.util.removeFirst
+import ro.ande.dekont.util.withListIteratorWhile
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 
@@ -122,30 +124,36 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
     fun removeTransaction(id: Int): Boolean {
         var removedItemIndexInSection = -1
 
-        // Remove item from sections
-        val sectionIndexOfRemovedItem = this.sections.indexOfFirst { section ->
-            // Obtain the index of the first section that contains the item
-            section.transactions.indexOfFirst { it.id == id }.let { index ->
-                if (index > -1) {
-                    // Save the item index, remove the item, and stop at the current section
-                    removedItemIndexInSection = index
-                    section.transactions.removeAt(index)
-                    return@indexOfFirst true
-                }
-                // Continue to the next section
-                return@indexOfFirst false
+        this.sections.withListIteratorWhile sectionIterator@{ sectionIndex, section ->
+            // Search for the item in the current section
+            section.transactions.withListIteratorWhile itemIterator@{ itemIndex, item ->
+                if (item.id != id)
+                    return@itemIterator true
+
+                // Save the item index and remove the item
+                removedItemIndexInSection = itemIndex
+                remove()
+                return@itemIterator false
             }
+
+            // Keep going if the item wasn't found
+            if (removedItemIndexInSection < 0)
+                return@sectionIterator true
+
+            // Notify item removal
+            notifySectionItemRemoved(sectionIndex, removedItemIndexInSection)
+
+            if (section.transactions.isEmpty()) {
+                remove()
+                notifySectionRemoved(sectionIndex)
+            }
+
+            return@sectionIterator false
         }
 
-        // Remove item from transaction list
-        this.transactions.removeAll { it.id == id }
+        this.transactions.removeFirst { it.id == id }
 
-        if (removedItemIndexInSection < 0) return false
-
-        // Notify removal of item
-        notifySectionItemRemoved(sectionIndexOfRemovedItem, removedItemIndexInSection)
-
-        return true
+        return removedItemIndexInSection > 0
     }
 
     fun setCategories(categories: List<Category>) {

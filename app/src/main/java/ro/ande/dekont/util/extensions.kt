@@ -46,3 +46,33 @@ inline fun <reified T> JSONArray.toList(): List<T> {
 
     return mutableNonFieldErrors
 }
+
+/**
+ * Iterates through the list invoking [f] for each element,
+ * with the list's [MutableListIterator] as its receiver,
+ * as long as [f] returns `true`.
+ */
+fun <T> MutableList<T>.withListIteratorWhile(f: MutableListIterator<T>.(Int, T) -> Boolean) {
+    with (this.listIterator()) {
+        while (hasNext()) {
+            if (!this.f(nextIndex(), next()))
+                return
+        }
+    }
+}
+
+/**
+ * Removes the first element from this list that satisfies the predicate.
+ * @return Whether the element was removed or not
+ */
+fun <T> MutableIterable<T>.removeFirst(predicate: (T) -> Boolean): Boolean {
+    with (iterator()) {
+        while (hasNext()) {
+            if (predicate(next())) {
+                remove()
+                return true
+            }
+        }
+    }
+    return false
+}
