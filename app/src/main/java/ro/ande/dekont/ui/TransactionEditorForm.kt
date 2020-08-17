@@ -2,51 +2,71 @@ package ro.ande.dekont.ui
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.view_transaction_editor_form.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle
 import ro.ande.dekont.R
+import ro.ande.dekont.util.IdTextPair
+import ro.ande.dekont.util.IdTextPairAdapter
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 import java.math.BigDecimal
 import java.util.*
 
-class TransactionEditorForm(context: Context, attrs: AttributeSet) : CoordinatorLayout(context, attrs) {
-    init {
-        LayoutInflater.from(context).inflate(R.layout.view_transaction_editor_form, this)
-
-        date_view.setOnClickListener { openDatePicker() }
-        save_button.setOnClickListener { submitTransaction() }
-    }
-
+class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
     var date: LocalDate = LocalDate.now()
         set(value) {
             field = value
-            date_view.text = value.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            updateDateButtonText(value)
         }
+    var selectedCurrency: Currency = Currency.getInstance(Locale.getDefault())
+    var selectedCategoryId: Int? = null
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.view_transaction_editor_form, this)
+
+        date_picker_button.setOnClickListener { openDatePicker() }
+        save_button.setOnClickListener { submitTransaction() }
+        category_dropdown.setOnItemClickListener { _, _, _, id ->
+            // id 0 means no category selected
+            selectedCategoryId = id.toInt().let { if (it == 0) null else it }
+        }
+        currency_dropdown.setOnItemClickListener { parent, _, position, _ ->
+            val currencyCode = parent.getItemAtPosition(position) as String
+            val currency = Currency.getInstance(currencyCode)
+            if (currency != null) selectedCurrency = currency
+        }
+
+        // Needed because date's custom setter is not called on initialization
+        updateDateButtonText(date)
+    }
 
     fun setCurrencies(currencies: List<String>) {
         val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, currencies)
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        val localCurrencyCode = Currency.getInstance(Locale.getDefault()).currencyCode
-        val localCurrencyPosition = adapter.getPosition(localCurrencyCode)
-
-        currency_spinner.adapter = adapter
-        currency_spinner.setSelection(localCurrencyPosition)
+        currency_dropdown.setAdapter(adapter)
+        currency_dropdown.setText(selectedCurrency.currencyCode, false)
     }
 
     fun setCategories(categories: List<Category>) {
-        val choices = listOf(Category(0, "No category")) + categories
+        val defaultSelection = IdTextPair(0, "No category")
+        val choices = listOf(defaultSelection) + categories.map { IdTextPair(it.id.toLong(), it.name) }
 
-        category_spinner.adapter =
-                CategoriesAdapter(context, android.R.layout.simple_spinner_item, choices).also {
-//                    it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        category_dropdown.setAdapter(
+                IdTextPairAdapter(context, android.R.layout.simple_spinner_item, choices).also {
+                    it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 }
+        )
+
+        category_dropdown.setText(defaultSelection.text, false)
     }
 
 
@@ -70,8 +90,12 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : Coordinator
 
 
     private val onDateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-        date = LocalDate.of(year, month+1, day)
+        date = LocalDate.of(year, month + 1, day)
         onDateSelectedListener?.onDateSelected(date)
+    }
+
+    private fun updateDateButtonText(date: LocalDate) {
+        date_picker_button.setText(date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
     }
 
     private fun openDatePicker() {
@@ -80,7 +104,7 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : Coordinator
                 R.style.DatePickerDialog,
                 onDateSetListener,
                 date.year,
-                date.monthValue-1,
+                date.monthValue - 1,
                 date.dayOfMonth
         )
         picker.show()
@@ -89,20 +113,66 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : Coordinator
     private fun submitTransaction() {
         val transaction = Transaction(
                 date,
-                amount = BigDecimal(this.amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
-                currency = Currency.getInstance(this.currency_spinner.selectedItem.toString()),
-                categoryId = category_spinner.selectedItemId.let { if (it == 0L) null else it }?.toInt(),
-                description = this.description_input.text.toString(),
-                supplier = this.supplier_input.text.toString(),
-                documentType = this.document_type_input.text.toString(),
-                documentNumber = this.document_number_input.text.toString()
+                amount = BigDecimal(amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
+                currency = selectedCurrency,
+                categoryId = selectedCategoryId,
+                description = description_input.text.toString(),
+                supplier = supplier_input.text.toString(),
+                documentType = document_type_input.text.toString(),
+                documentNumber = document_number_input.text.toString()
         )
 
         onTransactionSaveListener?.onTransactionSave(transaction)
     }
 
+    override fun onSaveInstanceState(): Parcelable? {
+        val superState = super.onSaveInstanceState()
+        return SavedState(superState!!).also { state ->
+            state.dateEpoch = date.toEpochDay()
+            state.selectedCurrency = selectedCurrency.currencyCode
+            state.selectedCategory = selectedCategoryId
+        }
+    }
 
-    private class CategoriesAdapter(context: Context, resource: Int, categories: List<Category>) : ArrayAdapter<Category>(context, resource, categories) {
-        override fun getItemId(position: Int): Long = getItem(position)!!.id.toLong()
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state is SavedState) {
+            super.onRestoreInstanceState(state.superState)
+
+            date = LocalDate.ofEpochDay(state.dateEpoch)
+            selectedCurrency = Currency.getInstance(state.selectedCurrency)
+            selectedCategoryId = state.selectedCategory
+        } else
+            super.onRestoreInstanceState(state)
+    }
+
+    private class SavedState : BaseSavedState {
+        var dateEpoch: Long = 0
+        var selectedCurrency: String = "USD"
+        var selectedCategory: Int? = null
+
+        constructor(parcelable: Parcelable) : super(parcelable)
+
+        constructor(parcel: Parcel) : super(parcel) {
+            dateEpoch = parcel.readLong()
+            selectedCurrency = parcel.readString() ?: "USD"
+            selectedCategory = parcel.readValue(Int::class.java.classLoader) as Int?
+        }
+
+        override fun writeToParcel(out: Parcel?, flags: Int) {
+            super.writeToParcel(out, flags)
+            out?.writeLong(dateEpoch)
+            out?.writeString(selectedCurrency)
+            out?.writeValue(selectedCategory)
+        }
+
+        companion object {
+            val CREATOR = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(source: Parcel): SavedState = SavedState(source)
+
+                override fun newArray(size: Int): Array<SavedState?> =
+                        arrayOfNulls(size)
+
+            }
+        }
     }
 }

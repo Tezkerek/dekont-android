@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.threeten.bp.LocalDate
-import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiErrorType
 import ro.ande.dekont.api.ApiSuccessResponse
@@ -16,13 +14,10 @@ import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
-import java.math.BigDecimal
-import java.util.*
 import javax.inject.Inject
 
 class TransactionRepository
 @Inject constructor(
-        private val appExecutors: AppExecutors,
         private val transactionDao: TransactionDao,
         private val dekontService: DekontService
 ) {
@@ -79,31 +74,8 @@ class TransactionRepository
                 }
             }
 
-    fun updateTransaction(
-            id: Int,
-            date: LocalDate,
-            amount: BigDecimal,
-            currency: Currency,
-            description: String,
-            supplier: String,
-            documentType: String,
-            documentNumber: String
-    ): Transaction {
-        val transaction = getTransactionById(id)
-        transaction.also {
-            it.date = date
-            it.amount = amount
-            it.currency = currency
-            it.description = description
-            it.supplier = supplier
-            it.documentType = documentType
-            it.documentNumber = documentNumber
-        }
-
-        transactionDao.update(transaction)
-
-        return transaction
-    }
+    suspend fun updateTransaction(transaction: Transaction): Transaction =
+            TODO("Not implemented")
 
     suspend fun deleteTransaction(id: Int): ResourceDeletion =
             withContext(Dispatchers.IO) {

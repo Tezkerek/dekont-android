@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.TransactionDetailFragment"
-    android:background="@color/colorBackground"
+    android:background="?android:attr/colorBackground"
     android:padding="40dp"
     android:clickable="true"
     android:focusable="true">

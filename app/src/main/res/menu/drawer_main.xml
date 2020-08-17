@@ -3,12 +3,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_sign_out_white_48"
+            android:icon="@drawable/ic_sign_out_24"
             android:title="@string/action_sign_out"
             android:checkable="false" />
         <item
             android:id="@id/groupSettingsFragment"
-            android:icon="@drawable/ic_group_white_24"
+            android:icon="@drawable/ic_group_24"
             android:title="@string/nav_item_group"
             android:checkable="false" />
     </group>

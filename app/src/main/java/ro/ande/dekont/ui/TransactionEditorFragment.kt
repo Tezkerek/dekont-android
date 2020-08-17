@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_editor.*
-import org.threeten.bp.LocalDate
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.TransactionEditorViewModel
@@ -44,13 +43,7 @@ class TransactionEditorFragment : Fragment(), Injectable {
         // the EditText views flash white when we click the view.
         this.view?.setOnTouchListener { _, _ -> true }
 
-        // Observe and update the date in the form
-        editorViewModel.date.observe(viewLifecycleOwner, Observer { transaction_editor_form.date = it })
-
         // Setup data
-        if (editorViewModel.date.value == null) {
-            editorViewModel.setDate(LocalDate.now())
-        }
         populateCurrencySpinner()
         populateCategorySpinner()
 

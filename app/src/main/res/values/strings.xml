@@ -25,7 +25,10 @@
     <string name="message_transaction_deletion_success">The transaction has been deleted.</string>
 
     <!-- Strings related to transaction editor -->
+    <string name="hint_date">Date</string>
+    <string name="hint_category">Category</string>
     <string name="hint_amount">Amount</string>
+    <string name="hint_currency">Currency</string>
     <string name="hint_description">Description</string>
     <string name="hint_supplier">Supplier</string>
     <string name="hint_document_type">Document type</string>

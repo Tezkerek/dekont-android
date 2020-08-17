@@ -4,14 +4,11 @@ import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Transaction
-import java.math.BigDecimal
-import java.util.*
 import javax.inject.Inject
 
 class TransactionEditorViewModel
@@ -20,9 +17,6 @@ class TransactionEditorViewModel
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ): AndroidViewModel(app) {
-    val date: LiveData<LocalDate>
-        get() = _date
-
     val categories: LiveData<List<Category>> by lazy { categoryRepository.retrieveAll() }
 
     val currencies: LiveData<List<String>> by lazy {
@@ -43,12 +37,7 @@ class TransactionEditorViewModel
     val transactionResource: LiveData<Resource<Transaction>>
         get() = _transactionResource
 
-    private val _date = MutableLiveData<LocalDate>()
     private val _transactionResource = MediatorLiveData<Resource<Transaction>>()
-
-    fun setDate(date: LocalDate) {
-        _date.value = date
-    }
 
     fun createTransaction(transaction: Transaction) {
         viewModelScope.launch {
@@ -57,15 +46,8 @@ class TransactionEditorViewModel
         }
     }
 
-    fun saveTransaction(
-            id: Int,
-            amount: BigDecimal,
-            currency: Currency,
-            description: String,
-            supplier: String,
-            documentType: String,
-            documentNumber: String
-    ) {
-        val transaction = transactionRepository.updateTransaction(id, this.date.value!!, amount, currency, description, supplier, documentType, documentNumber)
+    fun saveTransaction(transaction: Transaction) {
+        TODO("Implement update")
+//        val transaction = transactionRepository.updateTransaction(transaction)
     }
 }

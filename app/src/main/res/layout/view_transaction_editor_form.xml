@@ -1,134 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.TransactionEditorFragment"
-    android:paddingLeft="20dp"
-    android:background="@color/colorBackground"
-    android:paddingRight="20dp">
+    tools:context=".ui.TransactionEditorForm">
 
     <LinearLayout
-        android:id="@+id/main_inputs_layout"
+        android:id="@+id/date_category_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:baselineAligned="false"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/date_view"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/date_picker_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/input_horizontal_margin"
+            app:endIconDrawable="@drawable/ic_calendar_24"
+            app:endIconMode="custom">
+
+            <AutoCompleteTextView
+                android:id="@+id/date_picker_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:hint="@string/hint_date"
+                android:inputType="none"
+                tools:text="11-11-2018" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:background="@drawable/rounded_corners_rectangle"
-            android:gravity="center"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="11-11-2018"
-            android:textSize="@dimen/date_view_text_size" />
+            android:layout_weight="1">
+
+            <AutoCompleteTextView
+                android:id="@+id/category_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_category"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/amount_currency_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:layout_marginTop="@dimen/input_vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/date_category_layout">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3">
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:layout_marginEnd="@dimen/input_horizontal_margin">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/amount_input"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="@string/hint_amount"
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/currency_spinner"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:gravity="bottom" />
-    </LinearLayout>
+            android:layout_weight="2">
 
-    <Spinner
-        android:id="@+id/category_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/main_inputs_layout"
-        app:layout_constraintStart_toStartOf="parent" />
+            <AutoCompleteTextView
+                android:id="@+id/currency_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:hint="@string/hint_currency" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/description_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/category_spinner">
+        android:layout_marginTop="@dimen/input_vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/amount_currency_layout">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/description_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:hint="@string/hint_description" />
+            android:layout_height="match_parent"
+            android:hint="@string/hint_description"
+            android:inputType="textMultiLine" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/supplier_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/input_vertical_margin"
         app:layout_constraintTop_toBottomOf="@id/description_input_layout">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/supplier_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textAutoComplete"
-            android:hint="@string/hint_supplier" />
+            android:layout_height="match_parent"
+            android:hint="@string/hint_supplier"
+            android:inputType="textAutoComplete" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:id="@+id/document_inputs_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
         android:layout_gravity="bottom"
+        android:baselineAligned="false"
+        android:layout_marginTop="@dimen/input_vertical_margin"
         app:layout_constraintTop_toBottomOf="@id/supplier_input_layout">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:layout_marginEnd="@dimen/input_horizontal_margin">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/document_type_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_document_type"
+                android:inputType="textAutoComplete" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3">
 
-            <EditText
-                android:id="@+id/document_type_input"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textAutoComplete"
-                android:hint="@string/hint_document_type" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2">
-
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/document_number_input"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="text"
                 android:hint="@string/hint_document_number" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <Button
         android:id="@+id/save_button"
-        style="@style/MaterialButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/document_inputs_layout"
-        android:text="@string/action_save" />
+        android:layout_marginTop="@dimen/input_vertical_margin"
+        android:text="@string/action_save"
+        app:layout_constraintTop_toBottomOf="@id/document_inputs_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

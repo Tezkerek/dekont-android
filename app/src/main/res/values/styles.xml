@@ -1,36 +1,41 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Bridge">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
-
+    <style name="AppTheme" parent="Theme.MaterialComponents">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-    </style>
 
-    <style name="DatePickerDialog" parent="Theme.AppCompat.Dialog">
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorBackground</item>
-    </style>
+        <item name="colorPrimary">@color/brand_green</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorOnPrimarySurface">@android:color/white</item>
+        <item name="colorSecondary">@color/brand_green</item>
+        <item name="colorOnSecondary">@android:color/white</item>
 
-    <style name="MaterialButton" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">?attr/colorAccent</item>
-        <item name="android:textColor">@android:color/white</item>
-   </style>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar.FullWidth</item>
+        <item name="snackbarTextViewStyle">@style/AppTheme.SnackbarTextView</item>
+    </style>
 
     <style name="Title">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="MaterialButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">?attr/colorAccent</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="DatePickerDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="android:windowBackground">?android:attr/colorBackground</item>
+        <item name="daySelectedStyle">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="AppTheme.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
-
 </resources>
