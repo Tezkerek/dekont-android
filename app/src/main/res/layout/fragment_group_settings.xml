@@ -1,59 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/group_settings_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_bar"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/progress_bar_margin" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/not_in_group_controls"
         style="?android:buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="visible">
 
         <Button
+            android:id="@+id/join_group_button"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/join_group_button"
-            style="?android:buttonBarButtonStyle"
             android:text="@string/action_join_group" />
 
         <Button
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/create_group_button"
-            style="?android:buttonBarButtonStyle"
             android:text="@string/action_create_group" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/group_screen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/group_screen"
         android:visibility="visible">
 
         <TextView
+            style="@style/Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/group_name"
-            style="@style/Title"
-            android:text="Group name" />
+            tools:text="Group name" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/leave_group_button"
             android:text="@string/action_leave_group" />
 
     </LinearLayout>

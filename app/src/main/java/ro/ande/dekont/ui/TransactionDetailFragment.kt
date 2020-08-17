@@ -57,8 +57,4 @@ class TransactionDetailFragment : Fragment(), Injectable {
         this.document_type_view.text = transaction.documentType
         this.document_number_view.text = transaction.documentNumber
     }
-
-    companion object {
-        const val ARG_TRANSACTION_ID = "TRANSACTION_ID"
-    }
 }

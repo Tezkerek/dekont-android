@@ -18,8 +18,6 @@ import kotlin.math.ceil
 
 class AuthViewModel
 @Inject constructor(app: Application, private val userRepository: UserRepository) : AndroidViewModel(app) {
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
-
     val authToken: LiveData<Resource<Token>>
         get() = mediatorAuthToken
     val registrationResponse: LiveData<ApiResponse<User>>

@@ -34,7 +34,6 @@ class GroupSettingsFragment : Fragment(), Injectable {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        this.view?.setOnTouchListener { _, _ -> true }
         setupButtonActions()
 
         // Attempt to load the user information

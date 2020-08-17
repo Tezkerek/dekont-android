@@ -100,12 +100,6 @@ class MainActivity : BaseActivity(), Injectable {
     }
 
     companion object {
-        const val INTENT_ARG_START_SCREEN = "START_SCREEN"
         const val INTENT_ARG_IS_POST_LOGIN = "IS_POST_LOGIN"
-
-        enum class Screens {
-            TRANSACTION_LIST,
-
-        }
     }
 }

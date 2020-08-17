@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
+    android:background="@color/dark_gray"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:background="@color/dark_gray"
     android:paddingStart="15dp"
     android:paddingTop="10dp"
     android:paddingEnd="15dp"
@@ -27,7 +27,7 @@
         android:layout_height="20dp"
         android:layout_gravity="end"
         android:contentDescription="@string/action_collapse_expand"
-        android:src="@drawable/baseline_keyboard_arrow_down_white_48"
+        android:src="@drawable/ic_expand_24"
         app:tint="?attr/colorOnSurface" />
 
 </LinearLayout>

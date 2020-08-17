@@ -9,5 +9,4 @@ class PaginatedResponse<T>(
         val pageCount: Int,
         @field:SerializedName("results")
         val data: T
-) {
-}
+)

@@ -6,19 +6,13 @@
     <string name="prompt_password">Password</string>
     <string name="message_registration_successful">Account created! Signing you in…</string>
 
-    <string name="error_missing_internet_connection">No internet connection</string>
     <string name="error_network">A network error has occurred.</string>
     <string name="error_unknown">Unknown error</string>
     <string name="error_server_unreachable">Unable to reach server.</string>
-    <string name="error_internal_server_error">An internal server error has occurred.</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_sign_in_failed">Failed to sign in with the given credentials</string>
     <string name="error_field_required">This field is required</string>
 
-    <string name="dialog_message_login_redirect">You are not logged in. Would you like to be redirected to the login screen?</string>
-    <string name="dialog_positive_login_redirect">Yes</string>
-    <string name="dialog_negative_login_redirect">No</string>
     <string name="dialog_message_confirm_transaction_deletion">Delete this transaction?</string>
 
     <!-- Strings related to transaction list -->
@@ -73,7 +67,6 @@
     <string name="nav_item_group">Group</string>
 
     <!-- Activity and fragment labels -->
-    <string name="title_activity_transactions">Transactions</string>
     <string name="label_fragment_transaction_list">Transactions</string>
     <string name="label_fragment_transaction_editor">Transaction Editor</string>
     <string name="label_fragment_transaction_detail">Details</string>

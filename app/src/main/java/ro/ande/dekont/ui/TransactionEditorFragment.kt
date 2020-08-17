@@ -38,11 +38,6 @@ class TransactionEditorFragment : Fragment(), Injectable {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Fake handle a touch event to prevent propagation to the fragment below
-        // We use this instead of making the view clickable because the latter makes
-        // the EditText views flash white when we click the view.
-        this.view?.setOnTouchListener { _, _ -> true }
-
         // Setup data
         populateCurrencySpinner()
         populateCategorySpinner()
@@ -99,9 +94,5 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
     enum class Action {
         CREATE, EDIT
-    }
-
-    companion object {
-        const val TAG = "TRANSACTION_EDITOR_FRAGMENT"
     }
 }

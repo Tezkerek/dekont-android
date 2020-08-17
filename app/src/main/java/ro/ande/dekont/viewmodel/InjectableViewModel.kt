@@ -10,7 +10,7 @@ import ro.ande.dekont.di.DaggerAppComponent
 
 @MainThread
 inline fun <reified VM : ViewModel> Fragment.injectableViewModel(): Lazy<VM> =
-        viewModels(factoryProducer = { DaggerAppComponent.builder().application(this.activity!!.application).build().viewModelProviderFactory() })
+        viewModels(factoryProducer = { DaggerAppComponent.builder().application(this.requireActivity().application).build().viewModelProviderFactory() })
 
 @MainThread
 inline fun <reified VM : ViewModel> BaseActivity.injectableViewModel(): Lazy<VM> =

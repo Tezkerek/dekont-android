@@ -166,6 +166,7 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintL
         }
 
         companion object {
+            @JvmField
             val CREATOR = object : Parcelable.Creator<SavedState> {
                 override fun createFromParcel(source: Parcel): SavedState = SavedState(source)
 

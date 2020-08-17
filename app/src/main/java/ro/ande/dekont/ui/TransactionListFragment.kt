@@ -193,8 +193,6 @@ class TransactionListFragment : Fragment(), Injectable {
     }
 
     companion object {
-        const val TAG = "TRANSACTION_LIST_FRAGMENT"
-
         private enum class ResourceType {
             TRANSACTION_LIST, CATEGORY_LIST
         }

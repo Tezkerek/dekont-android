@@ -6,15 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".ui.TransactionDetailFragment"
     android:background="?android:attr/colorBackground"
-    android:padding="40dp"
-    android:clickable="true"
-    android:focusable="true">
+    android:padding="40dp">
 
     <TextView
         android:id="@+id/date_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2018-11-23"
+        tools:text="2018-11-23"
         android:textSize="@dimen/detail_date_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,7 +21,7 @@
         android:id="@+id/amount_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="66.30"
+        tools:text="66.30"
         android:textSize="@dimen/detail_date_view"
         android:layout_marginEnd="@dimen/label_margin"
         app:layout_constraintTop_toTopOf="parent"
@@ -33,7 +31,7 @@
         android:id="@+id/currency_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="EUR"
+        tools:text="EUR"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/amount_view"
         app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +40,7 @@
         android:id="@+id/description_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Description"
+        tools:text="Description"
         android:layout_marginTop="@dimen/detail_section_space"
         app:layout_constraintTop_toBottomOf="@id/amount_view"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +60,7 @@
         android:id="@+id/supplier_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Supplier"
+        tools:text="Supplier"
         android:layout_marginStart="@dimen/label_margin"
         app:layout_constraintTop_toTopOf="@id/supplier_label"
         app:layout_constraintStart_toEndOf="@id/supplier_label" />
@@ -80,7 +78,7 @@
         android:id="@+id/document_type_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Type 49"
+        tools:text="Type 49"
         android:layout_marginStart="@dimen/label_margin"
         app:layout_constraintTop_toBottomOf="@id/supplier_view"
         app:layout_constraintStart_toEndOf="@id/document_type_label" />
@@ -98,7 +96,7 @@
         android:id="@+id/document_number_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="122349"
+        tools:text="122349"
         android:layout_marginStart="@dimen/label_margin"
         app:layout_constraintTop_toBottomOf="@id/document_type_view"
         app:layout_constraintStart_toEndOf="@id/document_number_label" />

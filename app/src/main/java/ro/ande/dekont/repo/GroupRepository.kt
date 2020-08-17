@@ -8,10 +8,7 @@ import ro.ande.dekont.vo.Group
 import ro.ande.dekont.vo.Resource
 import javax.inject.Inject
 
-class GroupRepository @Inject constructor(
-        private val appExecutors: AppExecutors,
-        private val dekontService: DekontService
-) {
+class GroupRepository @Inject constructor(private val dekontService: DekontService) {
 
     private val _currentUserGroup = MutableLiveData<Resource<Group>>()
     val currentUserGroup: LiveData<Resource<Group>> = _currentUserGroup

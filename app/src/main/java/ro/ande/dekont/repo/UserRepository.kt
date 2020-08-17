@@ -9,10 +9,7 @@ import ro.ande.dekont.vo.Token
 import ro.ande.dekont.vo.User
 import javax.inject.Inject
 
-class UserRepository @Inject constructor(
-        private val appExecutors: AppExecutors,
-        private val dekontService: DekontService
-) {
+class UserRepository @Inject constructor(private val dekontService: DekontService) {
 
     private val _currentUser = MutableLiveData<Resource<User>>()
     val currentUser: LiveData<Resource<User>> = _currentUser
