@@ -13,15 +13,15 @@
             android:id="@+id/action_transactionListFragment_to_transactionEditorFragment"
             app:destination="@id/transactionEditorFragment"
             app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@android:anim/fade_out"
-            app:popEnterAnim="@android:anim/fade_in"
+            app:exitAnim="@anim/slide_left_fade_out"
+            app:popEnterAnim="@anim/slide_right_fade_in"
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_transactionListFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment"
             app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@android:anim/fade_out"
-            app:popEnterAnim="@android:anim/fade_in"
+            app:exitAnim="@anim/slide_left_fade_out"
+            app:popEnterAnim="@anim/slide_right_fade_in"
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_transactionListFragment_to_authActivity"
