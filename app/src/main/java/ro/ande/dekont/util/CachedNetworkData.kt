@@ -1,11 +1,11 @@
 package ro.ande.dekont.util
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 /** A wrapper class for returning cached data and a network state for the status of the server data loading. */
-class LoadMoreLiveData<T>(
-        val data: LiveData<T>,
-        val networkState: LiveData<NetworkState>
+class CachedNetworkData<T>(
+        val data: Flow<T>,
+        val networkState: Flow<NetworkState>
 )
 
 class NetworkState(

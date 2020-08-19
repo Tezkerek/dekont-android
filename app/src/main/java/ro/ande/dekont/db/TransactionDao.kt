@@ -2,12 +2,13 @@ package ro.ande.dekont.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 import ro.ande.dekont.vo.Transaction
 
 @Dao
 abstract class TransactionDao {
     @Insert
-    abstract suspend fun insert(transactions: Transaction): Long
+    abstract suspend fun insert(transaction: Transaction): Long
 
     @Insert
     abstract fun insert(transactions: List<Transaction>): List<Long>
@@ -16,10 +17,10 @@ abstract class TransactionDao {
     abstract fun update(transaction: Transaction)
 
     @Query("DELETE FROM `transaction` WHERE id = :id")
-    abstract fun delete(id: Int)
+    abstract suspend fun delete(id: Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAndReplace(transactions: List<Transaction>)
+    abstract suspend fun insertAndReplace(transactions: List<Transaction>)
 
     @Query("SELECT * FROM `transaction` WHERE id = :id")
     abstract fun getById(id: Int): Transaction
@@ -28,5 +29,5 @@ abstract class TransactionDao {
     abstract fun retrieveById(id: Int): LiveData<Transaction>
 
     @Query("SELECT * FROM `transaction` ORDER BY date DESC LIMIT :limit OFFSET :offset")
-    abstract fun retrievePartial(offset: Int, limit: Int): LiveData<List<Transaction>>
+    abstract fun retrievePartial(offset: Int, limit: Int): Flow<List<Transaction>>
 }
