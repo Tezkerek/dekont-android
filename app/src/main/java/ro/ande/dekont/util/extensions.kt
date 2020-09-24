@@ -4,6 +4,34 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import org.json.JSONArray
 import org.json.JSONObject
+import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
+
+val LocalDate.yearMonth: YearMonth
+    get() = YearMonth.from(this)
+
+
+fun JSONObject.getStringOrNull(name: String): String? =
+        opt(name)?.toString()
+
+/**
+ * Collects all of the [JSONArray]'s elements of type [T] into a list.
+ * @param T The type of the elements to collect
+ */
+inline fun <reified T> JSONArray.toList(): List<T> {
+    val mutableNonFieldErrors = mutableListOf<T>()
+
+    for (i in 0 until length()) {
+        get(i).also {
+            if (it is T) {
+                mutableNonFieldErrors.add(it)
+            }
+        }
+    }
+
+    return mutableNonFieldErrors
+}
+
 
 /** Similar to the zip function in RxJava. Combines the two LiveData instances into one
  * that emits Pair<A, B> values.
@@ -26,26 +54,6 @@ fun <A, B> zipLiveData(first: LiveData<A>, second: LiveData<B>): MediatorLiveDat
     }
 }
 
-fun JSONObject.getStringOrNull(name: String): String? =
-        opt(name)?.toString()
-
-/**
- * Collects all of the [JSONArray]'s elements of type [T] into a list.
- * @param T The type of the elements to collect
- */
-inline fun <reified T> JSONArray.toList(): List<T> {
-    val mutableNonFieldErrors = mutableListOf<T>()
-
-    for (i in 0 until length()) {
-        get(i).also {
-            if (it is T) {
-                mutableNonFieldErrors.add(it as T)
-            }
-        }
-    }
-
-    return mutableNonFieldErrors
-}
 
 /**
  * Iterates through the list invoking [f] for each element,

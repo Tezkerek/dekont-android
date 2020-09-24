@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.transaction_list_header.view.*
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.threeten.bp.YearMonth
 import org.zakariya.stickyheaders.SectioningAdapter
 import ro.ande.dekont.R
@@ -25,100 +27,77 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
     private var onTransactionClickListener: OnTransactionClickListener? = null
     private var onTransactionLongPressListener: OnTransactionLongPressListener? = null
 
-    fun setTransactions(transactions: List<Transaction>) {
-        val oldTransactions = this.transactions
-        val oldSections = this.sections
+    suspend fun addTransactions(newTransactions: List<Transaction>) {
+        // Add the transactions
+        transactions.addAll(newTransactions)
 
-        val byYearMonth: Map<YearMonth, List<Transaction>> = transactions
-                .asSequence()
-                .groupBy { YearMonth.from(it.date) }
-
-        this.transactions = transactions.toMutableList()
-        this.sections =  byYearMonth
-                .map { entry ->
-                    val yearMonth = entry.key
-                    val contents =  entry.value
-
-                    val oldSectionIndex = oldSections.indexOfFirst { it.yearMonth == yearMonth }
-                    val oldSection = if (oldSectionIndex > -1) oldSections[oldSectionIndex] else null
-
-
-                    // New sections are expanded
-                    // Existing sections are expanded if their contents are changed
-                    // Otherwise they keep their state
-                    val isCollapsed =
-                                if (oldSection != null) {
-                                    // Contents are unchanged if size is the same, and the elements have not changed
-                                    val areContentsUnchanged = oldSection.transactions.let {
-                                        it.size == contents.size &&
-                                        it.foldIndexed(true) { i, acc, transaction -> acc && transaction == contents[i] }
-                                    }
-                                        if (areContentsUnchanged) oldSection.isCollapsed else false
-                                } else {
-                                    // New section is collapsed
-                                    false
-                                }
-
-                    Section(yearMonth, entry.value, isCollapsed)
-                }
-                .toMutableList()
-
-        notifyAllSectionsDataSetChanged()
-
-        // Apply collapse states
-        this.sections.forEachIndexed { index, section ->
-            setSectionIsCollapsed(index, section.isCollapsed)
+        val newSections = withContext(Dispatchers.Default) {
+            sections = groupTransactionsByYearMonth(transactions)
+            groupTransactionsByYearMonth(newTransactions)
         }
+
+        notifyNewSectionsAndItems(newSections.toHashSet(), newTransactions.toHashSet())
     }
 
-    fun addTransactions(newTransactions: List<Transaction>) {
-        // Add the transactions
-        this.transactions.addAll(newTransactions)
-
-        // Group the new transactions in sections
-        val newSections = newTransactions.groupBy { YearMonth.from(it.date) }.map { Section(it.key, it.value) }.toMutableList()
-
+    private fun mergeSections(sections: MutableList<Section>, newSections: MutableList<Section>) {
         // Merge existing sections, removing them from newSections after merge
-        this.sections.forEach { section ->
-            newSections.find { it.yearMonth == section.yearMonth }?.let { newSection ->
-                // Copy the new transactions and sort
-                section.transactions.run {
-                    addAll(newSection.transactions)
-                    sortByDescending { it.date }
-                }
+        sections.forEach { section ->
+            newSections.withListIteratorWhile { newSectionIndex, newSection ->
+                if (newSection.yearMonth != section.yearMonth) true
+                else {
+                    // Copy the new transactions and sort
+                    section.transactions.run {
+                        addAll(newSection.transactions)
+                        sortByDescending { it.date }
+                    }
 
-                // Remove the merged section from the new sections list
-                newSections.remove(newSection)
+                    // Remove the merged section from the new sections list
+                    remove()
+
+                    false
+                }
             }
         }
 
         // Add the remaining sections and sort
-        this.sections.run {
+        sections.run {
             addAll(newSections)
             sortByDescending { it.yearMonth }
         }
+    }
 
+    private fun groupTransactionsByYearMonth(transactions: List<Transaction>): MutableList<Section> =
+            transactions
+                    .groupBy { YearMonth.from(it.date) }
+                    .map { Section(it.key, it.value) }
+                    .toMutableList()
+
+    private fun notifyNewSectionsAndItems(newSections: HashSet<Section>, newTransactions: HashSet<Transaction>) {
         // Find the positions of the inserted items and sections
         // and notify the adapter of their insertion
-        this.sections.forEachIndexed { sectionIndex, section ->
+        sections.forEachIndexed { sectionIndex, section ->
             if (section in newSections) {
                 // The entire section is new
                 notifySectionInserted(sectionIndex)
             } else {
                 // Find the positions of newly inserted transactions, if any
                 // and notify the adapter of their insertion
-                section.transactions.mapIndexedNotNull { index, transaction ->
-                    if (transaction in newTransactions) index else null
-                }.forEach { transactionIndex -> notifySectionItemInserted(sectionIndex, transactionIndex) }
+                section.transactions.forEachIndexed { transactionIndex, transaction ->
+                    if (transaction in newTransactions) {
+                        notifySectionItemInserted(sectionIndex, transactionIndex)
+                    }
+                }
             }
         }
     }
 
-    fun mergeTransactions(transactions: List<Transaction>) {
-        addTransactions(transactions.minus(this.transactions))
+    suspend fun mergeTransactions(transactions: List<Transaction>) {
+        val newTransactions = transactions.minus(this.transactions)
+        addTransactions(newTransactions)
     }
 
-    /** Removes a transaction from the RecyclerView.
+    /**
+     * Removes a transaction from the RecyclerView.
      * @return Whether the transaction was found and removed.
      */
     fun removeTransaction(id: Int): Boolean {
@@ -172,6 +151,7 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
     fun setOnTransactionLongPressListener(listener: OnTransactionLongPressListener) {
         onTransactionLongPressListener = listener
     }
+
     fun setOnTransactionLongPressListener(listener: (Int) -> Unit) {
         setOnTransactionLongPressListener(object : OnTransactionLongPressListener {
             override fun onLongPress(transactionId: Int) {
@@ -184,6 +164,7 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
     fun setOnTransactionClickListener(listener: OnTransactionClickListener) {
         onTransactionClickListener = listener
     }
+
     fun setOnTransactionClickListener(listener: (Int) -> Unit) {
         setOnTransactionClickListener(object : OnTransactionClickListener {
             override fun onClick(transactionId: Int) {
@@ -215,7 +196,8 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
         // Try to find the category of the transaction. If not found, display the category id
         viewHolder.categoryView.text =
                 if (transaction.categoryId == null) ""
-                else categories.find { it.id == transaction.categoryId }?.name ?: "id: ${transaction.categoryId}"
+                else categories.find { it.id == transaction.categoryId }?.name
+                        ?: "id: ${transaction.categoryId}"
         viewHolder.amountView.text = transaction.formattedAmount
         viewHolder.currencyView.text = transaction.currency.currencyCode
 
@@ -294,7 +276,7 @@ class TransactionRecyclerViewAdapter : SectioningAdapter() {
                     else
                         RotateAnimation(180.0f, 0.0f, pivotX, pivotY)
 
-            animation.duration = 500
+            animation.duration = 300
             animation.repeatCount = 0
             animation.fillAfter = true
 

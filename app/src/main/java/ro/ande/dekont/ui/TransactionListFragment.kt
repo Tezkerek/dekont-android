@@ -6,16 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
-import org.zakariya.stickyheaders.PagedLoadScrollListener
-import org.zakariya.stickyheaders.StickyHeaderLayoutManager
+import kotlinx.coroutines.launch
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.NetworkState
+import ro.ande.dekont.util.PagedLoadScrollListener
 import ro.ande.dekont.viewmodel.TransactionListViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 
@@ -43,15 +45,18 @@ class TransactionListFragment : Fragment(), Injectable {
             val categoriesResource = pair.second
 
             when {
-                categoriesResource.isError() -> showResourceError(categoriesResource.message, ResourceType.CATEGORY_LIST)
+                // TODO Make this error less obtrusive
+                // categoriesResource.isError() -> showResourceError(categoriesResource.message, ResourceType.CATEGORY_LIST)
             }
 
             // Set transactions and categories in adapter
-            this.transaction_list.adapter.also { adapter ->
-                adapter as TransactionRecyclerViewAdapter
+            lifecycleScope.launch {
+                transaction_list.adapter.also { adapter ->
+                    adapter as ITransactionListManager
 
-                categoriesResource.data?.let { adapter.setCategories(it) }
-                adapter.mergeTransactions(transactions.getAll())
+                    categoriesResource.data?.let { adapter.setCategories(it) }
+                    adapter.appendTransactions(transactions.getAll())
+                }
             }
         }
 
@@ -82,17 +87,22 @@ class TransactionListFragment : Fragment(), Injectable {
      * Initialise the transaction list.
      */
     private fun initTransactionList() {
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        val transactionListAdapter = TransactionListAdapter()
+                .apply {
+                    onTransactionClickListener = ITransactionListManager.OnTransactionClickListener { id -> handleTransactionClick(id) }
+                    onTransactionLongClickListener = ITransactionListManager.OnTransactionLongClickListener { id -> openTransactionOptionsMenu(id) }
+                }
+
         this.transaction_list.apply {
-            val stickyHeaderLayoutManager = StickyHeaderLayoutManager()
+            layoutManager = linearLayoutManager
 
-            layoutManager = stickyHeaderLayoutManager
-            adapter = TransactionRecyclerViewAdapter()
-                    .also {
-                        it.setOnTransactionClickListener { id -> onTransactionClick(id) }
-                        it.setOnTransactionLongPressListener { id -> openTransactionOptionsMenu(id) }
-                    }
+            val headerItemDecoration = HeaderItemDecoration(this, isHeader = transactionListAdapter::isItemHeader)
+            addItemDecoration(headerItemDecoration)
 
-            addOnScrollListener(object : PagedLoadScrollListener(stickyHeaderLayoutManager, 2) {
+            adapter = transactionListAdapter
+
+            addOnScrollListener(object : PagedLoadScrollListener(linearLayoutManager, 2) {
                 override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
                     transactionsLoadCompleteNotifier = loadComplete
 
@@ -119,12 +129,12 @@ class TransactionListFragment : Fragment(), Injectable {
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy < 0) {
-                        // Show FAB on scroll up
-                        this@TransactionListFragment.add_transaction_fab.show()
-                    } else if (dy > 0) {
-                        // Hide FAB on scroll down
-                        this@TransactionListFragment.add_transaction_fab.hide()
+                    this@TransactionListFragment.add_transaction_fab.run {
+                        // Toggle FAB on scroll
+                        if (dy < 0)
+                            show()
+                        else if (dy > 0)
+                            hide()
                     }
                 }
             })
@@ -154,10 +164,10 @@ class TransactionListFragment : Fragment(), Injectable {
                     transactionListViewModel.deleteTransaction(transactionId).observe(viewLifecycleOwner) { deletion ->
                         if (deletion.isSuccess()) {
                             // Remove item manually from list
-                            this.transaction_list.adapter.let { adapter ->
-                                adapter as TransactionRecyclerViewAdapter
-                                adapter.removeTransaction(transactionId)
-                            }
+//                            this.transaction_list.adapter.let { adapter ->
+//                                adapter as TransactionRecyclerViewAdapter
+//                                adapter.removeTransaction(transactionId)
+//                            }
                             Snackbar.make(this.requireView(), R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
                         } else {
                             Snackbar.make(this.requireView(), deletion.message
@@ -183,7 +193,7 @@ class TransactionListFragment : Fragment(), Injectable {
         Snackbar.make(this.transaction_list, fullMessage, Snackbar.LENGTH_INDEFINITE).show()
     }
 
-    private fun onTransactionClick(id: Int) {
+    private fun handleTransactionClick(id: Int) {
         // Navigate to TransactionDetail
         findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToTransactionDetailFragment(id))
     }
