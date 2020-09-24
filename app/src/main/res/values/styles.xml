@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents">
@@ -14,6 +14,7 @@
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
         <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar.FullWidth</item>
         <item name="snackbarTextViewStyle">@style/AppTheme.SnackbarTextView</item>
+        <item name="android:datePickerDialogTheme" tools:targetApi="lollipop">@style/DatePickerDialog</item>
     </style>
 
     <style name="Title">
@@ -21,10 +22,14 @@
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="DatePickerDialog" parent="Theme.AppCompat.Dialog">
-        <item name="colorAccent">?attr/colorPrimary</item>
+    <style name="DatePickerDialog" parent="android:Theme.Material.Dialog" tools:targetApi="lollipop">
+        <item name="colorAccent">@color/brand_green</item>
         <item name="android:windowBackground">?android:attr/colorBackground</item>
-        <item name="daySelectedStyle">?attr/colorOnPrimary</item>
+        <item name="android:datePickerStyle">@style/DatePicker</item>
+    </style>
+
+    <style name="DatePicker" parent="android:Widget.Material.DatePicker" tools:targetApi="lollipop">
+        <item name="android:datePickerMode">spinner</item>
     </style>
 
     <style name="AppTheme.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">

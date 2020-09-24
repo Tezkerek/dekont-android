@@ -101,7 +101,6 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintL
     private fun openDatePicker() {
         val picker = DatePickerDialog(
                 context,
-                R.style.DatePickerDialog,
                 onDateSetListener,
                 date.year,
                 date.monthValue - 1,
