@@ -4,12 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.liveData
 import ro.ande.dekont.repo.TransactionRepository
+import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
 class TransactionDetailViewModel
-@Inject constructor(app: Application, private val transactionRepository: TransactionRepository): AndroidViewModel(app) {
+@Inject constructor(app: Application, private val transactionRepository: TransactionRepository) : AndroidViewModel(app) {
     val transaction: LiveData<Transaction>
         get() = _transaction
 
@@ -20,4 +22,12 @@ class TransactionDetailViewModel
             _transaction.value = transaction
         }
     }
+
+    fun deleteCurrentTransaction(): LiveData<ResourceDeletion> =
+            liveData {
+                transaction.value?.let {
+                    val deletion = transactionRepository.deleteTransaction(it.id)
+                    emit(deletion)
+                }
+            }
 }
