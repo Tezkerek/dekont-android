@@ -100,8 +100,7 @@ class TransactionListAdapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val adapterItem = getItem(position)
-        when (adapterItem) {
+        when (val adapterItem = getItem(position)) {
             is AdapterItem.TransactionItem -> {
                 holder as ViewHolder.TransactionItem
 

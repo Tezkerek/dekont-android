@@ -1,19 +1,6 @@
 package ro.ande.dekont.ui
 
-/*
-solution based on - based on Sevastyan answer on StackOverflow
-
-
-changes:
-- take to account views offsets
-- transformed to Kotlin
-- now works on viewHolders
-- try to cache viewHolders between draw's
-- support for clipToPadding=false
-
-Source:
-https://stackoverflow.com/questions/32949971/how-can-i-make-sticky-headers-in-recyclerview-without-external-lib/44327350#44327350
-*/
+// Source: https://gist.github.com/filipkowicz/1a769001fae407b8813ab4387c42fcbd
 
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -59,10 +46,10 @@ class HeaderItemDecoration(
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(c, parent, state)
-        //val topChild = parent.getChildAt(0) ?: return
+
         val topChild = parent.findChildViewUnder(
                 parent.paddingLeft.toFloat(),
-                parent.paddingTop.toFloat() /*+ (currentHeader?.second?.itemView?.height ?: 0 )*/
+                parent.paddingTop.toFloat()
         ) ?: return
         val topChildPosition = parent.getChildAdapterPosition(topChild)
         if (topChildPosition == RecyclerView.NO_POSITION) {

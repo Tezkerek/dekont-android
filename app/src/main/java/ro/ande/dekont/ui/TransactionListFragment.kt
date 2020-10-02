@@ -50,13 +50,11 @@ class TransactionListFragment : Fragment(), Injectable {
             }
 
             // Set transactions and categories in adapter
-            lifecycleScope.launch {
-                transaction_list.adapter.also { adapter ->
-                    adapter as ITransactionListManager
+            transaction_list.adapter.also { adapter ->
+                adapter as ITransactionListManager
 
-                    categoriesResource.data?.let { adapter.setCategories(it) }
-                    adapter.setTransactions(transactions.getAll())
-                }
+                categoriesResource.data?.let { adapter.setCategories(it) }
+                adapter.setTransactions(transactions.getAll())
             }
         }
 
@@ -163,11 +161,6 @@ class TransactionListFragment : Fragment(), Injectable {
                     // TODO Progress indicator (maybe on toolbar)
                     transactionListViewModel.deleteTransaction(transactionId).observe(viewLifecycleOwner) { deletion ->
                         if (deletion.isSuccess()) {
-                            // Remove item manually from list
-//                            this.transaction_list.adapter.let { adapter ->
-//                                adapter as TransactionRecyclerViewAdapter
-//                                adapter.removeTransaction(transactionId)
-//                            }
                             Snackbar.make(this.requireView(), R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
                         } else {
                             Snackbar.make(this.requireView(), deletion.message

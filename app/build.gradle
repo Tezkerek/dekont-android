@@ -103,8 +103,6 @@ dependencies {
 
     /* Third party libraries */
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.4'
-    implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
-    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
 
     /* Testing */
     testImplementation 'junit:junit:4.13'
