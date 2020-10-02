@@ -26,17 +26,37 @@ class TransactionListAdapter
         categoriesById = categories.associateBy { it.id }
     }
 
+    override fun setTransactions(transactions: List<Transaction>) =
+            submitList(buildSectionedList(transactions))
+
     override fun appendTransactions(newTransactions: List<Transaction>) {
         if (newTransactions.isEmpty()) return
 
+        val newItems = buildSectionedList(newTransactions, getLastYearMonthInList())
+        submitList(currentList + newItems)
+    }
+
+    private fun getLastYearMonthInList(): YearMonth? =
+            when (val lastItem = currentList.lastOrNull()) {
+                is AdapterItem.TransactionItem -> lastItem.value.date.yearMonth
+                is AdapterItem.Header -> lastItem.month
+                null -> null
+            }
+
+    /**
+     * Builds a list of [AdapterItem]s by inserting headers between groups of [Transaction]s
+     * with the same [YearMonth].
+     * @param itemList The initial list
+     * @param startFrom The [YearMonth] to compare with the first group. Useful if you want to
+     *                  append the result to an existing list. If null, the first item will always
+     *                  be a header.
+     */
+    private fun buildSectionedList(itemList: List<Transaction>, startFrom: YearMonth? = null): List<AdapterItem> {
         val newItems: MutableList<AdapterItem> = mutableListOf()
 
-        // Start with the YearMonth of the last item from the current list,
-        // which should be a TransactionItem
-        val lastItem = currentList.lastOrNull() as AdapterItem.TransactionItem?
-        var prevYearMonth: YearMonth? = lastItem?.value?.date?.yearMonth
+        var prevYearMonth: YearMonth? = startFrom
 
-        for (transaction in newTransactions) {
+        for (transaction in itemList) {
             // If the previous YearMonth is different or null, add a header
             if (prevYearMonth != transaction.date.yearMonth) {
                 newItems.add(AdapterItem.Header(transaction.date.yearMonth))
@@ -46,7 +66,7 @@ class TransactionListAdapter
             prevYearMonth = transaction.date.yearMonth
         }
 
-        submitList(currentList + newItems)
+        return newItems
     }
 
     override fun isItemHeader(position: Int): Boolean =

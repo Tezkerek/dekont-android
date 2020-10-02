@@ -5,6 +5,7 @@ import ro.ande.dekont.vo.Transaction
 
 interface ITransactionListManager {
     fun setCategories(categories: List<Category>)
+    fun setTransactions(transactions: List<Transaction>)
     fun appendTransactions(newTransactions: List<Transaction>)
 
     /** To be used by [HeaderItemDecoration] */

@@ -55,7 +55,7 @@ class TransactionListFragment : Fragment(), Injectable {
                     adapter as ITransactionListManager
 
                     categoriesResource.data?.let { adapter.setCategories(it) }
-                    adapter.appendTransactions(transactions.getAll())
+                    adapter.setTransactions(transactions.getAll())
                 }
             }
         }
