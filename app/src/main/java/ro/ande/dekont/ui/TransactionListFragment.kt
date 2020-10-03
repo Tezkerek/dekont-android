@@ -5,19 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
-import kotlinx.coroutines.launch
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.util.PagedLoadScrollListener
+import ro.ande.dekont.util.setupWithIndividualNavController
 import ro.ande.dekont.viewmodel.TransactionListViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 
@@ -29,6 +30,32 @@ class TransactionListFragment : Fragment(), Injectable {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_transaction_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupNavigationUI(findNavController())
+    }
+
+    private fun setupNavigationUI(navController: NavController) {
+        // Setup toolbar and drawer
+        transaction_list_bottom_app_bar.setupWithIndividualNavController(navController, drawer_layout)
+
+        nav_drawer.also { drawer ->
+            drawer.setupWithNavController(navController)
+            drawer.setNavigationItemSelectedListener { item ->
+                drawer_layout.closeDrawer(drawer)
+
+                when (item.itemId) {
+                    R.id.nav_logout ->
+                        (activity as? AuthSessionManager)?.performLogout()
+                    R.id.groupSettingsFragment ->
+                        navigateToGroupSettings()
+                    else ->
+                        return@setNavigationItemSelectedListener false
+                }
+                true
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -124,18 +151,6 @@ class TransactionListFragment : Fragment(), Injectable {
                     transactionListViewModel.loadTransactions(page)
                 }
             })
-
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    this@TransactionListFragment.add_transaction_fab.run {
-                        // Toggle FAB on scroll
-                        if (dy < 0)
-                            show()
-                        else if (dy > 0)
-                            hide()
-                    }
-                }
-            })
         }
     }
 
@@ -161,10 +176,10 @@ class TransactionListFragment : Fragment(), Injectable {
                     // TODO Progress indicator (maybe on toolbar)
                     transactionListViewModel.deleteTransaction(transactionId).observe(viewLifecycleOwner) { deletion ->
                         if (deletion.isSuccess()) {
-                            Snackbar.make(this.requireView(), R.string.message_transaction_deletion_success, Snackbar.LENGTH_LONG).show()
+                            showBottomSnackbar(R.string.message_transaction_deletion_success)
                         } else {
-                            Snackbar.make(this.requireView(), deletion.message
-                                    ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
+                            showBottomSnackbar(deletion.message
+                                    ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG)
                         }
                     }
                     confirmationDialog.dismiss()
@@ -176,6 +191,15 @@ class TransactionListFragment : Fragment(), Injectable {
                 .show()
     }
 
+    private fun showBottomSnackbar(text: CharSequence, duration: Int = Snackbar.LENGTH_SHORT) {
+        Snackbar.make(coordinator_layout, text, duration)
+                .setAnchorView(add_transaction_fab)
+                .show()
+    }
+
+    private fun showBottomSnackbar(@StringRes textResId: Int, duration: Int = Snackbar.LENGTH_SHORT) =
+            showBottomSnackbar(getString(textResId), duration)
+
     private fun showResourceError(message: String?, type: ResourceType) {
         val prefix = when (type) {
             ResourceType.TRANSACTION_LIST -> R.string.error_loading_transactions_prefix
@@ -183,7 +207,7 @@ class TransactionListFragment : Fragment(), Injectable {
         }
         val fullMessage = getString(prefix, message ?: getString(R.string.error_unknown))
 
-        Snackbar.make(this.transaction_list, fullMessage, Snackbar.LENGTH_INDEFINITE).show()
+        showBottomSnackbar(fullMessage, Snackbar.LENGTH_LONG)
     }
 
     private fun handleTransactionClick(id: Int) {
@@ -194,6 +218,9 @@ class TransactionListFragment : Fragment(), Injectable {
     private fun navigateToNewTransactionEditor() {
         findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToTransactionEditorFragment(TransactionEditorFragment.Action.CREATE))
     }
+
+    private fun navigateToGroupSettings() =
+            findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToGroupSettingsFragment())
 
     companion object {
         private enum class ResourceType {

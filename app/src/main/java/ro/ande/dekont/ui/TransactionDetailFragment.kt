@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_transaction_detail.*
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
+import ro.ande.dekont.util.setupWithIndividualNavController
 import ro.ande.dekont.viewmodel.TransactionDetailViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 import ro.ande.dekont.vo.Transaction
@@ -28,6 +30,10 @@ class TransactionDetailFragment : Fragment(), Injectable {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_transaction_detail, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        transaction_detail_toolbar.setupWithIndividualNavController(findNavController())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

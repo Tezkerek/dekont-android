@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
-    tools:context=".ui.TransactionEditorFragment">
+    android:orientation="vertical">
 
-    <ro.ande.dekont.ui.TransactionEditorForm
-        android:id="@+id/transaction_editor_form"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/transaction_editor_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="@dimen/content_horizontal_padding"
-        android:paddingVertical="@dimen/content_vertical_padding" />
+        android:background="?android:attr/colorBackground"
+        tools:context=".ui.TransactionEditorFragment">
 
-</androidx.core.widget.NestedScrollView>
+        <ro.ande.dekont.ui.TransactionEditorForm
+            android:id="@+id/transaction_editor_form"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="@dimen/content_horizontal_padding"
+            android:paddingVertical="@dimen/content_vertical_padding" />
+
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

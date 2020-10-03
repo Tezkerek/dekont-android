@@ -8,7 +8,7 @@
         android:id="@+id/transactionListFragment"
         android:name="ro.ande.dekont.ui.TransactionListFragment"
         android:label="@string/label_fragment_transaction_list"
-        tools:layout="@layout/fragment_transaction_list" >
+        tools:layout="@layout/fragment_transaction_list">
         <action
             android:id="@+id/action_transactionListFragment_to_transactionEditorFragment"
             app:destination="@id/transactionEditorFragment"
@@ -28,13 +28,17 @@
             app:destination="@id/authActivity" />
         <action
             android:id="@+id/action_transactionListFragment_to_groupSettingsFragment"
-            app:destination="@id/groupSettingsFragment" />
+            app:destination="@id/groupSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_left_fade_out"
+            app:popEnterAnim="@anim/slide_right_fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/transactionEditorFragment"
         android:name="ro.ande.dekont.ui.TransactionEditorFragment"
         android:label="@string/label_fragment_transaction_editor"
-        tools:layout="@layout/fragment_transaction_editor" >
+        tools:layout="@layout/fragment_transaction_editor">
         <argument
             android:name="editorAction"
             app:argType="ro.ande.dekont.ui.TransactionEditorFragment$Action" />
@@ -43,8 +47,9 @@
         android:id="@+id/transactionDetailFragment"
         android:name="ro.ande.dekont.ui.TransactionDetailFragment"
         android:label="@string/label_fragment_transaction_detail"
-        tools:layout="@layout/fragment_transaction_detail" >
-        <argument android:name="transactionId"
+        tools:layout="@layout/fragment_transaction_detail">
+        <argument
+            android:name="transactionId"
             app:argType="integer" />
     </fragment>
     <activity

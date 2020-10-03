@@ -9,6 +9,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_group_settings.*
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import ro.ande.dekont.R
 import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.di.Injectable
+import ro.ande.dekont.util.setupWithIndividualNavController
 import ro.ande.dekont.viewmodel.GroupSettingsViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 
@@ -29,6 +31,10 @@ class GroupSettingsFragment : Fragment(), Injectable {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_group_settings, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        group_settings_toolbar.setupWithIndividualNavController(findNavController())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

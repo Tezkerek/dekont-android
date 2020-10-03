@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_editor.*
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
+import ro.ande.dekont.util.setupWithIndividualNavController
 import ro.ande.dekont.viewmodel.TransactionEditorViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 import ro.ande.dekont.vo.Transaction
@@ -33,6 +34,10 @@ class TransactionEditorFragment : Fragment(), Injectable {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_transaction_editor, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        transaction_editor_toolbar.setupWithIndividualNavController(findNavController())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

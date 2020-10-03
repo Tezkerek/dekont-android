@@ -4,7 +4,13 @@
     android:id="@+id/group_settings_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?android:attr/colorBackground">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/group_settings_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

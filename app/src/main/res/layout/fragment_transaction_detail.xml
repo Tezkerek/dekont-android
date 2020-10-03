@@ -1,104 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.TransactionDetailFragment"
     android:background="?android:attr/colorBackground"
-    android:padding="40dp">
+    tools:context=".ui.TransactionDetailFragment"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/date_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="2018-11-23"
-        android:textSize="@dimen/detail_date_view"
-        app:layout_constraintStart_toStartOf="parent"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/transaction_detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/amount_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="66.30"
-        android:textSize="@dimen/detail_date_view"
-        android:layout_marginEnd="@dimen/label_margin"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/currency_view" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="40dp">
 
-    <TextView
-        android:id="@+id/currency_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="EUR"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/amount_view"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/date_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/detail_date_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2018-11-23" />
 
-    <TextView
-        android:id="@+id/description_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        tools:text="Description"
-        android:layout_marginTop="@dimen/detail_section_space"
-        app:layout_constraintTop_toBottomOf="@id/amount_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/amount_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/label_margin"
+            android:textSize="@dimen/detail_date_view"
+            app:layout_constraintEnd_toStartOf="@id/currency_view"
+            app:layout_constraintTop_toTopOf="@id/date_view"
+            tools:text="66.30" />
 
-    <TextView
-        android:id="@+id/supplier_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_supplier"
-        android:textStyle="bold"
-        android:layout_marginTop="@dimen/detail_section_space"
-        app:layout_constraintTop_toBottomOf="@id/description_view"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/currency_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/amount_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/amount_view"
+            tools:text="EUR" />
 
-    <TextView
-        android:id="@+id/supplier_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Supplier"
-        android:layout_marginStart="@dimen/label_margin"
-        app:layout_constraintTop_toTopOf="@id/supplier_label"
-        app:layout_constraintStart_toEndOf="@id/supplier_label" />
+        <TextView
+            android:id="@+id/description_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/detail_section_space"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/amount_view"
+            tools:text="Description" />
 
-    <TextView
-        android:id="@+id/document_type_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_document_type"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/supplier_label"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/supplier_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/detail_section_space"
+            android:text="@string/label_supplier"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description_view" />
 
-    <TextView
-        android:id="@+id/document_type_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Type 49"
-        android:layout_marginStart="@dimen/label_margin"
-        app:layout_constraintTop_toBottomOf="@id/supplier_view"
-        app:layout_constraintStart_toEndOf="@id/document_type_label" />
+        <TextView
+            android:id="@+id/supplier_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/label_margin"
+            app:layout_constraintStart_toEndOf="@id/supplier_label"
+            app:layout_constraintTop_toTopOf="@id/supplier_label"
+            tools:text="Supplier" />
 
-    <TextView
-        android:id="@+id/document_number_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_document_number"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/document_type_label"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/document_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_document_type"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/supplier_label" />
 
-    <TextView
-        android:id="@+id/document_number_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="122349"
-        android:layout_marginStart="@dimen/label_margin"
-        app:layout_constraintTop_toBottomOf="@id/document_type_view"
-        app:layout_constraintStart_toEndOf="@id/document_number_label" />
+        <TextView
+            android:id="@+id/document_type_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/label_margin"
+            app:layout_constraintStart_toEndOf="@id/document_type_label"
+            app:layout_constraintTop_toBottomOf="@id/supplier_view"
+            tools:text="Type 49" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/document_number_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_document_number"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/document_type_label" />
+
+        <TextView
+            android:id="@+id/document_number_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/label_margin"
+            app:layout_constraintStart_toEndOf="@id/document_number_label"
+            app:layout_constraintTop_toBottomOf="@id/document_type_view"
+            tools:text="122349" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

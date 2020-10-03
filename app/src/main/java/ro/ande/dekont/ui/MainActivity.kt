@@ -3,36 +3,25 @@ package ro.ande.dekont.ui
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.core.view.GravityCompat
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.onNavDestinationSelected
-import androidx.navigation.ui.setupWithNavController
-import kotlinx.android.synthetic.main.activity_main.*
 import ro.ande.dekont.BaseActivity
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.viewmodel.MainViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 
-class MainActivity : BaseActivity(), Injectable {
+class MainActivity : BaseActivity(), Injectable, AuthSessionManager {
     private val mainViewModel: MainViewModel by injectableViewModel()
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(this.toolbar)
 
         // https://stackoverflow.com/a/62612502/4904553
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_nav_host) as NavHostFragment
         navController = navHostFragment.navController
-
-        /* UI Setup */
-        setupNavigationUI()
 
         setupLoginCheck()
 
@@ -40,30 +29,12 @@ class MainActivity : BaseActivity(), Injectable {
         if (this.intent.getBooleanExtra(INTENT_ARG_IS_POST_LOGIN, false)) executePostLogin()
     }
 
-    private fun setupNavigationUI() {
-        // Setup toolbar and drawer
-        val appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
-        nav_drawer.setupWithNavController(navController)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
-
-        this.nav_drawer.setNavigationItemSelectedListener { item ->
-            item.isChecked = true
-            this.drawer_layout.closeDrawers()
-
-            when (item.itemId) {
-                R.id.nav_logout -> performLogout()
-            }
-
-            item.onNavDestinationSelected(navController)
-        }
-    }
-
     private fun setupLoginCheck() {
-        mainViewModel.isLoginValid.observe(this, Observer<Boolean> { isLoggedIn ->
+        mainViewModel.isLoginValid.observe(this) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 redirectToLogin()
             }
-        })
+        }
         mainViewModel.verifyLogin()
     }
 
@@ -77,7 +48,7 @@ class MainActivity : BaseActivity(), Injectable {
         finish()
     }
 
-    private fun performLogout() {
+    override fun performLogout() {
         AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_message_confirm_logout)
                 .setPositiveButton(R.string.action_sign_out) { dialog, _ ->
@@ -89,17 +60,11 @@ class MainActivity : BaseActivity(), Injectable {
                 .show()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                // Open drawer when pressing the menu button
-                this.drawer_layout.openDrawer(GravityCompat.START)
-            }
-        }
-        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
-    }
-
     companion object {
         const val INTENT_ARG_IS_POST_LOGIN = "IS_POST_LOGIN"
     }
+}
+
+interface AuthSessionManager {
+    fun performLogout()
 }
