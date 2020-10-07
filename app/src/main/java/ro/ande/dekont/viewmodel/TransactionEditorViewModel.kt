@@ -3,6 +3,7 @@ package ro.ande.dekont.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
@@ -17,7 +18,7 @@ class TransactionEditorViewModel
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ): AndroidViewModel(app) {
-    val categories: LiveData<List<Category>> by lazy { categoryRepository.retrieveAll() }
+    val categories: LiveData<List<Category>> = categoryRepository.retrieveAll().asLiveData()
 
     val currencies: LiveData<List<String>> by lazy {
         val liveData = MutableLiveData<List<String>>()

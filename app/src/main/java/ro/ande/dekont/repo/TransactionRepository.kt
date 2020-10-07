@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
+import org.threeten.bp.LocalDate
 import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiErrorType
 import ro.ande.dekont.api.ApiSuccessResponse
@@ -16,6 +16,8 @@ import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
+import java.math.BigDecimal
+import java.util.*
 import javax.inject.Inject
 
 class TransactionRepository
@@ -25,30 +27,48 @@ class TransactionRepository
 ) {
     /** Retrieve the cached page, and simultaneously fetch changes from the server. */
     fun loadTransactions(page: Int, users: List<Int>?): CachedNetworkData<List<Transaction>> {
-        val cachedData =
-                transactionDao
-                        .retrievePartial((page - 1) * PAGE_SIZE, PAGE_SIZE)
-                        .distinctUntilChanged()
+//        val cachedData =
+//                transactionDao
+//                        .retrievePartial((page - 1) * PAGE_SIZE, PAGE_SIZE)
+//                        .distinctUntilChanged()
+        val cachedData = flow<List<Transaction>> {
+            val list = mutableListOf<Transaction>()
+            (1..50).forEach {
+                list.add(Transaction(
+                        it,
+                        0,
+                        LocalDate.now().minusDays(it * 3L),
+                        BigDecimal(100 + it),
+                        Currency.getInstance(Locale.getDefault()),
+                        null,
+                        "",
+                        "",
+                        "",
+                        "",
+                        Transaction.PENDING
+                )) }
+            emit(list)
+        }
 
         val networkState = flow {
             // Emit loading state
-            emit(NetworkState(NetworkState.Status.LOADING, isExhausted = false))
+            emit(NetworkState.loading())
 
             // Retrieve data from server
             val response = dekontService.listTransactions(page, users)
             when (response) {
                 is ApiSuccessResponse -> {
                     val isDataExhausted = response.body.page == response.body.pageCount
-                    emit(NetworkState(NetworkState.Status.SUCCESS, isExhausted = isDataExhausted))
+                    emit(NetworkState.success(isExhausted = isDataExhausted))
 
                     // The DB source will refresh automatically after insertion
                     transactionDao.insertAndReplace(response.body.data)
                 }
                 is ApiErrorResponse -> {
-                    emit(NetworkState(NetworkState.Status.ERROR, message = response.getFirstError()))
+                    emit(NetworkState.error(response.getFirstError()))
                 }
             }
-        }.flowOn(Dispatchers.IO).distinctUntilChanged()
+        }.distinctUntilChanged()
 
         return CachedNetworkData(cachedData, networkState)
     }

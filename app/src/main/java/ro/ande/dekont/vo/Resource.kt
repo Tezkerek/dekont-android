@@ -24,7 +24,13 @@ open class Resource<out T>(val status: Status, val data: T?, val message: String
     }
 }
 
-class ResourceDeletion(status: Status, message: String?) : Resource<Void>(status, null, message) {
+class ResourceDeletion(val status: Status, val message: String?) {
+    val isSuccess
+        get() = status == Status.SUCCESS
+
+    val isError
+        get() = status == Status.ERROR
+
     companion object {
         fun success(): ResourceDeletion {
             return ResourceDeletion(Status.SUCCESS, null)
@@ -32,10 +38,6 @@ class ResourceDeletion(status: Status, message: String?) : Resource<Void>(status
 
         fun error(msg: String): ResourceDeletion {
             return ResourceDeletion(Status.ERROR, msg)
-        }
-
-        fun loading(): ResourceDeletion {
-            return ResourceDeletion(Status.LOADING, null)
         }
     }
 }

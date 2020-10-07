@@ -36,5 +36,5 @@ interface DekontService {
     suspend fun deleteTransaction(@Path("id") id: Int): ApiResponse<Void>
 
     @GET("categories/")
-    fun listCategories(): LiveData<ApiResponse<List<Category>>>
+    suspend fun listCategories(): ApiResponse<List<Category>>
 }

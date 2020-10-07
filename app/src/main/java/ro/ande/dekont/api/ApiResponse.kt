@@ -67,8 +67,6 @@ class ApiErrorResponse<T> : ApiResponse<T> {
         errors = ApiErrors(message)
     }
 
-//    private fun
-
     /**
      * Collects the errors from the response into an [ApiErrors] object.
      */
@@ -101,7 +99,7 @@ class ApiErrorResponse<T> : ApiResponse<T> {
         // Collect remaining errors in a map
         val fieldErrors: Map<String, List<String>> =
                 errorJson.keys().asSequence().associateWith { field ->
-                    errorJson.getJSONArray(field).toList<String>()
+                    errorJson.getJSONArray(field).toList()
                 }
 
         return ApiErrors(detail, fieldErrors, nonFieldErrors)
