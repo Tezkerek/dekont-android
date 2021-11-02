@@ -6,13 +6,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
-import ro.ande.dekont.api.ApiErrorResponse
-import ro.ande.dekont.api.ApiErrorType
-import ro.ande.dekont.api.ApiSuccessResponse
-import ro.ande.dekont.api.DekontService
+import ro.ande.dekont.api.*
 import ro.ande.dekont.db.TransactionDao
-import ro.ande.dekont.util.CachedNetworkData
-import ro.ande.dekont.util.NetworkState
+import ro.ande.dekont.util.*
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
@@ -27,6 +23,7 @@ class TransactionRepository
 ) {
     /** Retrieve the cached page, and simultaneously fetch changes from the server. */
     fun loadTransactions(page: Int, users: List<Int>?): CachedNetworkData<List<Transaction>> {
+        
 //        val cachedData =
 //                transactionDao
 //                        .retrievePartial((page - 1) * PAGE_SIZE, PAGE_SIZE)
@@ -52,29 +49,26 @@ class TransactionRepository
 
         val networkState = flow {
             // Emit loading state
-            emit(NetworkState.loading())
+            emit(NetworkLoadingState())
 
             // Retrieve data from server
             val response = dekontService.listTransactions(page, users)
             when (response) {
                 is ApiSuccessResponse -> {
                     val isDataExhausted = response.body.page == response.body.pageCount
-                    emit(NetworkState.success(isExhausted = isDataExhausted))
+                    emit(NetworkSuccessState(isExhausted = isDataExhausted))
 
                     // The DB source will refresh automatically after insertion
                     transactionDao.insertAndReplace(response.body.data)
                 }
                 is ApiErrorResponse -> {
-                    emit(NetworkState.error(response.getFirstError()))
+                    emit(NetworkErrorState(response.getFirstError()))
                 }
+                is ApiEmptyResponse -> {}
             }
         }.distinctUntilChanged()
 
         return CachedNetworkData(cachedData, networkState)
-    }
-
-    fun getTransactionById(id: Int): Transaction {
-        return transactionDao.getById(id)
     }
 
     fun retrieveTransactionById(id: Int): LiveData<Transaction> {

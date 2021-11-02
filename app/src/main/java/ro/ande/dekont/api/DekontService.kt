@@ -1,6 +1,5 @@
 package ro.ande.dekont.api
 
-import androidx.lifecycle.LiveData
 import retrofit2.http.*
 import ro.ande.dekont.vo.*
 

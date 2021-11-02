@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -15,12 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_transaction_list.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
-import ro.ande.dekont.util.NetworkState
-import ro.ande.dekont.util.PagedLoadScrollListener
-import ro.ande.dekont.util.StringResource
-import ro.ande.dekont.util.setupWithIndividualNavController
+import ro.ande.dekont.util.*
 import ro.ande.dekont.viewmodel.TransactionListViewModel
 import ro.ande.dekont.viewmodel.injectableViewModel
 
@@ -42,10 +42,10 @@ class TransactionListFragment : Fragment(), Injectable {
         // Setup toolbar and drawer
         transaction_list_bottom_app_bar.setupWithIndividualNavController(navController, drawer_layout)
 
-        nav_drawer.also { drawer ->
-            drawer.setupWithNavController(navController)
-            drawer.setNavigationItemSelectedListener { item ->
-                drawer_layout.closeDrawer(drawer)
+        nav_drawer.apply {
+            setupWithNavController(navController)
+            setNavigationItemSelectedListener { item ->
+                drawer_layout.closeDrawer(this)
 
                 when (item.itemId) {
                     R.id.nav_logout ->
@@ -65,51 +65,17 @@ class TransactionListFragment : Fragment(), Injectable {
 
         initTransactionList()
 
-        lifecycleScope.launchWhenCreated {
-            for (message in transactionListViewModel.messages) {
-                showBottomSnackbar(message)
+        transactionListViewModel.apply {
+            messages.onEach {
+                showBottomSnackbar(it ?: return@onEach)
+            }.launchIn(lifecycleScope)
+
+            transactions.observe(viewLifecycleOwner) {
+                (transaction_list.adapter as TransactionListAdapter).setTransactions(it.getAll())
             }
-        }
-
-        // Observe transaction list
-        transactionListViewModel.transactionsWithCategories.observe(viewLifecycleOwner) { pair ->
-            val transactions = pair.first
-            val categoriesResource = pair.second
-
-            when {
-                // TODO Make this error less obtrusive
-                // categoriesResource.isError() -> showResourceError(categoriesResource.message, ResourceType.CATEGORY_LIST)
+            categories.observe(viewLifecycleOwner) {
+                (transaction_list.adapter as TransactionListAdapter).setCategories(it)
             }
-
-            // Set transactions and categories in adapter
-            transaction_list.adapter.also { adapter ->
-                adapter as ITransactionListManager
-
-                categoriesResource.data?.let { adapter.setCategories(it) }
-                adapter.setTransactions(transactions.getAll())
-            }
-        }
-
-        // Observe transactions network state
-        transactionListViewModel.transactionsState.observe(viewLifecycleOwner) { state: NetworkState? ->
-            // Sometimes state is null after login, no idea why
-            if (state == null) return@observe
-
-            // On success or error, notify load complete
-            if (!state.isLoading) {
-                transactionListManager?.notifyLoadComplete()
-                transactionListViewModel.transactionsLastLoadedPage++
-            }
-
-            if (state.isError) showResourceError(state.message, ResourceType.TRANSACTION_LIST)
-
-            // Stop loading if data has been exhausted
-            if (state.isExhausted) transactionListManager?.notifyLoadExhausted()
-        }
-
-        // Load transactions on launch
-        if (transactionListViewModel.transactions.value == null) {
-            transactionListViewModel.loadTransactionsWithCategories(1)
         }
     }
 
@@ -120,25 +86,8 @@ class TransactionListFragment : Fragment(), Injectable {
         transactionListManager = TransactionListManager(transaction_list).apply {
             onTransactionClickListener = { id -> handleTransactionClick(id) }
             onTransactionLongClickListener = { id -> openTransactionOptionsMenu(id) }
-            onPageLoadListener = onPageLoad@{ page ->
-                // Skip the first page, we will load it with categories later
-                if (page == 1) {
-                    notifyLoadComplete()
-                    return@onPageLoad
-                }
-
-                // Compare with ViewModel state
-                // Check if data is exhausted
-                if (transactionListViewModel.transactionsState.value?.isExhausted == true) {
-                    notifyLoadExhausted()
-                    return@onPageLoad
-                }
-
-                // Skip pages that we already loaded
-                if (page <= transactionListViewModel.transactionsLastLoadedPage)
-                    return@onPageLoad
-
-                transactionListViewModel.loadTransactions(page)
+            onPageLoadListener = onPageLoad@{ loadState ->
+                transactionListViewModel.attemptTransactionsPageLoad(loadState)
             }
         }
     }
@@ -217,32 +166,32 @@ class TransactionListFragment : Fragment(), Injectable {
 class TransactionListManager(recyclerView: RecyclerView) {
     var onTransactionClickListener: (Int) -> Unit = {}
     var onTransactionLongClickListener: (Int) -> Unit = {}
-    var onPageLoadListener: (Int) -> Unit = {}
+    var onPageLoadListener: (PagedLoadState) -> Unit = {}
 
-    private var loadCompleteNotifier: PagedLoadScrollListener.LoadCompleteNotifier? = null
+    private var loadState: PagedLoadState? = null
 
     init {
         val linearLayoutManager = LinearLayoutManager(recyclerView.context)
-        val transactionListAdapter = TransactionListAdapter()
+        val transactionListAdapter = TransactionListAdapterImpl()
                 .apply {
-                    onTransactionClickListener = ITransactionListManager.OnTransactionClickListener(this@TransactionListManager.onTransactionClickListener)
-                    onTransactionLongClickListener = ITransactionListManager.OnTransactionLongClickListener(this@TransactionListManager.onTransactionLongClickListener)
+                    onTransactionClickListener = TransactionListAdapter.OnTransactionClickListener(this@TransactionListManager.onTransactionClickListener)
+                    onTransactionLongClickListener = TransactionListAdapter.OnTransactionLongClickListener(this@TransactionListManager.onTransactionLongClickListener)
                 }
+
+        val pagedLoadManager = PagedLoadScrollListener(linearLayoutManager, 2) {
+            loadState = it
+            onPageLoadListener(it)
+        }
 
 
         recyclerView.apply {
             layoutManager = linearLayoutManager
             adapter = transactionListAdapter
             addItemDecoration(HeaderItemDecoration(this, isHeader = transactionListAdapter::isItemHeader))
-            addOnScrollListener(object : PagedLoadScrollListener(linearLayoutManager, 2) {
-                override fun onLoadMore(page: Int, loadComplete: LoadCompleteNotifier) {
-                    loadCompleteNotifier = loadComplete
-                    onPageLoadListener(page)
-                }
-            })
+            addOnScrollListener(pagedLoadManager.scrollListener)
         }
     }
 
-    fun notifyLoadComplete() = loadCompleteNotifier?.notifyLoadComplete()
-    fun notifyLoadExhausted() = loadCompleteNotifier?.notifyLoadExhausted()
+    fun notifyLoadComplete() = loadState?.notifyLoadComplete()
+    fun notifyDataExhausted() = loadState?.notifyDataExhausted()
 }

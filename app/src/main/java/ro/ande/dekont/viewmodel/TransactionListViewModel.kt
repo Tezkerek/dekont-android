@@ -1,47 +1,45 @@
 package ro.ande.dekont.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
-import kotlinx.coroutines.channels.Channel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ro.ande.dekont.R
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
-import ro.ande.dekont.util.NetworkState
-import ro.ande.dekont.util.PagedList
-import ro.ande.dekont.util.StringResource
-import ro.ande.dekont.util.zipLiveData
+import ro.ande.dekont.util.*
 import ro.ande.dekont.vo.Category
-import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
 class TransactionListViewModel
 @Inject constructor(
-        private val mApplication: Application,
+        mApplication: Application,
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {
     private val _transactions = MediatorLiveData<PagedList<Transaction>>()
     val transactions: LiveData<PagedList<Transaction>> = _transactions
 
-    private val _transactionsState = MediatorLiveData<NetworkState>()
-    val transactionsState: LiveData<NetworkState> = _transactionsState
+    private val _categories = MediatorLiveData<List<Category>>()
+    val categories: LiveData<List<Category>> = _categories
 
-    private val _categories = MediatorLiveData<Resource<List<Category>>>()
-    val categories: LiveData<Resource<List<Category>>> = _categories
-
-    private val _transactionsWithCategories = MediatorLiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>>()
-    val transactionsWithCategories: LiveData<Pair<PagedList<Transaction>, Resource<List<Category>>>> = _transactionsWithCategories
-
-    var transactionsLastLoadedPage: Int = 0
-
-    val messages: Channel<StringResource> = Channel()
+    private val _messages: MutableStateFlow<StringResource?> = MutableStateFlow(null)
+    val messages: StateFlow<StringResource?>
+        get() = _messages
 
 
-    fun loadTransactions(page: Int, users: List<Int>? = null) {
+    init {
+        loadCategories()
+    }
+
+    private fun loadTransactions(page: Int, users: List<Int>? = null) {
         val loadSource = transactionRepository.loadTransactions(page, users)
 
         loadSource.data.onEach { transactions ->
@@ -49,61 +47,62 @@ class TransactionListViewModel
             // This can happen if there is a network error,
             // and the local source is exhausted.
             if (transactions.isEmpty()) {
-                _transactionsState.postValue(_transactionsState.value?.also { prevState ->
-                    NetworkState(prevState.status, prevState.message, isExhausted = true)
-                })
+                lastPagedLoadState.notifyDataExhausted()
             } else {
                 // Update page with the new data
                 _transactions.run {
-                    postValue((value
-                            ?: PagedList()).apply { setPageContents(page, transactions) })
+                    val currentList = value ?: PagedList()
+                    currentList.setPageContents(page, transactions)
+                    postValue(currentList)
                 }
             }
         }.launchIn(viewModelScope)
 
         loadSource.networkState.onEach { networkState ->
-            if (networkState.isError) {
-                messages.send(StringResource.createWithDefault(networkState.message, R.string.error_unknown))
+            if (networkState !is NetworkLoadingState)
+                lastPagedLoadState.notifyLoadComplete()
+            if (networkState is NetworkErrorState) {
+                _messages.value = networkState.message.toStringResource(R.string.error_unknown)
             }
-            if (networkState.isExhausted) isNetworkSourceExhausted = networkState.isExhausted
+            if (networkState.isExhausted) lastPagedLoadState.notifyDataExhausted()
         }.launchIn(viewModelScope)
     }
 
-    var lastLoadedPage = 0
-    var isNetworkSourceExhausted = false
+    private var lastPagedLoadState: PagedLoadState = PagedLoadState(0)
 
-    fun attemptPageLoad(page: Int): Boolean {
-        if (page <= lastLoadedPage || isNetworkSourceExhausted)
+    fun attemptTransactionsPageLoad(pagedLoadState: PagedLoadState): Boolean {
+        // Skip if page was already loaded or if data source is exhausted
+        if (pagedLoadState.page <= lastPagedLoadState.page || lastPagedLoadState.isExhausted)
             return false
 
-        loadTransactions(page)
+        lastPagedLoadState = pagedLoadState
+        loadTransactions(pagedLoadState.page)
         return true
     }
 
-    /** Same as loadTransactions, but only emits when both transactions and categories are loaded. */
-    fun loadTransactionsWithCategories(page: Int, users: List<Int>? = null) {
-        val bothLiveData = zipLiveData(transactions, categories)
-        loadTransactions(page, users)
-        loadCategories()
+    private fun loadCategories() {
+        val loadSource = categoryRepository.loadAll()
 
-        _transactionsWithCategories.addSource(bothLiveData) {
-            _transactionsWithCategories.value = it
-        }
-    }
+        loadSource.data.onEach { categories ->
+            _categories.postValue(categories)
+        }.launchIn(viewModelScope)
 
-    fun loadCategories() {
-        _categories.addSource(categoryRepository.loadAll()) {
-            _categories.value = it
-        }
+        loadSource.networkState.onEach { networkState ->
+            if (networkState !is NetworkLoadingState)
+                lastPagedLoadState.notifyLoadComplete()
+            if (networkState is NetworkErrorState) {
+                _messages.value = networkState.message.toStringResource(R.string.error_unknown)
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun attemptTransactionDeletion(id: Int) {
         viewModelScope.launch {
             val deletion = transactionRepository.deleteTransaction(id)
             if (deletion.isSuccess) {
-                messages.send(StringResource(R.string.message_transaction_deletion_success))
+                _messages.value = StringResource(R.string.message_transaction_deletion_success)
             } else {
-                messages.send(StringResource.createWithDefault(deletion.message, R.string.error_unknown))
+                _messages.value = deletion.message.toStringResource(R.string.error_unknown)
             }
         }
     }

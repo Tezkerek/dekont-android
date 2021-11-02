@@ -8,34 +8,7 @@ class CachedNetworkData<T>(
         val networkState: Flow<NetworkState>
 )
 
-class NetworkState(
-        val status: Status,
-        val message: String? = null,
-        val isExhausted: Boolean = false
-) {
-    val isSuccess
-        get() = status == Status.SUCCESS
-
-    val isLoading
-        get() = status == Status.LOADING
-
-    val isError
-        get() = status == Status.ERROR
-
-    enum class Status {
-        SUCCESS,
-        LOADING,
-        ERROR
-    }
-
-    companion object {
-        fun success(message: String? = null, isExhausted: Boolean = false) =
-                NetworkState(Status.SUCCESS, message, isExhausted)
-
-        fun loading(message: String? = null, isExhausted: Boolean = false) =
-                NetworkState(Status.LOADING, message, isExhausted)
-
-        fun error(message: String? = null, isExhausted: Boolean = false) =
-                NetworkState(Status.ERROR, message, isExhausted)
-    }
-}
+sealed class NetworkState(val isExhausted: Boolean)
+class NetworkSuccessState(isExhausted: Boolean) : NetworkState(isExhausted)
+class NetworkErrorState(val message: String, isExhausted: Boolean = false) : NetworkState(isExhausted)
+class NetworkLoadingState : NetworkState(false)
