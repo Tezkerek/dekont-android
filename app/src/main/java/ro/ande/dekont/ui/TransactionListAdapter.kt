@@ -3,7 +3,7 @@ package ro.ande.dekont.ui
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 
-interface ITransactionListManager {
+interface TransactionListAdapter {
     fun setCategories(categories: List<Category>)
     fun setTransactions(transactions: List<Transaction>)
     fun appendTransactions(newTransactions: List<Transaction>)

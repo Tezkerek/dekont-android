@@ -26,3 +26,8 @@ fun StringResource(string: String): StringResource =
 
 fun StringResource(resId: Int): StringResource =
         StringResource.Resource(resId)
+
+fun String.toStringResource(): StringResource = StringResource(this)
+
+fun String?.toStringResource(@StringRes default: Int): StringResource =
+    StringResource.createWithDefault(this, default)

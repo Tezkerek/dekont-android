@@ -7,8 +7,7 @@ import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiSuccessResponse
 import ro.ande.dekont.api.DekontService
 import ro.ande.dekont.db.CategoryDao
-import ro.ande.dekont.util.CachedNetworkData
-import ro.ande.dekont.util.NetworkState
+import ro.ande.dekont.util.*
 import ro.ande.dekont.vo.Category
 import javax.inject.Inject
 
@@ -21,15 +20,15 @@ class CategoryRepository
         val cachedData = categoryDao.retrieveAll().distinctUntilChanged()
 
         val networkState: Flow<NetworkState> = flow {
-            emit(NetworkState.loading())
+            emit(NetworkLoadingState())
 
             when (val response = dekontService.listCategories()) {
                 is ApiSuccessResponse -> {
                     categoryDao.insert(response.body)
-                    emit(NetworkState.success(isExhausted = true))
+                    emit(NetworkSuccessState(isExhausted = true))
                 }
                 is ApiErrorResponse -> {
-                    emit(NetworkState.error(response.getFirstError()))
+                    emit(NetworkErrorState(response.getFirstError()))
                 }
             }
         }.distinctUntilChanged()

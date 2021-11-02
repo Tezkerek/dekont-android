@@ -16,9 +16,9 @@ import ro.ande.dekont.util.yearMonth
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 
-class TransactionListAdapter
-    : ListAdapter<AdapterItem, TransactionListAdapter.ViewHolder>(TransactionsDiffUtil()),
-        ITransactionListManager {
+class TransactionListAdapterImpl
+    : ListAdapter<AdapterItem, TransactionListAdapterImpl.ViewHolder>(TransactionsDiffUtil()),
+        TransactionListAdapter {
 
     private var categoriesById: Map<Int, Category> = mapOf()
 
@@ -73,8 +73,8 @@ class TransactionListAdapter
     override fun isItemHeader(position: Int): Boolean =
             getItemViewType(position) == TYPE_HEADER
 
-    override var onTransactionClickListener: ITransactionListManager.OnTransactionClickListener? = null
-    override var onTransactionLongClickListener: ITransactionListManager.OnTransactionLongClickListener? = null
+    override var onTransactionClickListener: TransactionListAdapter.OnTransactionClickListener? = null
+    override var onTransactionLongClickListener: TransactionListAdapter.OnTransactionLongClickListener? = null
 
     override fun getItemViewType(position: Int): Int =
             when (getItem(position)) {
