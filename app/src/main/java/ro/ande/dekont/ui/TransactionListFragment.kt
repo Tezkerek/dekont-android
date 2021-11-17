@@ -201,20 +201,23 @@ class TransactionListManager(recyclerView: RecyclerView) {
                 TransactionListAdapter.OnTransactionLongClickListener(value)
         }
     var onPageLoadListener: (PagedLoadState) -> Unit = {}
+        set(value) {
+            field = value
+
+            // Update page load listener as well
+            pagedLoadManager.onLoadMore = { newPagedLoadState ->
+                loadState = newPagedLoadState
+                value(newPagedLoadState)
+            }
+        }
 
     private var loadState: PagedLoadState? = null
 
+    private val linearLayoutManager = LinearLayoutManager(recyclerView.context)
     private val transactionListAdapter = TransactionListAdapterImpl()
+    private val pagedLoadManager = PagedLoadScrollListener(linearLayoutManager, 30)
 
     init {
-        val linearLayoutManager = LinearLayoutManager(recyclerView.context)
-
-        val pagedLoadManager = PagedLoadScrollListener(linearLayoutManager, 2) {
-            loadState = it
-            onPageLoadListener(it)
-        }
-
-
         recyclerView.apply {
             layoutManager = linearLayoutManager
             adapter = transactionListAdapter

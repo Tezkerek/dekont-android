@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 class PagedLoadScrollListener(
     layoutManager: LinearLayoutManager,
     visibleThreshold: Int = DEFAULT_VISIBLE_THRESHOLD,
-    private val onLoadMore: (PagedLoadState) -> Unit
 ) {
+    var onLoadMore: (PagedLoadState) -> Unit = {}
+
     private var currentPage = 0
     private var previousTotalItemCount = 0
     private var prevPagedLoadState: PagedLoadState? = null
