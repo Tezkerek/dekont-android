@@ -23,29 +23,10 @@ class TransactionRepository
 ) {
     /** Retrieve the cached page, and simultaneously fetch changes from the server. */
     fun loadTransactions(page: Int, users: List<Int>?): CachedNetworkData<List<Transaction>> {
-        
-//        val cachedData =
-//                transactionDao
-//                        .retrievePartial((page - 1) * PAGE_SIZE, PAGE_SIZE)
-//                        .distinctUntilChanged()
-        val cachedData = flow<List<Transaction>> {
-            val list = mutableListOf<Transaction>()
-            (1..50).forEach {
-                list.add(Transaction(
-                        it,
-                        0,
-                        LocalDate.now().minusDays(it * 3L),
-                        BigDecimal(100 + it),
-                        Currency.getInstance(Locale.getDefault()),
-                        null,
-                        "",
-                        "",
-                        "",
-                        "",
-                        Transaction.PENDING
-                )) }
-            emit(list)
-        }
+        val cachedData =
+            transactionDao
+                .retrievePartial((page - 1) * PAGE_SIZE, PAGE_SIZE)
+                .distinctUntilChanged()
 
         val networkState = flow {
             // Emit loading state
@@ -114,6 +95,26 @@ class TransactionRepository
                     ResourceDeletion.error(response.getFirstError())
                 }
             }
+
+    fun mockTransactions(count: Int): Flow<List<Transaction>> =
+        flow<List<Transaction>> {
+            val list = mutableListOf<Transaction>()
+            (1..count).forEach { mockId ->
+                list.add(Transaction(
+                        mockId,
+                        0,
+                        LocalDate.now().minusDays(mockId * 3L),
+                        BigDecimal(9000 + mockId),
+                        Currency.getInstance(Locale.getDefault()),
+                        null,
+                        "Mocked transaction",
+                        "",
+                        "",
+                        "",
+                        Transaction.PENDING
+                )) }
+            emit(list)
+        }
 
     companion object {
         const val PAGE_SIZE = 15
