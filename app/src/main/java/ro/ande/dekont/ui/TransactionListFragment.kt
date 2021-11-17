@@ -165,18 +165,29 @@ class TransactionListFragment : Fragment(), Injectable {
 
 class TransactionListManager(recyclerView: RecyclerView) {
     var onTransactionClickListener: (Int) -> Unit = {}
+        set(value) {
+            field = value
+
+            // Update adapter listener as well
+            transactionListAdapter.onTransactionClickListener =
+                TransactionListAdapter.OnTransactionClickListener(value)
+        }
     var onTransactionLongClickListener: (Int) -> Unit = {}
+        set(value) {
+            field = value
+
+            // Update adapter listener as well
+            transactionListAdapter.onTransactionLongClickListener =
+                TransactionListAdapter.OnTransactionLongClickListener(value)
+        }
     var onPageLoadListener: (PagedLoadState) -> Unit = {}
 
     private var loadState: PagedLoadState? = null
 
+    private val transactionListAdapter = TransactionListAdapterImpl()
+
     init {
         val linearLayoutManager = LinearLayoutManager(recyclerView.context)
-        val transactionListAdapter = TransactionListAdapterImpl()
-                .apply {
-                    onTransactionClickListener = TransactionListAdapter.OnTransactionClickListener(this@TransactionListManager.onTransactionClickListener)
-                    onTransactionLongClickListener = TransactionListAdapter.OnTransactionLongClickListener(this@TransactionListManager.onTransactionLongClickListener)
-                }
 
         val pagedLoadManager = PagedLoadScrollListener(linearLayoutManager, 2) {
             loadState = it
