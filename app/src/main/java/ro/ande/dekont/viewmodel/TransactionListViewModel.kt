@@ -37,6 +37,7 @@ class TransactionListViewModel
 
     init {
         loadCategories()
+        loadTransactions(1)
     }
 
     private fun loadTransactions(page: Int, users: List<Int>? = null) {
