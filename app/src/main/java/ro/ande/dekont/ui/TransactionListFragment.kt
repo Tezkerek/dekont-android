@@ -39,6 +39,21 @@ class TransactionListFragment : Fragment(), Injectable {
         setupNavigationUI(findNavController())
 
         add_transaction_fab.setOnClickListener { navigateToNewTransactionEditor() }
+
+        initTransactionList()
+
+        transactionListViewModel.apply {
+            messages.onEach {
+                showBottomSnackbar(it ?: return@onEach)
+            }.launchIn(lifecycleScope)
+
+            transactions.observe(viewLifecycleOwner) {
+                (transaction_list.adapter as TransactionListAdapter).setTransactions(it.getAll())
+            }
+            categories.observe(viewLifecycleOwner) {
+                (transaction_list.adapter as TransactionListAdapter).setCategories(it)
+            }
+        }
     }
 
     private fun setupNavigationUI(navController: NavController) {
@@ -62,25 +77,6 @@ class TransactionListFragment : Fragment(), Injectable {
                         return@setNavigationItemSelectedListener false
                 }
                 true
-            }
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        initTransactionList()
-
-        transactionListViewModel.apply {
-            messages.onEach {
-                showBottomSnackbar(it ?: return@onEach)
-            }.launchIn(lifecycleScope)
-
-            transactions.observe(viewLifecycleOwner) {
-                (transaction_list.adapter as TransactionListAdapter).setTransactions(it.getAll())
-            }
-            categories.observe(viewLifecycleOwner) {
-                (transaction_list.adapter as TransactionListAdapter).setCategories(it)
             }
         }
     }
