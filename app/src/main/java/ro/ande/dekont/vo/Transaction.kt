@@ -11,65 +11,65 @@ import java.text.DecimalFormat
 import java.util.*
 
 @Entity
-data class Transaction (
-        @field:SerializedName("id")
-        @field:PrimaryKey(autoGenerate = true)
-        val id: Int,
+data class Transaction(
+    @field:SerializedName("id")
+    @field:PrimaryKey(autoGenerate = true)
+    val id: Int,
 
-        @field:SerializedName("user")
-        val userId: Int,
+    @field:SerializedName("user")
+    val userId: Int,
 
-        @field:SerializedName("date")
-        var date: LocalDate,
+    @field:SerializedName("date")
+    var date: LocalDate,
 
-        @field:SerializedName("amount")
-        var amount: BigDecimal,
+    @field:SerializedName("amount")
+    var amount: BigDecimal,
 
-        @field:SerializedName("currency")
-        var currency: Currency,
+    @field:SerializedName("currency")
+    var currency: Currency,
 
-        @field:SerializedName("category")
-        val categoryId: Int?,
+    @field:SerializedName("category")
+    val categoryId: Int?,
 
-        @field:SerializedName("description")
-        var description: String,
+    @field:SerializedName("description")
+    var description: String,
 
-        @field:SerializedName("supplier")
-        var supplier: String,
+    @field:SerializedName("supplier")
+    var supplier: String,
 
-        @field:SerializedName("document_number")
-        @field:ColumnInfo(name = "document_number")
-        var documentNumber: String,
+    @field:SerializedName("document_number")
+    @field:ColumnInfo(name = "document_number")
+    var documentNumber: String,
 
-        @field:SerializedName("document_type")
-        @field:ColumnInfo(name = "document_type")
-        var documentType: String,
+    @field:SerializedName("document_type")
+    @field:ColumnInfo(name = "document_type")
+    var documentType: String,
 
-        @field:SerializedName("status")
-        var status: Int
+    @field:SerializedName("status")
+    var status: Int
 ) {
     /** Constructor for to-be-created transactions */
     constructor(
-            date: LocalDate,
-            amount: BigDecimal,
-            currency: Currency,
-            categoryId: Int?,
-            description: String,
-            supplier: String,
-            documentNumber: String,
-            documentType: String
+        date: LocalDate,
+        amount: BigDecimal,
+        currency: Currency,
+        categoryId: Int?,
+        description: String,
+        supplier: String,
+        documentNumber: String,
+        documentType: String
     ) : this(
-            0,
-            0,
-            date,
-            amount,
-            currency,
-            categoryId,
-            description,
-            supplier,
-            documentNumber,
-            documentType,
-            PENDING
+        0,
+        0,
+        date,
+        amount,
+        currency,
+        categoryId,
+        description,
+        supplier,
+        documentNumber,
+        documentType,
+        PENDING
     )
 
     /** Returns a String containing the formatted date */

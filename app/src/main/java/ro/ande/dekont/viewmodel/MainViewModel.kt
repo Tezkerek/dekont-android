@@ -15,12 +15,12 @@ import javax.inject.Inject
 
 class MainViewModel
 @Inject constructor(
-        private val mApplication: Application,
-        private val dekontDatabase: DekontDatabase,
-        private val userRepository: UserRepository
+    private val mApplication: Application,
+    private val dekontDatabase: DekontDatabase,
+    private val userRepository: UserRepository
 ) : AndroidViewModel(mApplication) {
     private val authToken: String? =
-            mApplication.getSharedPreferences("auth", Context.MODE_PRIVATE).getString("token", null)
+        mApplication.getSharedPreferences("auth", Context.MODE_PRIVATE).getString("token", null)
 
     private val _isLoginValid: MediatorLiveData<Boolean> = MediatorLiveData()
     val isLoginValid: LiveData<Boolean> = _isLoginValid.apply { value = verifyLogin() }
@@ -39,10 +39,13 @@ class MainViewModel
             }
 
             // Delete token and invalidate login
-            mApplication.getSharedPreferences(AuthActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-                    .edit()
-                    .remove(AuthActivity.SHARED_PREFERENCES_TOKEN_KEY)
-                    .apply()
+            mApplication.getSharedPreferences(
+                AuthActivity.SHARED_PREFERENCES_NAME,
+                Context.MODE_PRIVATE
+            )
+                .edit()
+                .remove(AuthActivity.SHARED_PREFERENCES_TOKEN_KEY)
+                .apply()
             _isLoginValid.postValue(false)
         }
     }

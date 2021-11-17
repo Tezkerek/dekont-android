@@ -22,33 +22,33 @@ class ApiModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(app: Application): OkHttpClient =
-            OkHttpClient.Builder()
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .addInterceptor(AuthTokenInterceptor(app))
-                    .addInterceptor(LoggingInterceptor())
-                    .build()
+        OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(AuthTokenInterceptor(app))
+            .addInterceptor(LoggingInterceptor())
+            .build()
 
     @Provides
     @Singleton
     fun provideDekontService(client: OkHttpClient, gson: Gson): DekontService =
-            Retrofit.Builder()
-                    .baseUrl(DEKONT_BASE_URL)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .addCallAdapterFactory(LiveDataCallAdapterFactory())
-                    .addCallAdapterFactory(ApiResponseCallAdapterFactory())
-                    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                    .build()
-                    .create(DekontService::class.java)
+        Retrofit.Builder()
+            .baseUrl(DEKONT_BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .build()
+            .create(DekontService::class.java)
 
     @Provides
     fun provideGson(): Gson =
-            GsonBuilder()
-                    .registerTypeAdapter(LocalDate::class.java, GsonLocalDateSerializer())
-                    .registerTypeAdapter(LocalDate::class.java, GsonLocalDateDeserializer())
-                    .registerTypeAdapter(Currency::class.java, GsonCurrencySerializer())
-                    .registerTypeAdapter(Currency::class.java, GsonCurrencyDeserializer())
-                    .create()
+        GsonBuilder()
+            .registerTypeAdapter(LocalDate::class.java, GsonLocalDateSerializer())
+            .registerTypeAdapter(LocalDate::class.java, GsonLocalDateDeserializer())
+            .registerTypeAdapter(Currency::class.java, GsonCurrencySerializer())
+            .registerTypeAdapter(Currency::class.java, GsonCurrencyDeserializer())
+            .create()
 
     companion object {
         const val DEKONT_BASE_URL = "http://192.168.1.102:8080"

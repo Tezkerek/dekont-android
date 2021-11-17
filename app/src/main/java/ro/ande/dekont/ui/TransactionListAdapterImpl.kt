@@ -18,7 +18,7 @@ import ro.ande.dekont.vo.Transaction
 
 class TransactionListAdapterImpl
     : ListAdapter<AdapterItem, TransactionListAdapterImpl.ViewHolder>(TransactionsDiffUtil()),
-        TransactionListAdapter {
+    TransactionListAdapter {
 
     private var categoriesById: Map<Int, Category> = mapOf()
 
@@ -28,7 +28,7 @@ class TransactionListAdapterImpl
     }
 
     override fun setTransactions(transactions: List<Transaction>) =
-            submitList(buildSectionedList(transactions))
+        submitList(buildSectionedList(transactions))
 
     override fun appendTransactions(newTransactions: List<Transaction>) {
         if (newTransactions.isEmpty()) return
@@ -38,11 +38,11 @@ class TransactionListAdapterImpl
     }
 
     private fun getLastYearMonthInList(): YearMonth? =
-            when (val lastItem = currentList.lastOrNull()) {
-                is AdapterItem.TransactionItem -> lastItem.value.date.yearMonth
-                is AdapterItem.Header -> lastItem.month
-                null -> null
-            }
+        when (val lastItem = currentList.lastOrNull()) {
+            is AdapterItem.TransactionItem -> lastItem.value.date.yearMonth
+            is AdapterItem.Header -> lastItem.month
+            null -> null
+        }
 
     /**
      * Builds a list of [AdapterItem]s by inserting headers between groups of [Transaction]s
@@ -52,7 +52,10 @@ class TransactionListAdapterImpl
      *                  append the result to an existing list. If null, the first item will always
      *                  be a header.
      */
-    private fun buildSectionedList(itemList: List<Transaction>, startFrom: YearMonth? = null): List<AdapterItem> {
+    private fun buildSectionedList(
+        itemList: List<Transaction>,
+        startFrom: YearMonth? = null
+    ): List<AdapterItem> {
         val newItems: MutableList<AdapterItem> = mutableListOf()
 
         var prevYearMonth: YearMonth? = startFrom
@@ -71,28 +74,30 @@ class TransactionListAdapterImpl
     }
 
     override fun isItemHeader(position: Int): Boolean =
-            getItemViewType(position) == TYPE_HEADER
+        getItemViewType(position) == TYPE_HEADER
 
-    override var onTransactionClickListener: TransactionListAdapter.OnTransactionClickListener? = null
-    override var onTransactionLongClickListener: TransactionListAdapter.OnTransactionLongClickListener? = null
+    override var onTransactionClickListener: TransactionListAdapter.OnTransactionClickListener? =
+        null
+    override var onTransactionLongClickListener: TransactionListAdapter.OnTransactionLongClickListener? =
+        null
 
     override fun getItemViewType(position: Int): Int =
-            when (getItem(position)) {
-                is AdapterItem.TransactionItem -> TYPE_TRANSACTION
-                is AdapterItem.Header -> TYPE_HEADER
-            }
+        when (getItem(position)) {
+            is AdapterItem.TransactionItem -> TYPE_TRANSACTION
+            is AdapterItem.Header -> TYPE_HEADER
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TRANSACTION -> {
                 val view = layoutInflater
-                        .inflate(R.layout.transaction_list_item, parent, false)
+                    .inflate(R.layout.transaction_list_item, parent, false)
                 ViewHolder.TransactionItem(view)
             }
             TYPE_HEADER -> {
                 val view = layoutInflater
-                        .inflate(R.layout.transaction_list_header, parent, false)
+                    .inflate(R.layout.transaction_list_header, parent, false)
                 ViewHolder.Header(view)
 
             }
@@ -151,24 +156,24 @@ class TransactionListAdapterImpl
 
     class TransactionsDiffUtil : DiffUtil.ItemCallback<AdapterItem>() {
         override fun areItemsTheSame(oldItem: AdapterItem, newItem: AdapterItem): Boolean =
-                when (oldItem) {
-                    is AdapterItem.TransactionItem ->
-                        newItem is AdapterItem.TransactionItem
-                                && oldItem.value.id == newItem.value.id
-                    is AdapterItem.Header ->
-                        newItem is AdapterItem.Header
-                                && oldItem.month == newItem.month
-                }
+            when (oldItem) {
+                is AdapterItem.TransactionItem ->
+                    newItem is AdapterItem.TransactionItem
+                            && oldItem.value.id == newItem.value.id
+                is AdapterItem.Header ->
+                    newItem is AdapterItem.Header
+                            && oldItem.month == newItem.month
+            }
 
         override fun areContentsTheSame(oldItem: AdapterItem, newItem: AdapterItem): Boolean =
-                when (oldItem) {
-                    is AdapterItem.TransactionItem ->
-                        newItem is AdapterItem.TransactionItem
-                                && oldItem.value == newItem.value
-                    is AdapterItem.Header ->
-                        newItem is AdapterItem.Header
-                                && oldItem.month == newItem.month
-                }
+            when (oldItem) {
+                is AdapterItem.TransactionItem ->
+                    newItem is AdapterItem.TransactionItem
+                            && oldItem.value == newItem.value
+                is AdapterItem.Header ->
+                    newItem is AdapterItem.Header
+                            && oldItem.month == newItem.month
+            }
 
     }
 

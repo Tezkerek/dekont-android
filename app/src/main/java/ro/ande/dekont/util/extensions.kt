@@ -12,7 +12,7 @@ val LocalDate.yearMonth: YearMonth
 
 
 fun JSONObject.getStringOrNull(name: String): String? =
-        opt(name)?.toString()
+    opt(name)?.toString()
 
 /**
  * Collects all of the [JSONArray]'s elements of type [T] into a list.
@@ -61,7 +61,7 @@ fun <A, B> zipLiveData(first: LiveData<A>, second: LiveData<B>): MediatorLiveDat
  * as long as [f] returns `true`.
  */
 fun <T> MutableList<T>.withListIteratorWhile(f: MutableListIterator<T>.(Int, T) -> Boolean) {
-    with (this.listIterator()) {
+    with(this.listIterator()) {
         while (hasNext()) {
             if (!this.f(nextIndex(), next()))
                 return
@@ -74,7 +74,7 @@ fun <T> MutableList<T>.withListIteratorWhile(f: MutableListIterator<T>.(Int, T) 
  * @return Whether the element was removed or not
  */
 fun <T> MutableIterable<T>.removeFirst(predicate: (T) -> Boolean): Boolean {
-    with (iterator()) {
+    with(iterator()) {
         while (hasNext()) {
             if (predicate(next())) {
                 remove()

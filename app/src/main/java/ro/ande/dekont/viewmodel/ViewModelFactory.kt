@@ -9,12 +9,12 @@ import javax.inject.Singleton
 @Singleton
 class ViewModelFactory
 @Inject constructor(
-        val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
+    val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         // Try to find the class or a superclass of it in the creators list
         val creator =
-                creators[modelClass]
+            creators[modelClass]
                 ?: creators.entries.find { entry -> entry.key.isAssignableFrom(modelClass) }?.value
                 ?: throw IllegalArgumentException("Unknown model class $modelClass")
 

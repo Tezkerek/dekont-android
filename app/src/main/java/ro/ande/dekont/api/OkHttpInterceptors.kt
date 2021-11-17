@@ -13,13 +13,15 @@ import ro.ande.dekont.ui.AuthActivity
 class AuthTokenInterceptor(val app: Application) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val token = app.getSharedPreferences(AuthActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).getString("token", null)
+        val token =
+            app.getSharedPreferences(AuthActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                .getString("token", null)
 
         val request =
-                if (token != null) originalRequest.newBuilder()
-                        .addHeader("Authorization", "Token $token")
-                        .build()
-                else originalRequest
+            if (token != null) originalRequest.newBuilder()
+                .addHeader("Authorization", "Token $token")
+                .build()
+            else originalRequest
 
         return chain.proceed(request)
     }
@@ -28,9 +30,15 @@ class AuthTokenInterceptor(val app: Application) : Interceptor {
 class LoggingInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        Log.d("LoggingInterceptor", "Sending request ${request.url()} on ${chain.connection()} with ${request.headers()}")
+        Log.d(
+            "LoggingInterceptor",
+            "Sending request ${request.url()} on ${chain.connection()} with ${request.headers()}"
+        )
         val response = chain.proceed(request)
-        Log.d("LoggingInterceptor", "Received response for ${response.request().url()} with ${response.headers()}")
+        Log.d(
+            "LoggingInterceptor",
+            "Received response for ${response.request().url()} with ${response.headers()}"
+        )
         return response
     }
 

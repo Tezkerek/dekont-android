@@ -80,11 +80,11 @@ class ApiErrorResponse<T> : ApiResponse<T> {
             return ApiErrors()
 
         val errorJson =
-                try {
-                    JSONObject(errorString)
-                } catch (e: JSONException) {
-                    return ApiErrors()
-                }
+            try {
+                JSONObject(errorString)
+            } catch (e: JSONException) {
+                return ApiErrors()
+            }
 
         // Extract detail from the error response
         val detail: String? = errorJson.getStringOrNull("detail")
@@ -92,15 +92,15 @@ class ApiErrorResponse<T> : ApiResponse<T> {
 
         // Extract non-field errors
         val nonFieldErrors: List<String> =
-                errorJson.optJSONArray("non_field_errors")?.toList()
-                        ?: listOf()
+            errorJson.optJSONArray("non_field_errors")?.toList()
+                ?: listOf()
         errorJson.remove("non_field_errors")
 
         // Collect remaining errors in a map
         val fieldErrors: Map<String, List<String>> =
-                errorJson.keys().asSequence().associateWith { field ->
-                    errorJson.getJSONArray(field).toList()
-                }
+            errorJson.keys().asSequence().associateWith { field ->
+                errorJson.getJSONArray(field).toList()
+            }
 
         return ApiErrors(detail, fieldErrors, nonFieldErrors)
     }
@@ -121,9 +121,15 @@ class ApiErrorResponse<T> : ApiResponse<T> {
 
         /** A mapping of exception classes to error messages */
         private val exceptionToMessageMap = mapOf<KClass<out Throwable>, Pair<Int, String>>(
-                IOException::class to Pair(R.string.error_network, "Network error"),
-                ConnectException::class to Pair(R.string.error_server_unreachable, "Unable to reach server"),
-                SocketTimeoutException::class to Pair(R.string.error_server_unreachable, "Unable to reach server")
+            IOException::class to Pair(R.string.error_network, "Network error"),
+            ConnectException::class to Pair(
+                R.string.error_server_unreachable,
+                "Unable to reach server"
+            ),
+            SocketTimeoutException::class to Pair(
+                R.string.error_server_unreachable,
+                "Unable to reach server"
+            )
         )
 
         /**
@@ -133,21 +139,22 @@ class ApiErrorResponse<T> : ApiResponse<T> {
         private fun getMessageByException(exception: Throwable): Pair<Int, String> {
             Log.e("ApiResponse", "Received exception: ${exception.javaClass} ${exception.message}")
             return exceptionToMessageMap[exception::class]
-                    ?: Pair(R.string.error_unknown, "Unknown error")
+                ?: Pair(R.string.error_unknown, "Unknown error")
         }
     }
 }
 
 class ApiErrors(
-        val detail: String? = null,
-        val fieldErrors: Map<String, List<String>> = mapOf(),
-        val nonFieldErrors: List<String> = listOf()
+    val detail: String? = null,
+    val fieldErrors: Map<String, List<String>> = mapOf(),
+    val nonFieldErrors: List<String> = listOf()
 ) {
     fun getFirstError(): String =
-            detail
-                    ?: nonFieldErrors.firstOrNull()
-                    ?: fieldErrors.entries.iterator().run { if (hasNext()) next().run { "$key: ${value.first()}" } else null }
-                    ?: "No error response from server"
+        detail
+            ?: nonFieldErrors.firstOrNull()
+            ?: fieldErrors.entries.iterator()
+                .run { if (hasNext()) next().run { "$key: ${value.first()}" } else null }
+            ?: "No error response from server"
 }
 
 enum class ApiErrorType {
@@ -156,9 +163,9 @@ enum class ApiErrorType {
 
     companion object {
         fun fromHttpCode(code: Int) =
-                when (code) {
-                    HttpURLConnection.HTTP_NOT_FOUND -> NOT_FOUND
-                    else -> UNKNOWN
-                }
+            when (code) {
+                HttpURLConnection.HTTP_NOT_FOUND -> NOT_FOUND
+                else -> UNKNOWN
+            }
     }
 }

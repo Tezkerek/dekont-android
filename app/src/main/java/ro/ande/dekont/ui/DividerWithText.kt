@@ -48,8 +48,14 @@ class DividerWithText(context: Context, attrs: AttributeSet) : AppCompatTextView
         val middleY = (height + textBounds.bottom + dividerWidth) / 2f
 
         // Draw left line
-        canvas.drawLine(0f, middleY, (width - textBounds.right)/2 - textPadding, middleY, paint)
+        canvas.drawLine(0f, middleY, (width - textBounds.right) / 2 - textPadding, middleY, paint)
         // Draw right line
-        canvas.drawLine(textPadding + (width + textBounds.right)/2, middleY, width.toFloat(), middleY, paint)
+        canvas.drawLine(
+            textPadding + (width + textBounds.right) / 2,
+            middleY,
+            width.toFloat(),
+            middleY,
+            paint
+        )
     }
 }

@@ -38,12 +38,12 @@ android {
     }
     buildTypes {
         debug {
-            manifestPlaceholders = [usesCleartextTraffic:"true"]
+            manifestPlaceholders = [usesCleartextTraffic: "true"]
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [usesCleartextTraffic:"false"]
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
         }
     }
     buildToolsVersion = '30.0.2'

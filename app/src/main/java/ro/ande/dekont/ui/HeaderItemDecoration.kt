@@ -11,9 +11,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 class HeaderItemDecoration(
-        parent: RecyclerView,
-        private val shouldFadeOutHeader: Boolean = false,
-        private val isHeader: (itemPosition: Int) -> Boolean
+    parent: RecyclerView,
+    private val shouldFadeOutHeader: Boolean = false,
+    private val isHeader: (itemPosition: Int) -> Boolean
 ) : RecyclerView.ItemDecoration() {
 
     private var currentHeader: Header? = null
@@ -34,8 +34,8 @@ class HeaderItemDecoration(
         // Handle click on sticky header
         parent.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
             override fun onInterceptTouchEvent(
-                    recyclerView: RecyclerView,
-                    motionEvent: MotionEvent
+                recyclerView: RecyclerView,
+                motionEvent: MotionEvent
             ): Boolean {
                 return if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                     motionEvent.y <= currentHeader?.viewHolder?.itemView?.bottom ?: 0
@@ -48,8 +48,8 @@ class HeaderItemDecoration(
         super.onDrawOver(c, parent, state)
 
         val topChild = parent.findChildViewUnder(
-                parent.paddingLeft.toFloat(),
-                parent.paddingTop.toFloat()
+            parent.paddingLeft.toFloat(),
+            parent.paddingTop.toFloat()
         ) ?: return
         val topChildPosition = parent.getChildAdapterPosition(topChild)
         if (topChildPosition == RecyclerView.NO_POSITION) {
@@ -103,14 +103,14 @@ class HeaderItemDecoration(
         } else {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 c.saveLayerAlpha(
-                        RectF(0f, 0f, c.width.toFloat(), c.height.toFloat()),
-                        (((nextHeader.top - paddingTop) / nextHeader.height.toFloat()) * 255).toInt()
+                    RectF(0f, 0f, c.width.toFloat(), c.height.toFloat()),
+                    (((nextHeader.top - paddingTop) / nextHeader.height.toFloat()) * 255).toInt()
                 )
             } else {
                 c.saveLayerAlpha(
-                        0f, 0f, c.width.toFloat(), c.height.toFloat(),
-                        (((nextHeader.top - paddingTop) / nextHeader.height.toFloat()) * 255).toInt(),
-                        Canvas.ALL_SAVE_FLAG
+                    0f, 0f, c.width.toFloat(), c.height.toFloat(),
+                    (((nextHeader.top - paddingTop) / nextHeader.height.toFloat()) * 255).toInt(),
+                    Canvas.ALL_SAVE_FLAG
                 )
             }
 
@@ -151,18 +151,18 @@ class HeaderItemDecoration(
         // Specs for parent (RecyclerView)
         val widthSpec = View.MeasureSpec.makeMeasureSpec(parent.width, View.MeasureSpec.EXACTLY)
         val heightSpec =
-                View.MeasureSpec.makeMeasureSpec(parent.height, View.MeasureSpec.UNSPECIFIED)
+            View.MeasureSpec.makeMeasureSpec(parent.height, View.MeasureSpec.UNSPECIFIED)
 
         // Specs for children (headers)
         val childWidthSpec = ViewGroup.getChildMeasureSpec(
-                widthSpec,
-                parent.paddingLeft + parent.paddingRight,
-                view.layoutParams.width
+            widthSpec,
+            parent.paddingLeft + parent.paddingRight,
+            view.layoutParams.width
         )
         val childHeightSpec = ViewGroup.getChildMeasureSpec(
-                heightSpec,
-                parent.paddingTop + parent.paddingBottom,
-                view.layoutParams.height
+            heightSpec,
+            parent.paddingTop + parent.paddingBottom,
+            view.layoutParams.height
         )
 
         view.measure(childWidthSpec, childHeightSpec)

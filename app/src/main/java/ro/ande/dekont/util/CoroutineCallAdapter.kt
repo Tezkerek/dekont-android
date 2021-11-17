@@ -29,13 +29,18 @@ import java.lang.reflect.Type
  * HTTP responses and throws [IOException][java.io.IOException] for network errors
  */
 class CoroutineCallAdapterFactory : CallAdapter.Factory() {
-    override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
+    override fun get(
+        returnType: Type,
+        annotations: Array<Annotation>,
+        retrofit: Retrofit
+    ): CallAdapter<*, *>? {
         if (Deferred::class.java != getRawType(returnType)) {
             return null
         }
         if (returnType !is ParameterizedType) {
             throw IllegalStateException(
-                    "Deferred return type must be parameterized as Deferred<Foo> or Deferred<out Foo>")
+                "Deferred return type must be parameterized as Deferred<Foo> or Deferred<out Foo>"
+            )
         }
         val responseType = getParameterUpperBound(0, returnType)
 
@@ -43,7 +48,8 @@ class CoroutineCallAdapterFactory : CallAdapter.Factory() {
         return if (rawDeferredType == ApiResponse::class.java) {
             if (responseType !is ParameterizedType) {
                 throw IllegalStateException(
-                        "Response must be parameterized as Response<Foo> or Response<out Foo>")
+                    "Response must be parameterized as Response<Foo> or Response<out Foo>"
+                )
             }
             DeferredApiResponseCallAdapter<Any>(getParameterUpperBound(0, responseType))
         } else {
@@ -53,7 +59,7 @@ class CoroutineCallAdapterFactory : CallAdapter.Factory() {
 }
 
 private class BodyCallAdapter<T>(
-        private val responseType: Type
+    private val responseType: Type
 ) : CallAdapter<T, Deferred<T>> {
 
     override fun responseType(): Type = responseType
@@ -86,7 +92,7 @@ private class BodyCallAdapter<T>(
 }
 
 private class DeferredApiResponseCallAdapter<T>(
-        private val responseType: Type
+    private val responseType: Type
 ) : CallAdapter<T, Deferred<ApiResponse<T>>> {
 
     override fun responseType() = responseType

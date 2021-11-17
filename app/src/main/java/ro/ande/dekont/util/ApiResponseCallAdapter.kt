@@ -22,7 +22,11 @@ import java.lang.reflect.Type
  *
  */
 class ApiResponseCallAdapterFactory : CallAdapter.Factory() {
-    override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
+    override fun get(
+        returnType: Type,
+        annotations: Array<Annotation>,
+        retrofit: Retrofit
+    ): CallAdapter<*, *>? {
         return if (getRawType(returnType) == Call::class.java) {
             val callType = getParameterUpperBound(0, returnType as ParameterizedType)
             if (getRawType(callType) == ApiResponse::class.java) {
@@ -33,7 +37,7 @@ class ApiResponseCallAdapterFactory : CallAdapter.Factory() {
 }
 
 private class ApiResponseCallAdapter(
-        private val responseType: Type
+    private val responseType: Type
 ) : CallAdapter<Type, Call<ApiResponse<Type>>> {
 
     override fun responseType() = responseType
@@ -41,7 +45,7 @@ private class ApiResponseCallAdapter(
 }
 
 /** Transforms Call<T> into Call<ApiResponse<T>> */
-private class ApiResponseCall<T>(private val proxy: Call<T>): Call<ApiResponse<T>> {
+private class ApiResponseCall<T>(private val proxy: Call<T>) : Call<ApiResponse<T>> {
     override fun enqueue(callback: Callback<ApiResponse<T>>) {
         proxy.enqueue(object : Callback<T> {
             override fun onFailure(call: Call<T>, t: Throwable) {
@@ -60,7 +64,9 @@ private class ApiResponseCall<T>(private val proxy: Call<T>): Call<ApiResponse<T
     override fun isExecuted(): Boolean = proxy.isExecuted
     override fun isCanceled(): Boolean = proxy.isCanceled
     override fun cancel() = proxy.cancel()
-    override fun execute(): Response<ApiResponse<T>> = throw NotImplementedError("Don't try to execute this call")
+    override fun execute(): Response<ApiResponse<T>> =
+        throw NotImplementedError("Don't try to execute this call")
+
     override fun request(): Request = proxy.request()
     override fun timeout(): Timeout = proxy.timeout()
 }

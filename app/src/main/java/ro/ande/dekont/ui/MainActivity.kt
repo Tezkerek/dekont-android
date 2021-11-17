@@ -20,7 +20,8 @@ class MainActivity : BaseActivity(), Injectable, AuthSessionManager {
         setContentView(R.layout.activity_main)
 
         // https://stackoverflow.com/a/62612502/4904553
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_nav_host) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.main_nav_host) as NavHostFragment
         navController = navHostFragment.navController
 
         setupLoginCheck()
@@ -50,14 +51,14 @@ class MainActivity : BaseActivity(), Injectable, AuthSessionManager {
 
     override fun performLogout() {
         AlertDialog.Builder(this)
-                .setMessage(R.string.dialog_message_confirm_logout)
-                .setPositiveButton(R.string.action_sign_out) { dialog, _ ->
-                    mainViewModel.logout()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
-                .create()
-                .show()
+            .setMessage(R.string.dialog_message_confirm_logout)
+            .setPositiveButton(R.string.action_sign_out) { dialog, _ ->
+                mainViewModel.logout()
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
     }
 
     companion object {

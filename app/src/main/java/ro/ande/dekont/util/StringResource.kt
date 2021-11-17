@@ -6,10 +6,10 @@ import androidx.annotation.StringRes
 sealed class StringResource {
     /** Obtain the string, whatever type it may be. */
     fun getString(context: Context): kotlin.String =
-            when (this) {
-                is Resource -> context.getString(id)
-                is String -> string
-            }
+        when (this) {
+            is Resource -> context.getString(id)
+            is String -> string
+        }
 
     class Resource(@StringRes val id: Int) : StringResource()
     class String(val string: kotlin.String) : StringResource()
@@ -17,15 +17,15 @@ sealed class StringResource {
     companion object {
         /** Creates a [StringResource.String] if [string] is not null, otherwise creates a [StringResource.Resource] containing [default]. */
         fun createWithDefault(string: kotlin.String?, @StringRes default: Int): StringResource =
-                string?.let { StringResource(it) } ?: StringResource(default)
+            string?.let { StringResource(it) } ?: StringResource(default)
     }
 }
 
 fun StringResource(string: String): StringResource =
-        StringResource.String(string)
+    StringResource.String(string)
 
 fun StringResource(resId: Int): StringResource =
-        StringResource.Resource(resId)
+    StringResource.Resource(resId)
 
 fun String.toStringResource(): StringResource = StringResource(this)
 

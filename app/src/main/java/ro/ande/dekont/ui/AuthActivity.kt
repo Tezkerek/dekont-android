@@ -27,7 +27,7 @@ import ro.ande.dekont.vo.Token
  * A login screen that offers login via email/password.
  */
 class AuthActivity : BaseActivity(), Injectable {
-    private  val authViewModel: AuthViewModel by injectableViewModel()
+    private val authViewModel: AuthViewModel by injectableViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +39,11 @@ class AuthActivity : BaseActivity(), Injectable {
             when (response) {
                 is ApiSuccessResponse -> {
                     // Show message and attempt login
-                    Snackbar.make(this.registration_form, R.string.message_registration_successful, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(
+                        this.registration_form,
+                        R.string.message_registration_successful,
+                        Snackbar.LENGTH_LONG
+                    ).show()
                     finishRegistration()
                 }
                 is ApiErrorResponse -> showRegistrationErrors(response.errors)
@@ -150,8 +154,11 @@ class AuthActivity : BaseActivity(), Injectable {
     }
 
     private fun showRegistrationErrors(errors: ApiErrors) {
-        errors.detail?.let { Snackbar.make(this.registration_form, it, Snackbar.LENGTH_LONG).show() }
-        errors.nonFieldErrors.takeIf { it.isNotEmpty() }?.let { Snackbar.make(this.registration_form, it.first(), Snackbar.LENGTH_LONG).show() }
+        errors.detail?.let {
+            Snackbar.make(this.registration_form, it, Snackbar.LENGTH_LONG).show()
+        }
+        errors.nonFieldErrors.takeIf { it.isNotEmpty() }
+            ?.let { Snackbar.make(this.registration_form, it.first(), Snackbar.LENGTH_LONG).show() }
         errors.fieldErrors.also { fieldErrors ->
             fieldErrors["email"]?.let { this.registration_email.error = it.first() }
             fieldErrors["password"]?.let { this.registration_password.error = it.first() }
@@ -168,13 +175,19 @@ class AuthActivity : BaseActivity(), Injectable {
 
                 // Store the token
                 // TODO: Figure out how to use AccountManager
-                val sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-                sharedPreferences.edit().putString(SHARED_PREFERENCES_TOKEN_KEY, token.token).apply()
+                val sharedPreferences =
+                    getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString(SHARED_PREFERENCES_TOKEN_KEY, token.token)
+                    .apply()
 
                 finishLogin()
             } else {
                 // Display an error popup
-                Snackbar.make(this@AuthActivity.email_login_form, tokenResource.message!!, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(
+                    this@AuthActivity.email_login_form,
+                    tokenResource.message!!,
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
 
             showLoginProgress(false)
@@ -196,22 +209,22 @@ class AuthActivity : BaseActivity(), Injectable {
         val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
         viewToHide.animate()
-                .setDuration(shortAnimTime)
-                .alpha((if (show) 0 else 1).toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        email_sign_in_button.visibility = if (show) View.GONE else View.VISIBLE
-                    }
-                })
+            .setDuration(shortAnimTime)
+            .alpha((if (show) 0 else 1).toFloat())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    email_sign_in_button.visibility = if (show) View.GONE else View.VISIBLE
+                }
+            })
 
         progress_indicator.animate()
-                .setDuration(shortAnimTime)
-                .alpha((if (show) 1 else 0).toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        progress_indicator.visibility = if (show) View.VISIBLE else View.GONE
-                    }
-                })
+            .setDuration(shortAnimTime)
+            .alpha((if (show) 1 else 0).toFloat())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    progress_indicator.visibility = if (show) View.VISIBLE else View.GONE
+                }
+            })
     }
 
     private fun finishLogin() {
@@ -224,7 +237,10 @@ class AuthActivity : BaseActivity(), Injectable {
 
     private fun finishRegistration() {
         // Attempt login
-        authViewModel.attemptLogin(this.registration_email.text.toString(), this.registration_password.text.toString())
+        authViewModel.attemptLogin(
+            this.registration_email.text.toString(),
+            this.registration_password.text.toString()
+        )
         showLoginProgress(true)
     }
 

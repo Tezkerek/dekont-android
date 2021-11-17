@@ -20,7 +20,8 @@ import ro.ande.dekont.vo.Transaction
 import java.math.BigDecimal
 import java.util.*
 
-class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
+class TransactionEditorForm(context: Context, attrs: AttributeSet) :
+    ConstraintLayout(context, attrs) {
     var date: LocalDate = LocalDate.now()
         set(value) {
             field = value
@@ -49,7 +50,8 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintL
     }
 
     fun setCurrencies(currencies: List<String>) {
-        val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, currencies)
+        val adapter =
+            ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, currencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         currency_dropdown.setAdapter(adapter)
@@ -58,12 +60,13 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintL
 
     fun setCategories(categories: List<Category>) {
         val defaultSelection = IdTextPair(0, "No category")
-        val choices = listOf(defaultSelection) + categories.map { IdTextPair(it.id.toLong(), it.name) }
+        val choices =
+            listOf(defaultSelection) + categories.map { IdTextPair(it.id.toLong(), it.name) }
 
         category_dropdown.setAdapter(
-                IdTextPairAdapter(context, android.R.layout.simple_spinner_item, choices).also {
-                    it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
+            IdTextPairAdapter(context, android.R.layout.simple_spinner_item, choices).also {
+                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
         )
 
         category_dropdown.setText(defaultSelection.text, false)
@@ -100,25 +103,25 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintL
 
     private fun openDatePicker() {
         val picker = DatePickerDialog(
-                context,
-                onDateSetListener,
-                date.year,
-                date.monthValue - 1,
-                date.dayOfMonth
+            context,
+            onDateSetListener,
+            date.year,
+            date.monthValue - 1,
+            date.dayOfMonth
         )
         picker.show()
     }
 
     private fun submitTransaction() {
         val transaction = Transaction(
-                date,
-                amount = BigDecimal(amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
-                currency = selectedCurrency,
-                categoryId = selectedCategoryId,
-                description = description_input.text.toString(),
-                supplier = supplier_input.text.toString(),
-                documentType = document_type_input.text.toString(),
-                documentNumber = document_number_input.text.toString()
+            date,
+            amount = BigDecimal(amount_input.text.toString().let { if (it.isEmpty()) "0" else it }),
+            currency = selectedCurrency,
+            categoryId = selectedCategoryId,
+            description = description_input.text.toString(),
+            supplier = supplier_input.text.toString(),
+            documentType = document_type_input.text.toString(),
+            documentNumber = document_number_input.text.toString()
         )
 
         onTransactionSaveListener?.onTransactionSave(transaction)
@@ -170,7 +173,7 @@ class TransactionEditorForm(context: Context, attrs: AttributeSet) : ConstraintL
                 override fun createFromParcel(source: Parcel): SavedState = SavedState(source)
 
                 override fun newArray(size: Int): Array<SavedState?> =
-                        arrayOfNulls(size)
+                    arrayOfNulls(size)
 
             }
         }

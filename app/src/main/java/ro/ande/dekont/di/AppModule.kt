@@ -14,9 +14,9 @@ class AppModule {
     @Provides
     @Singleton
     fun provideDatabase(app: Application): DekontDatabase =
-            Room.databaseBuilder(app, DekontDatabase::class.java, "dekont.db")
-                    .fallbackToDestructiveMigration()
-                    .build()
+        Room.databaseBuilder(app, DekontDatabase::class.java, "dekont.db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton

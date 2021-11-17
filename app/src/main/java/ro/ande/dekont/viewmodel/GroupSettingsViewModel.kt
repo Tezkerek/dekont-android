@@ -15,10 +15,10 @@ import javax.inject.Inject
 
 class GroupSettingsViewModel
 @Inject constructor(
-        app: Application,
-        private val groupRepository: GroupRepository,
-        private val userRepository: UserRepository
-): AndroidViewModel(app) {
+    app: Application,
+    private val groupRepository: GroupRepository,
+    private val userRepository: UserRepository
+) : AndroidViewModel(app) {
     val group: LiveData<Resource<Group>> = groupRepository.currentUserGroup
 
     val user: LiveData<Resource<User>> = userRepository.currentUser
@@ -36,5 +36,5 @@ class GroupSettingsViewModel
     }
 
     suspend fun joinGroup(inviteCode: String): ApiResponse<Void> =
-            groupRepository.joinGroup(inviteCode)
+        groupRepository.joinGroup(inviteCode)
 }

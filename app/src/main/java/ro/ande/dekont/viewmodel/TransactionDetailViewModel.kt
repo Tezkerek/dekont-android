@@ -11,7 +11,8 @@ import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
 class TransactionDetailViewModel
-@Inject constructor(app: Application, private val transactionRepository: TransactionRepository) : AndroidViewModel(app) {
+@Inject constructor(app: Application, private val transactionRepository: TransactionRepository) :
+    AndroidViewModel(app) {
     val transaction: LiveData<Transaction>
         get() = _transaction
 
@@ -24,10 +25,10 @@ class TransactionDetailViewModel
     }
 
     fun deleteCurrentTransaction(): LiveData<ResourceDeletion> =
-            liveData {
-                transaction.value?.let {
-                    val deletion = transactionRepository.deleteTransaction(it.id)
-                    emit(deletion)
-                }
+        liveData {
+            transaction.value?.let {
+                val deletion = transactionRepository.deleteTransaction(it.id)
+                emit(deletion)
             }
+        }
 }

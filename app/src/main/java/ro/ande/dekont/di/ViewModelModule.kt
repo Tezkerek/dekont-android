@@ -9,27 +9,33 @@ import ro.ande.dekont.viewmodel.*
 
 @Module
 abstract class ViewModelModule {
-    @Binds @IntoMap
+    @Binds
+    @IntoMap
     @ViewModelKey(AuthViewModel::class)
     internal abstract fun bindLoginViewModel(authViewModel: AuthViewModel): ViewModel
 
-    @Binds @IntoMap
+    @Binds
+    @IntoMap
     @ViewModelKey(MainViewModel::class)
     internal abstract fun bindMainViewModel(mainViewModel: MainViewModel): ViewModel
 
-    @Binds @IntoMap
+    @Binds
+    @IntoMap
     @ViewModelKey(TransactionListViewModel::class)
     internal abstract fun bindTransactionListViewModel(transactionListViewModel: TransactionListViewModel): ViewModel
 
-    @Binds @IntoMap
+    @Binds
+    @IntoMap
     @ViewModelKey(TransactionEditorViewModel::class)
     internal abstract fun bindTransactionEditorViewModel(transactionEditorViewModel: TransactionEditorViewModel): ViewModel
 
-    @Binds @IntoMap
+    @Binds
+    @IntoMap
     @ViewModelKey(TransactionDetailViewModel::class)
     internal abstract fun bindTransactionDetailViewModel(transactionDetailViewModel: TransactionDetailViewModel): ViewModel
 
-    @Binds @IntoMap
+    @Binds
+    @IntoMap
     @ViewModelKey(GroupSettingsViewModel::class)
     internal abstract fun bindGroupSettingsViewModel(groupSettingsViewModel: GroupSettingsViewModel): ViewModel
 

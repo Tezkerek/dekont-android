@@ -22,14 +22,17 @@ class Converters {
     fun urlToString(url: URL?): String? = url.toString()
 
     @TypeConverter
-    fun dateFromLong(timestamp: Long?): LocalDate? = timestamp?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
+    fun dateFromLong(timestamp: Long?): LocalDate? =
+        timestamp?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
 
     @TypeConverter
-    fun dateToLong(date: LocalDate?): Long? = date?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+    fun dateToLong(date: LocalDate?): Long? =
+        date?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
 
     @TypeConverter
-    fun amountToLong(amount: BigDecimal?): Long? = amount?.let { (amount * BigDecimal(100)).toLong() }
+    fun amountToLong(amount: BigDecimal?): Long? =
+        amount?.let { (amount * BigDecimal(100)).toLong() }
 
     @TypeConverter
-    fun amountFromLong(long: Long?): BigDecimal? = long?.let{ BigDecimal(long / 100.toDouble()) }
+    fun amountFromLong(long: Long?): BigDecimal? = long?.let { BigDecimal(long / 100.toDouble()) }
 }

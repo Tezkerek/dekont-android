@@ -2,9 +2,6 @@ package ro.ande.dekont.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ro.ande.dekont.api.ApiErrorResponse
 import ro.ande.dekont.api.ApiResponse
@@ -17,7 +14,8 @@ import javax.inject.Inject
 import kotlin.math.ceil
 
 class AuthViewModel
-@Inject constructor(app: Application, private val userRepository: UserRepository) : AndroidViewModel(app) {
+@Inject constructor(app: Application, private val userRepository: UserRepository) :
+    AndroidViewModel(app) {
     val authToken: LiveData<Resource<Token>>
         get() = mediatorAuthToken
     val registrationResponse: LiveData<ApiResponse<User>>
@@ -34,7 +32,8 @@ class AuthViewModel
             val response = userRepository.login(email, password, deviceName)
             when (response) {
                 is ApiSuccessResponse -> mediatorAuthToken.value = Resource.success(response.body)
-                is ApiErrorResponse -> mediatorAuthToken.value = Resource.error(response.getFirstError(), null)
+                is ApiErrorResponse -> mediatorAuthToken.value =
+                    Resource.error(response.getFirstError(), null)
             }
         }
     }

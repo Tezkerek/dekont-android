@@ -7,8 +7,8 @@ import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Transaction
 
 @Database(
-        entities = [Transaction::class, Category::class],
-        version = 1
+    entities = [Transaction::class, Category::class],
+    version = 1
 )
 @TypeConverters(Converters::class)
 abstract class DekontDatabase : RoomDatabase() {

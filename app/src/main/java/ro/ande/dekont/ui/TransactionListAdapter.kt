@@ -14,10 +14,12 @@ interface TransactionListAdapter {
     fun interface OnTransactionClickListener {
         fun onClick(transactionId: Int)
     }
+
     var onTransactionClickListener: OnTransactionClickListener?
 
     fun interface OnTransactionLongClickListener {
         fun onLongClick(transactionId: Int)
     }
+
     var onTransactionLongClickListener: OnTransactionLongClickListener?
 }

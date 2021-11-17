@@ -20,9 +20,9 @@ import javax.inject.Inject
 
 class TransactionListViewModel
 @Inject constructor(
-        mApplication: Application,
-        private val transactionRepository: TransactionRepository,
-        private val categoryRepository: CategoryRepository
+    mApplication: Application,
+    private val transactionRepository: TransactionRepository,
+    private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {
     private val _transactions = MediatorLiveData<PagedList<Transaction>>()
     val transactions: LiveData<PagedList<Transaction>> = _transactions

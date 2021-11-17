@@ -10,12 +10,14 @@ import ro.ande.dekont.DekontApp
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
-    AndroidInjectionModule::class,
-    AppModule::class,
-    ActivityModule::class,
-    FragmentModule::class
-])
+@Component(
+    modules = [
+        AndroidInjectionModule::class,
+        AppModule::class,
+        ActivityModule::class,
+        FragmentModule::class
+    ]
+)
 interface AppComponent : AndroidInjector<DekontApp> {
     @Component.Builder
     interface Builder {

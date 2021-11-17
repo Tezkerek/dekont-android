@@ -27,8 +27,10 @@ class GroupSettingsFragment : Fragment(), Injectable {
     private val groupSettingsViewModel: GroupSettingsViewModel by injectableViewModel()
     private var activeSnackbar: Snackbar? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_group_settings, container, false)
     }
@@ -57,9 +59,13 @@ class GroupSettingsFragment : Fragment(), Injectable {
                     toggleGroupScreen(true)
                 }
             } else if (userResource.isError()) {
-                activeSnackbar = Snackbar.make(this.group_settings_view!!, getString(R.string.general_error_prefix, userResource.message), Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.action_retry) { loadCurrentUser() }
-                        .also { it.show() }
+                activeSnackbar = Snackbar.make(
+                    this.group_settings_view!!,
+                    getString(R.string.general_error_prefix, userResource.message),
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction(R.string.action_retry) { loadCurrentUser() }
+                    .also { it.show() }
             }
         })
         loadCurrentUser()
@@ -90,7 +96,11 @@ class GroupSettingsFragment : Fragment(), Injectable {
         toggleNotInGroupControls(false)
 
         // Inflate input view
-        val codeInputView = layoutInflater.inflate(R.layout.view_group_join_code_input, this.group_settings_view, false)
+        val codeInputView = layoutInflater.inflate(
+            R.layout.view_group_join_code_input,
+            this.group_settings_view,
+            false
+        )
         this.group_settings_view.addView(codeInputView)
 
         // Function for removing the invite screen

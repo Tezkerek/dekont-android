@@ -24,8 +24,8 @@ interface DekontService {
 
     @GET("transactions/")
     suspend fun listTransactions(
-            @Query("page") page: Int,
-            @Query("users") users: List<Int>?
+        @Query("page") page: Int,
+        @Query("users") users: List<Int>?
     ): ApiResponse<PaginatedResponse<List<Transaction>>>
 
     @POST("transactions/")

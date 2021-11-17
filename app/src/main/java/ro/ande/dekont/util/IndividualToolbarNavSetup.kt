@@ -6,8 +6,8 @@ import androidx.navigation.NavController
 import ro.ande.dekont.R
 
 fun Toolbar.setupWithIndividualNavController(
-        navController: NavController,
-        drawer: Openable? = null
+    navController: NavController,
+    drawer: Openable? = null
 ) {
     val currentDest = navController.currentDestination
 

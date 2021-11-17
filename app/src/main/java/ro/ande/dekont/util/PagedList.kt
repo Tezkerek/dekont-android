@@ -9,7 +9,7 @@ class PagedList<T> {
         get() = _pages
 
     fun getPageContents(page: Int): List<T>? =
-            pages[page]
+        pages[page]
 
     /**
      * Set the contents of a page, replacing the previous ones.
@@ -24,5 +24,5 @@ class PagedList<T> {
      * Retrieve a list containing all the items in the paged list.
      */
     fun getAll(): List<T> =
-            pages.flatMap { it.value }
+        pages.flatMap { it.value }
 }

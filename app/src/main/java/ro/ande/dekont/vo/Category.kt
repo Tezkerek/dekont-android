@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName
 
 @Entity
 data class Category(
-        @field:SerializedName("id")
-        @field:PrimaryKey
-        val id: Int,
+    @field:SerializedName("id")
+    @field:PrimaryKey
+    val id: Int,
 
-        @field:SerializedName("name")
-        var name: String
+    @field:SerializedName("name")
+    var name: String
 )

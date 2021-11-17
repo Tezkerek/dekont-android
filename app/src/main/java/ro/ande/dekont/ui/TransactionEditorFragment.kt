@@ -30,8 +30,10 @@ class TransactionEditorFragment : Fragment(), Injectable {
 
     private val navArgs: TransactionEditorFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_transaction_editor, container, false)
     }
@@ -48,13 +50,19 @@ class TransactionEditorFragment : Fragment(), Injectable {
         populateCategorySpinner()
 
         // Observe result transaction
-        editorViewModel.transactionResource.observe(viewLifecycleOwner, Observer { transactionResource ->
-            if (transactionResource.isSuccess()) {
-                finishEditing()
-            } else if (transactionResource.isError()) {
-                Snackbar.make(this.requireView(), transactionResource.message ?: "", Snackbar.LENGTH_SHORT).show()
-            }
-        })
+        editorViewModel.transactionResource.observe(
+            viewLifecycleOwner,
+            Observer { transactionResource ->
+                if (transactionResource.isSuccess()) {
+                    finishEditing()
+                } else if (transactionResource.isError()) {
+                    Snackbar.make(
+                        this.requireView(),
+                        transactionResource.message ?: "",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            })
 
         transaction_editor_form.setOnTransactionSaveListener {
             closeKeyboard()
@@ -88,7 +96,10 @@ class TransactionEditorFragment : Fragment(), Injectable {
         activity?.let { activity ->
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE).let {
                 it as InputMethodManager
-                it.hideSoftInputFromWindow(activity.currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+                it.hideSoftInputFromWindow(
+                    activity.currentFocus?.windowToken,
+                    InputMethodManager.HIDE_NOT_ALWAYS
+                )
             }
         }
     }

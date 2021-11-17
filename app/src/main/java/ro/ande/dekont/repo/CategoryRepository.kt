@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 class CategoryRepository
 @Inject constructor(
-        private val categoryDao: CategoryDao,
-        private val dekontService: DekontService
+    private val categoryDao: CategoryDao,
+    private val dekontService: DekontService
 ) {
     fun loadAll(): CachedNetworkData<List<Category>> {
         val cachedData = categoryDao.retrieveAll().distinctUntilChanged()

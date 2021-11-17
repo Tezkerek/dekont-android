@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -29,8 +28,12 @@ class TransactionListFragment : Fragment(), Injectable {
 
     private var transactionListManager: TransactionListManager? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_transaction_list, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
+        inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupNavigationUI(findNavController())
@@ -40,7 +43,10 @@ class TransactionListFragment : Fragment(), Injectable {
 
     private fun setupNavigationUI(navController: NavController) {
         // Setup toolbar and drawer
-        transaction_list_bottom_app_bar.setupWithIndividualNavController(navController, drawer_layout)
+        transaction_list_bottom_app_bar.setupWithIndividualNavController(
+            navController,
+            drawer_layout
+        )
 
         nav_drawer.apply {
             setupWithNavController(navController)
@@ -94,13 +100,13 @@ class TransactionListFragment : Fragment(), Injectable {
 
     private fun openTransactionOptionsMenu(transactionId: Int) {
         AlertDialog.Builder(this.context)
-                .setItems(R.array.transaction_options) { _, optionIndex ->
-                    when (optionIndex) {
-                        0 -> confirmTransactionDeletion(transactionId)
-                    }
+            .setItems(R.array.transaction_options) { _, optionIndex ->
+                when (optionIndex) {
+                    0 -> confirmTransactionDeletion(transactionId)
                 }
-                .create()
-                .show()
+            }
+            .create()
+            .show()
     }
 
     /**
@@ -109,30 +115,36 @@ class TransactionListFragment : Fragment(), Injectable {
     private fun confirmTransactionDeletion(transactionId: Int) {
         // Show delete confirmation dialog
         AlertDialog.Builder(this.context)
-                .setMessage(R.string.dialog_message_confirm_transaction_deletion)
-                .setPositiveButton(R.string.action_confirm) { confirmationDialog, _ ->
-                    // TODO Progress indicator (maybe on toolbar)
-                    transactionListViewModel.attemptTransactionDeletion(transactionId)
-                    confirmationDialog.dismiss()
-                }
-                .setNegativeButton(R.string.action_cancel) { confirmationDialog, _ ->
-                    confirmationDialog.dismiss()
-                }
-                .create()
-                .show()
+            .setMessage(R.string.dialog_message_confirm_transaction_deletion)
+            .setPositiveButton(R.string.action_confirm) { confirmationDialog, _ ->
+                // TODO Progress indicator (maybe on toolbar)
+                transactionListViewModel.attemptTransactionDeletion(transactionId)
+                confirmationDialog.dismiss()
+            }
+            .setNegativeButton(R.string.action_cancel) { confirmationDialog, _ ->
+                confirmationDialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     private fun showBottomSnackbar(text: CharSequence, duration: Int = Snackbar.LENGTH_SHORT) {
         Snackbar.make(coordinator_layout, text, duration)
-                .setAnchorView(add_transaction_fab)
-                .show()
+            .setAnchorView(add_transaction_fab)
+            .show()
     }
 
-    private fun showBottomSnackbar(stringResource: StringResource, duration: Int = Snackbar.LENGTH_SHORT) =
-            showBottomSnackbar(stringResource.getString(requireContext()), duration)
+    private fun showBottomSnackbar(
+        stringResource: StringResource,
+        duration: Int = Snackbar.LENGTH_SHORT
+    ) =
+        showBottomSnackbar(stringResource.getString(requireContext()), duration)
 
-    private fun showBottomSnackbar(@StringRes textResId: Int, duration: Int = Snackbar.LENGTH_SHORT) =
-            showBottomSnackbar(getString(textResId), duration)
+    private fun showBottomSnackbar(
+        @StringRes textResId: Int,
+        duration: Int = Snackbar.LENGTH_SHORT
+    ) =
+        showBottomSnackbar(getString(textResId), duration)
 
     private fun showResourceError(message: String?, type: ResourceType) {
         val prefix = when (type) {
@@ -146,15 +158,23 @@ class TransactionListFragment : Fragment(), Injectable {
 
     private fun handleTransactionClick(id: Int) {
         // Navigate to TransactionDetail
-        findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToTransactionDetailFragment(id))
+        findNavController().navigate(
+            TransactionListFragmentDirections.actionTransactionListFragmentToTransactionDetailFragment(
+                id
+            )
+        )
     }
 
     private fun navigateToNewTransactionEditor() {
-        findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToTransactionEditorFragment(TransactionEditorFragment.Action.CREATE))
+        findNavController().navigate(
+            TransactionListFragmentDirections.actionTransactionListFragmentToTransactionEditorFragment(
+                TransactionEditorFragment.Action.CREATE
+            )
+        )
     }
 
     private fun navigateToGroupSettings() =
-            findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToGroupSettingsFragment())
+        findNavController().navigate(TransactionListFragmentDirections.actionTransactionListFragmentToGroupSettingsFragment())
 
     companion object {
         private enum class ResourceType {
@@ -198,7 +218,12 @@ class TransactionListManager(recyclerView: RecyclerView) {
         recyclerView.apply {
             layoutManager = linearLayoutManager
             adapter = transactionListAdapter
-            addItemDecoration(HeaderItemDecoration(this, isHeader = transactionListAdapter::isItemHeader))
+            addItemDecoration(
+                HeaderItemDecoration(
+                    this,
+                    isHeader = transactionListAdapter::isItemHeader
+                )
+            )
             addOnScrollListener(pagedLoadManager.scrollListener)
         }
     }

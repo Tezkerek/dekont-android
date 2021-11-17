@@ -2,7 +2,6 @@ package ro.ande.dekont.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ro.ande.dekont.AppExecutors
 import ro.ande.dekont.api.*
 import ro.ande.dekont.vo.Resource
 import ro.ande.dekont.vo.Token
@@ -15,7 +14,7 @@ class UserRepository @Inject constructor(private val dekontService: DekontServic
     val currentUser: LiveData<Resource<User>> = _currentUser
 
     suspend fun login(email: String, password: String, deviceName: String): ApiResponse<Token> =
-            dekontService.login(LoginRequest(email, password, deviceName))
+        dekontService.login(LoginRequest(email, password, deviceName))
 
     suspend fun register(email: String, password: String): ApiResponse<User> {
         return dekontService.register(RegistrationRequest(email, password, null))

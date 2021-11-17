@@ -3,7 +3,6 @@ package ro.ande.dekont.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
@@ -14,10 +13,10 @@ import javax.inject.Inject
 
 class TransactionEditorViewModel
 @Inject constructor(
-        app: Application,
-        private val transactionRepository: TransactionRepository,
-        private val categoryRepository: CategoryRepository
-): AndroidViewModel(app) {
+    app: Application,
+    private val transactionRepository: TransactionRepository,
+    private val categoryRepository: CategoryRepository
+) : AndroidViewModel(app) {
     val categories: LiveData<List<Category>> = categoryRepository.retrieveAll().asLiveData()
 
     val currencies: LiveData<List<String>> by lazy {
@@ -26,9 +25,9 @@ class TransactionEditorViewModel
         // Retrieve currencies from the app's assets
         viewModelScope.launch(Dispatchers.IO) {
             val currencies = app.assets.open("currencies.csv")
-                    .bufferedReader()
-                    .use { it.readText() }
-                    .split('\n')
+                .bufferedReader()
+                .use { it.readText() }
+                .split('\n')
             liveData.postValue(currencies)
         }
 

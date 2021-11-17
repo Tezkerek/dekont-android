@@ -18,9 +18,9 @@ interface Injectable
 object AppInjector {
     fun injectAll(app: DekontApp) {
         DaggerAppComponent.builder()
-                .application(app)
-                .build()
-                .inject(app)
+            .application(app)
+            .build()
+            .inject(app)
 
         app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -47,19 +47,19 @@ object AppInjector {
         }
         if (activity is FragmentActivity) {
             activity.supportFragmentManager
-                    .registerFragmentLifecycleCallbacks(
-                            object : FragmentManager.FragmentLifecycleCallbacks() {
-                                override fun onFragmentCreated(
-                                        fm: FragmentManager,
-                                        f: Fragment,
-                                        savedInstanceState: Bundle?
-                                ) {
-                                    if (f is Injectable) {
-                                        AndroidSupportInjection.inject(f)
-                                    }
-                                }
-                            }, true
-                    )
+                .registerFragmentLifecycleCallbacks(
+                    object : FragmentManager.FragmentLifecycleCallbacks() {
+                        override fun onFragmentCreated(
+                            fm: FragmentManager,
+                            f: Fragment,
+                            savedInstanceState: Bundle?
+                        ) {
+                            if (f is Injectable) {
+                                AndroidSupportInjection.inject(f)
+                            }
+                        }
+                    }, true
+                )
         }
     }
 }
