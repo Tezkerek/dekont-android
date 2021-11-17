@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_transaction_detail.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ro.ande.dekont.R
 import ro.ande.dekont.di.Injectable
 import ro.ande.dekont.util.setupWithIndividualNavController
@@ -42,9 +44,11 @@ class TransactionDetailFragment : Fragment(), Injectable {
         super.onActivityCreated(savedInstanceState)
 
         // Observe transaction
-        transactionDetailViewModel.transaction.observe(viewLifecycleOwner) { transaction ->
-            showTransactionDetails(transaction)
-        }
+        transactionDetailViewModel.transaction.onEach { transaction ->
+            if (transaction != null) {
+                showTransactionDetails(transaction)
+            }
+        }.launchIn(lifecycleScope)
 
         // Load transaction on launch
         if (transactionDetailViewModel.transaction.value == null) {

@@ -1,6 +1,5 @@
 package ro.ande.dekont.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import ro.ande.dekont.vo.Transaction
@@ -26,7 +25,7 @@ abstract class TransactionDao {
     abstract fun getById(id: Int): Transaction
 
     @Query("SELECT * FROM `transaction` WHERE id = :id")
-    abstract fun retrieveById(id: Int): LiveData<Transaction>
+    abstract suspend fun retrieveById(id: Int): Transaction?
 
     @Query("SELECT * FROM `transaction` ORDER BY date DESC LIMIT :limit OFFSET :offset")
     abstract fun retrievePartial(offset: Int, limit: Int): Flow<List<Transaction>>

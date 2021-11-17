@@ -3,8 +3,11 @@ package ro.ande.dekont.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
@@ -13,14 +16,14 @@ import javax.inject.Inject
 class TransactionDetailViewModel
 @Inject constructor(app: Application, private val transactionRepository: TransactionRepository) :
     AndroidViewModel(app) {
-    val transaction: LiveData<Transaction>
+
+    private val _transaction = MutableStateFlow<Transaction?>(null)
+    val transaction: StateFlow<Transaction?>
         get() = _transaction
 
-    private val _transaction = MediatorLiveData<Transaction>()
-
     fun loadTransaction(id: Int) {
-        _transaction.addSource(transactionRepository.retrieveTransactionById(id)) { transaction ->
-            _transaction.value = transaction
+        viewModelScope.launch {
+            _transaction.value = transactionRepository.retrieveTransactionById(id)
         }
     }
 

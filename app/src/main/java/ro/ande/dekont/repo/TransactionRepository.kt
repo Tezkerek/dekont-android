@@ -1,6 +1,5 @@
 package ro.ande.dekont.repo
 
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -57,7 +56,7 @@ class TransactionRepository
         return CachedNetworkData(cachedData, networkState)
     }
 
-    fun retrieveTransactionById(id: Int): LiveData<Transaction> {
+    suspend fun retrieveTransactionById(id: Int): Transaction? {
         return transactionDao.retrieveById(id)
     }
 
