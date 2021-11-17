@@ -9,13 +9,33 @@ class CachedNetworkData<T>(
 )
 
 class NetworkState(
-        val state: Status,
+        val status: Status,
         val message: String? = null,
         val isExhausted: Boolean = false
 ) {
+    val isSuccess
+        get() = status == Status.SUCCESS
+
+    val isLoading
+        get() = status == Status.LOADING
+
+    val isError
+        get() = status == Status.ERROR
+
     enum class Status {
         SUCCESS,
         LOADING,
         ERROR
+    }
+
+    companion object {
+        fun success(message: String? = null, isExhausted: Boolean = false) =
+                NetworkState(Status.SUCCESS, message, isExhausted)
+
+        fun loading(message: String? = null, isExhausted: Boolean = false) =
+                NetworkState(Status.LOADING, message, isExhausted)
+
+        fun error(message: String? = null, isExhausted: Boolean = false) =
+                NetworkState(Status.ERROR, message, isExhausted)
     }
 }

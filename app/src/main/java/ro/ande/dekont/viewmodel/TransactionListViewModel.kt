@@ -2,22 +2,25 @@ package ro.ande.dekont.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import ro.ande.dekont.R
 import ro.ande.dekont.repo.CategoryRepository
 import ro.ande.dekont.repo.TransactionRepository
 import ro.ande.dekont.util.NetworkState
 import ro.ande.dekont.util.PagedList
+import ro.ande.dekont.util.StringResource
 import ro.ande.dekont.util.zipLiveData
 import ro.ande.dekont.vo.Category
 import ro.ande.dekont.vo.Resource
-import ro.ande.dekont.vo.ResourceDeletion
 import ro.ande.dekont.vo.Transaction
 import javax.inject.Inject
 
 class TransactionListViewModel
 @Inject constructor(
-        mApplication: Application,
+        private val mApplication: Application,
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository
 ) : AndroidViewModel(mApplication) {
@@ -35,6 +38,8 @@ class TransactionListViewModel
 
     var transactionsLastLoadedPage: Int = 0
 
+    val messages: Channel<StringResource> = Channel()
+
 
     fun loadTransactions(page: Int, users: List<Int>? = null) {
         val loadSource = transactionRepository.loadTransactions(page, users)
@@ -45,7 +50,7 @@ class TransactionListViewModel
             // and the local source is exhausted.
             if (transactions.isEmpty()) {
                 _transactionsState.postValue(_transactionsState.value?.also { prevState ->
-                    NetworkState(prevState.state, prevState.message, isExhausted = true)
+                    NetworkState(prevState.status, prevState.message, isExhausted = true)
                 })
             } else {
                 // Update page with the new data
@@ -56,9 +61,23 @@ class TransactionListViewModel
             }
         }.launchIn(viewModelScope)
 
-        loadSource.networkState.onEach { state ->
-            _transactionsState.value = state
+        loadSource.networkState.onEach { networkState ->
+            if (networkState.isError) {
+                messages.send(StringResource.createWithDefault(networkState.message, R.string.error_unknown))
+            }
+            if (networkState.isExhausted) isNetworkSourceExhausted = networkState.isExhausted
         }.launchIn(viewModelScope)
+    }
+
+    var lastLoadedPage = 0
+    var isNetworkSourceExhausted = false
+
+    fun attemptPageLoad(page: Int): Boolean {
+        if (page <= lastLoadedPage || isNetworkSourceExhausted)
+            return false
+
+        loadTransactions(page)
+        return true
     }
 
     /** Same as loadTransactions, but only emits when both transactions and categories are loaded. */
@@ -78,8 +97,14 @@ class TransactionListViewModel
         }
     }
 
-    fun deleteTransaction(id: Int): LiveData<ResourceDeletion> =
-            liveData {
-                emit(transactionRepository.deleteTransaction(id))
+    fun attemptTransactionDeletion(id: Int) {
+        viewModelScope.launch {
+            val deletion = transactionRepository.deleteTransaction(id)
+            if (deletion.isSuccess) {
+                messages.send(StringResource(R.string.message_transaction_deletion_success))
+            } else {
+                messages.send(StringResource.createWithDefault(deletion.message, R.string.error_unknown))
             }
+        }
+    }
 }
